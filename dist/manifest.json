@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "e-Dnevnik Vue",
+  "description": "Moderna verzija e-Dnevnika za učenike i roditelje.",
+  "author": "Kristijan Rosandić",
+  "version": "1.0",
+  "permissions": [
+    "tabs",
+    "storage"
+  ],
+  "optional_permissions": [
+    "notifications",
+    "cookies",
+    "background"
+  ],
+  "host_permissions": [
+    "https://ocjene.skole.hr/*",
+    "https://webmail.carnet.hr/*",
+    "http://*/",
+    "https://*/"
+  ],
+  "icons": {
+    "128": "assets/img/icon-128.png"
+  },
+  "action": {
+    "default_icon": "assets/img/icon-19-disabled.png",
+    "default_popup": "popup/popup.html"
+  },
+  "background": {
+    "service_worker": "service_worker.js"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "content-script.js"
+      ],
+      "matches": [
+        "https://ocjene.skole.hr/*"
+      ],
+      "run_at": "document_start"
+    }
+  ]
+}

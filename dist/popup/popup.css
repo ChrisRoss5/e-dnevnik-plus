@@ -1,0 +1,65 @@
+body {
+  font-family: "Trebuchet MS", "Helvetica", sans-serif;
+  width: 275px;
+  font-size: 16px;
+}
+
+a {
+  text-decoration: none;
+  color: #235694;
+}
+
+input {
+  display: none;
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.title {
+  font-size: 30px;
+  font-weight: bold;
+  padding-top: 5px;
+  padding-bottom: 10px;
+}
+
+.dnevnik:hover {
+  color: #46A246;
+}
+
+.plus {
+  color: rgb(34, 150, 218);
+}
+
+.settingText {
+  padding: 10px 10px 10px 20px;
+  user-select: none;
+}
+
+.check {
+  float: right;
+  transform: translate(-10px, -9px);
+}
+
+.rateME {
+  user-select: none;
+  cursor: pointer;
+  width: 275px;
+  font-weight: bold;
+  padding-top: 10px;
+  padding-bottom: 7px;
+  transition: 150ms;
+}
+
+.rateME:hover {
+  font-size: 19px;
+  background: linear-gradient(to right, #50B748, #50B748, #52B348, #58A846, #5F9A45, #976872, #B05187, #AD519E, #AD519E, #AD519E, #865AA6, #6663AC, #4A69B2, #356FB6, #2672B9, #1E74BA, #1B75BB);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("chrome-extension://__MSG_@@extension_id__/assets/font/Montserrat-Regular.ttf");
+}
