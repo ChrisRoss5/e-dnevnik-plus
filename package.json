@@ -1,11 +1,12 @@
 {
-  "name": "e-dnevnik-pro",
+  "name": "e-Dnevnik Vue",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "dev": "vue-cli-service build --no-clean"
   },
   "dependencies": {
     "core-js": "^3.6.5",
