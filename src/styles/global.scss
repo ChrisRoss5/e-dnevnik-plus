@@ -1,0 +1,111 @@
+@import "~material-design-icons/iconfont/material-icons.css";
+
+@font-face {
+  font-family: OpenSans;
+  src: url("~@/assets/font/OpenSans-Regular.ttf");
+}
+
+*:not(.material-icons) {
+  font-family: OpenSans, Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  overflow: hidden;
+  background: url("~@/assets/img/background.png");
+  background-size: cover;
+}
+
+a {
+  text-decoration: none;
+}
+
+input {
+  outline: none;
+  border: none;
+  transition: box-shadow 150ms;
+  width: 100%;
+  height: 30px;
+  padding: 5px 10px;
+  margin: 10px 0 20px;
+
+  &::placeholder {
+    font-family: OpenSans, Arial, Helvetica, sans-serif;
+  }
+
+  &[type="password"] {
+    -webkit-text-stroke-width: 0.1em;
+    letter-spacing: 0.2em;
+  }
+
+  &:focus {
+    box-shadow: 0 1px 2px 0 rgb(60 64 67), 0 1px 3px 1px rgb(60 64 67 / 15%);
+  }
+}
+
+
+table {
+  border-collapse: collapse;
+}
+
+::-webkit-scrollbar {
+  width: 20px;
+  height: 20px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #618cc9;
+  box-shadow: inset 0 0 6px #345788;
+}
+
+::-webkit-scrollbar-track {
+  background: #012948;
+  box-shadow: inset 0 0 6px #00000099;
+}
+
+::-webkit-scrollbar-corner {
+  background: #00508c;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  border-radius: 8px;
+  box-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%);
+}
+
+.button {
+  background: $button-color;
+  color: white;
+  text-align: center;
+  border-radius: 8px;
+  padding: 5px 20px;
+  transition: background-color 150ms, opacity 150ms;
+
+  &.disabled-button {
+    pointer-events: none;
+    user-select: none;
+    opacity: 0.5;
+  }
+
+  &:not(.disabled-button):hover {
+    cursor: pointer;
+    background-color: $hovered-button;
+  }
+}
+
+.text-link {
+  color: $button-color;
+  font-weight: bold;
+}

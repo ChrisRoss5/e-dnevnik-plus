@@ -1,0 +1,110 @@
+{
+  "settings": {},
+  "users": [
+    {
+      "signedIn": false,
+      "email": "",
+      "password": "",
+      "full-name": "",
+      "personal-data": {
+        "student": [
+          {
+            "key": "",
+            "value": ""
+          }
+        ],
+        "contacts": [
+          [
+            {
+              "key": "",
+              "value": ""
+            }
+          ]
+        ],
+        "lastUpdated": 0
+      },
+      "settings": {},
+      "classesList": {
+        "list": [
+          {
+            "url": "",
+            "name": "",
+            "year": "",
+            "final-grade": 0
+          }
+        ],
+        "lastUpdated": 0
+      },
+      "classes": [
+        {
+          "url": "",
+          "subjects": [
+            {
+              "name": "",
+              "teacher": "",
+              "categories": [
+                {
+                  "name": "",
+                  "grades": []
+                }
+              ],
+              "final-grade": 0,
+              "notes": [
+                {
+                  "note": "",
+                  "date": "",
+                  "grade": 0
+                }
+              ]
+            }
+          ],
+          "notes": [
+            {
+              "title": "",
+              "note": ""
+            }
+          ],
+          "exams": [
+            {
+              "subject": "",
+              "note": "",
+              "date": ""
+            }
+          ],
+          "absences": [
+            {
+              "hour": 0,
+              "subject": "",
+              "status": "",
+              "cause": ""
+            }
+          ],
+          "conduct": {
+            "final": "",
+            "measures": [
+              {
+                "name": "",
+                "info": "",
+                "date": ""
+              }
+            ]
+          },
+          "schedule": {
+            "A": [
+              {
+                "hour": 0,
+                "subject": ""
+              }
+            ],
+            "B": [
+              {
+                "hour": 0,
+                "subject": ""
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

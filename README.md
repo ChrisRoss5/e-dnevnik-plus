@@ -1,4 +1,4 @@
-# e-Dnevnik Vue
+# e-Dnevnik-Vue
 
 ## Project setup
 ```
