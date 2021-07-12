@@ -1,25 +1,60 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
-import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
+import Class from '../views/Class.vue'
 
 /*
 No lazy loading:
 https://router.vuejs.org/guide/advanced/lazy-loading.html#grouping-components-in-the-same-chunk
 
-Hash URL mode
+Hash URL mode:
 https://next.router.vuejs.org/guide/essentials/history-mode.html#hash-mode
  */
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/login',
     name: 'Login',
-    component: Login
+    component: Login,
+    meta: { transition: 'slide-to-sides' }
+  }, {
+    path: '/razred/:class',
+    component: Class/* ,
+    children: [{
+      path: '',
+      redirect: "/razred/:class/ocjene"
+    },] */ /*
+      {
+        path: 'ocjene',
+        component: Subjects,
+      },
+      {
+        path: 'bilješke',
+        component: Notes,
+      },
+      {
+        path: 'ispiti',
+        component: Exams,
+      },
+      {
+        path: 'izostanci',
+        component: Absences,
+      },
+      {
+        path: 'vladanja',
+        component: Conduct,
+      },
+      {
+        path: 'raspored',
+        component: Schedule,
+      },
+      {
+        path: 'statistika',
+        component: Stats,
+      },
+    ], */
+  }, {
+    path: '/:pathMatch(.*)',
+    redirect: "/"
   }
 ]
 

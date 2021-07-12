@@ -1,5 +1,9 @@
 @import "~material-design-icons/iconfont/material-icons.css";
 
+.material-icons {
+  user-select: none;
+}
+
 @font-face {
   font-family: OpenSans;
   src: url("~@/assets/font/OpenSans-Regular.ttf");
@@ -17,24 +21,31 @@ body {
 }
 
 html {
-  font-size: 16px;
+  font-size: 18px;
   overflow: hidden;
   background: url("~@/assets/img/background.png");
   background-size: cover;
+  background-repeat: no-repeat;
 }
 
 a {
   text-decoration: none;
+
+  &:focus-visible {
+    text-decoration: underline;
+    outline: none;
+  }
 }
 
 input {
   outline: none;
   border: none;
-  transition: box-shadow 150ms;
   width: 100%;
-  height: 30px;
+  height: 35px;
   padding: 5px 10px;
   margin: 10px 0 20px;
+  font-size: 16px;
+  transition: box-shadow 150ms;
 
   &::placeholder {
     font-family: OpenSans, Arial, Helvetica, sans-serif;
@@ -90,7 +101,9 @@ table {
   color: white;
   text-align: center;
   border-radius: 8px;
+  height: 35px;
   padding: 5px 20px;
+  outline: none;
   transition: background-color 150ms, opacity 150ms;
 
   &.disabled-button {
@@ -99,9 +112,14 @@ table {
     opacity: 0.5;
   }
 
-  &:not(.disabled-button):hover {
+  &:not(.disabled-button):hover,
+  &:focus:not(:focus-visible) {
     cursor: pointer;
     background-color: $hovered-button;
+  }
+
+  &:focus-visible {
+    text-decoration: underline;
   }
 }
 

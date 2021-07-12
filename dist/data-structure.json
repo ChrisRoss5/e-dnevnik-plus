@@ -5,8 +5,51 @@
       "signedIn": false,
       "email": "",
       "password": "",
-      "full-name": "",
-      "personal-data": {
+      "fullName": "",
+      "settings": {},
+      "updates": {
+        "personalData": {
+          "lastUpdated": 0,
+          "maxAge": 0
+        },
+        "classesList": {
+          "lastUpdated": 0,
+          "maxAge": 0
+        },
+        "classes": {
+          "lastUpdated": 0,
+          "maxAge": 0
+        },
+        "subjects": {
+          "lastUpdated": 0,
+          "maxAge": 0
+        },
+        "subject": {
+          "lastUpdated": 0,
+          "maxAge": 0
+        },
+        "notes": {
+          "lastUpdated": 0,
+          "maxAge": 0
+        },
+        "exams": {
+          "lastUpdated": 0,
+          "maxAge": 0
+        },
+        "absences": {
+          "lastUpdated": 0,
+          "maxAge": 0
+        },
+        "conduct": {
+          "lastUpdated": 0,
+          "maxAge": 0
+        },
+        "schedule": {
+          "lastUpdated": 0,
+          "maxAge": 0
+        }
+      },
+      "personalData": {
         "student": [
           {
             "key": "",
@@ -20,24 +63,22 @@
               "value": ""
             }
           ]
-        ],
-        "lastUpdated": 0
+        ]
       },
-      "settings": {},
-      "classesList": {
-        "list": [
-          {
-            "url": "",
-            "name": "",
-            "year": "",
-            "final-grade": 0
-          }
-        ],
-        "lastUpdated": 0
-      },
+      "classesList": [
+        {
+          "url": "",
+          "name": "",
+          "year": "",
+          "school": "",
+          "finalGrade": 0,
+          "opened": true
+        }
+      ],
       "classes": [
         {
           "url": "",
+          "headTeacher": "",
           "subjects": [
             {
               "name": "",
@@ -45,10 +86,10 @@
               "categories": [
                 {
                   "name": "",
-                  "grades": []
+                  "grades": [0]
                 }
               ],
-              "final-grade": 0,
+              "finalGrade": 0,
               "notes": [
                 {
                   "note": "",

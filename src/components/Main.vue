@@ -1,12 +1,10 @@
 <template>
   <div id="main">
-    <!-- <transition :name="transitionName">
-      <router-view></router-view>
-    </transition> -->
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-    </div>
-    <router-view />
+    <router-view v-slot="{ Component, route }">
+      <transition :name="route.meta.transition">
+        <component :is="Component" />
+      </transition>
+    </router-view>
   </div>
 </template>
 
@@ -23,11 +21,10 @@ export default defineComponent({
   },
   watch: {
     $route(to, from) {
-      const toDepth = to.path;
+      /* const toDepth = to.path;
       const fromDepth = from.path;
       console.log(to, from);
-
-      this.transitionName = toDepth < fromDepth ? "slide-right" : "slide-left";
+      this.transitionName = toDepth < fromDepth ? "slide-right" : "slide-left"; */
     },
   },
 });
@@ -35,6 +32,8 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 #main {
+  position: relative;
   flex: 1;
+  overflow-y: auto;
 }
 </style>

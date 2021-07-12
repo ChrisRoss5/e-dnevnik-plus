@@ -6,7 +6,7 @@
  */
 module.exports = {
   publicPath: '',
-  outputDir: 'dist/vue',
+  outputDir: 'dist/app',
   css: {
     loaderOptions: {
       sass: {
