@@ -1,6 +1,7 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
-import Login from '../views/Login.vue'
-import Class from '../views/Class.vue'
+import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
+import Login from "../views/Login.vue";
+import Class from "../views/Class.vue";
+import Website from "../views/Website.vue";
 
 /*
 No lazy loading:
@@ -12,13 +13,14 @@ https://next.router.vuejs.org/guide/essentials/history-mode.html#hash-mode
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    name: 'Login',
+    path: "/",
+    name: "Login",
     component: Login,
-    meta: { transition: 'slide-to-sides' }
-  }, {
-    path: '/razred/:class',
-    component: Class/* ,
+    meta: { transition: "slide-to-sides" },
+  },
+  {
+    path: "/razred/:class",
+    component: Class /* ,
     children: [{
       path: '',
       redirect: "/razred/:class/ocjene"
@@ -51,16 +53,21 @@ const routes: Array<RouteRecordRaw> = [
         path: 'statistika',
         component: Stats,
       },
-    ], */
-  }, {
-    path: '/:pathMatch(.*)',
-    redirect: "/"
-  }
-]
+    ], */,
+  },
+  {
+    path: "/stranica/:website",
+    component: Website,
+  },
+  {
+    path: "/:pathMatch(.*)",
+    redirect: "/",
+  },
+];
 
 const router = createRouter({
   history: createWebHashHistory(process.env.BASE_URL),
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;

@@ -13,7 +13,6 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "Main",
-  components: {},
   data() {
     return {
       transitionName: "login",
@@ -33,7 +32,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 #main {
   position: relative;
+  overflow-y: scroll;
   flex: 1;
-  overflow-y: auto;
 }
 </style>

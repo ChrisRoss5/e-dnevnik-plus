@@ -22,6 +22,7 @@ export default defineComponent({
     User,
   },
   mounted() {
+    window.onresize = () => this.$emitter.emit("window-resized");
     this.$router.push('/razred/4.c');
   },
 });

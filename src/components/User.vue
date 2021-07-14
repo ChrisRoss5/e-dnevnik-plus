@@ -27,9 +27,16 @@ export default defineComponent({
   display: flex;
   align-items: center;
   position: absolute;
-  top: 10px;
-  right: 40px;
+  top: 20px;
+  right: 0;
+  padding: 0 40px 0 20px;
   color: #476282;
+  border-radius: 8px 0 0 8px;
+  transition: box-shadow 150ms;
+
+  &.card {
+    background: #fff;
+  }
 
   .material-icons {
     font-size: 44px;

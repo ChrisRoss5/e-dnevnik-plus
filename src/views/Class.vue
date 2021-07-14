@@ -1,7 +1,12 @@
 <template>
-  <div v-if="openedClassInfo" id="class-container">
+  <div v-if="openedClassInfo" id="class-container" ref="classContainer">
     <div id="class-info">
       <div>{{ openedClassInfo.name }}</div>
+      <div>
+        <div class="expand-arrow material-icons">arrow_drop_down</div>
+        <div class="title">Godina:</div>
+        <div class="name">{{ openedClassInfo.year }}</div>
+      </div>
       <div v-if="openedClass">
         <div class="expand-arrow material-icons">arrow_drop_down</div>
         <div class="title">Razrednik:</div>
@@ -13,7 +18,7 @@
         <div class="name">{{ openedClassInfo.school }}</div>
       </div>
     </div>
-    <div id="sections">
+    <div id="sections" ref="sections">
       <router-link
         v-for="(tab, i) in tabs"
         :key="i"
@@ -52,12 +57,35 @@ export default defineComponent({
       ],
     };
   },
+  mounted() {
+    (
+      (this.$refs.classContainer as HTMLElement).parentElement as HTMLElement
+    ).onscroll = this.mainScrolled;
+    new (window as any).ResizeObserver(this.navResized).observe(
+      this.$refs.sections as HTMLElement,
+    );
+  },
   methods: {
-    userNavigated(e: MouseEvent) {
-      const { offsetLeft, offsetWidth } = e.target as HTMLElement;
+    userNavigated(e: MouseEvent | HTMLElement) {
+      const target = (e as MouseEvent).target;
+      const { offsetLeft, offsetWidth } = (target || e) as HTMLElement;
       const line = this.$refs.selectedLine as HTMLElement;
+      line.style.transition = target ? "width 500ms, transform 500ms" : "none";
       line.style.transform = `translateX(${offsetLeft}px)`;
       line.style.width = offsetWidth + "px";
+    },
+    navResized() {
+      const sections = this.$refs.sections as HTMLElement;
+      const activeSection = sections.querySelector(".router-link-active");
+      if (activeSection) this.userNavigated(activeSection as HTMLElement);
+    },
+    mainScrolled(e: Event) {
+      const main = e.target as HTMLElement;
+      const user = document.getElementById("user") as HTMLElement;
+      const sections = this.$refs.sections as HTMLElement;
+      const short = main.scrollTop > 30;
+      sections.style.paddingRight = short ? user.offsetWidth + 80 + "px" : "";
+      user.className = short ? "card" : "";
     },
   },
   computed: {
@@ -127,20 +155,11 @@ export default defineComponent({
 
 #sections {
   position: sticky;
-  top: -10px;
+  top: 0;
   display: flex;
   flex-wrap: wrap;
   padding: 30px 30px 0;
-
-  /* &::after {
-    content: "";
-    position: absolute;
-    bottom: -15px;
-    left: 0;
-    right: 0;
-    height: 15px;
-    background-color: #fff;
-  } */
+  transition: padding 150ms;
 
   &.sticky {
     backdrop-filter: blur(5px);
@@ -182,7 +201,7 @@ a {
 #line {
   width: 100%;
   height: 1.5px;
-  background:   #c3cfdd;
+  background: #c3cfdd;
 }
 
 #selected-line {
@@ -192,13 +211,12 @@ a {
   bottom: 0;
   border-radius: 3px 3px 0 0;
   background: $button-color;
-  transition: width 500ms, transform 500ms;
   transition-timing-function: cubic-bezier(0.35, 0, 0.25, 1);
   z-index: 1;
 }
 
 #class-section {
   height: 200vh;
-  background: linear-gradient(white, blue);
+  /* background: linear-gradient(white, blue); */
 }
 </style>
