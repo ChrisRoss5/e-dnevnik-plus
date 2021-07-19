@@ -1,6 +1,13 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import Login from "../views/Login.vue";
 import Class from "../views/Class.vue";
+import Subjects from "../views/class/Subjects.vue";
+import Notes from "../views/class/Notes.vue";
+import Exams from "../views/class/Exams.vue";
+import Absences from "../views/class/Absences.vue";
+import Conduct from "../views/class/Conduct.vue";
+import Schedule from "../views/class/Schedule.vue";
+import Stats from "../views/class/Stats.vue";
 import Website from "../views/Website.vue";
 
 /*
@@ -19,41 +26,46 @@ const routes: Array<RouteRecordRaw> = [
     meta: { transition: "slide-to-sides" },
   },
   {
+    path: "/razred",
+    redirect: "/razred/:class/ocjene",
+  },
+  {
     path: "/razred/:class",
-    component: Class /* ,
-    children: [{
-      path: '',
-      redirect: "/razred/:class/ocjene"
-    },] */ /*
+    component: Class,
+    children: [
       {
-        path: 'ocjene',
+        path: "",
+        redirect: "/razred/:class/ocjene",
+      },
+      {
+        path: "ocjene",
         component: Subjects,
       },
       {
-        path: 'bilješke',
+        path: "bilješke",
         component: Notes,
       },
       {
-        path: 'ispiti',
+        path: "ispiti",
         component: Exams,
       },
       {
-        path: 'izostanci',
+        path: "izostanci",
         component: Absences,
       },
       {
-        path: 'vladanja',
+        path: "vladanja",
         component: Conduct,
       },
       {
-        path: 'raspored',
+        path: "raspored",
         component: Schedule,
       },
       {
-        path: 'statistika',
+        path: "statistika",
         component: Stats,
       },
-    ], */,
+    ],
   },
   {
     path: "/stranica/:website",

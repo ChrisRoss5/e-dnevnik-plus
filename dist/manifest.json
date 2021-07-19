@@ -6,19 +6,25 @@
   "version": "1.0",
   "permissions": [
     "tabs",
-    "storage"
+    "storage",
+    "declarativeNetRequest"
   ],
   "optional_permissions": [
     "notifications",
-    "cookies",
     "background"
   ],
   "host_permissions": [
-    "https://ocjene.skole.hr/*",
-    "https://webmail.carnet.hr/*",
-    "http://*/",
-    "https://*/"
+    "*://*/*"
   ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
   "icons": {
     "128": "assets/img/icon-128.png"
   },
@@ -38,6 +44,16 @@
         "*://ocjene.skole.hr/*"
       ],
       "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "app/index.html"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ]
 }

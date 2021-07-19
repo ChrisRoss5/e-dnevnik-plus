@@ -1,5 +1,5 @@
 <template>
-  <div id="main">
+  <div id="main" ref="main">
     <router-view v-slot="{ Component, route }">
       <transition :name="route.meta.transition">
         <component :is="Component" />
@@ -18,8 +18,11 @@ export default defineComponent({
       transitionName: "login",
     };
   },
+  mounted() {
+    (this.$refs.main as HTMLElement).onscroll = () => this.$emitter.emit("main-scrolled");
+  },
   watch: {
-    $route(to, from) {
+    $route(/* to, from */) {
       /* const toDepth = to.path;
       const fromDepth = from.path;
       console.log(to, from);

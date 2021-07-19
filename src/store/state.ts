@@ -67,18 +67,36 @@ export const state: State = {
       },
       classesList: [
         {
-          url: "a",
-          name: "b",
-          year: "2020./2019.",
-          school: "c",
+          url: "aaa",
+          name: "4.a",
+          year: "2019./2020.",
+          headTeacher: "asd asd",
+          school: "ccccccc cccccc ddddddd",
+          finalGrade: 5,
+          opened: true,
+        },
+        {
+          url: "bbb",
+          name: "4.b",
+          year: "2018./2019.",
+          headTeacher: "asd asd",
+          school: "ccccccc ggggggg ddddddd",
+          finalGrade: 5,
+          opened: true,
+        },
+        {
+          url: "ccc",
+          name: "4.c",
+          year: "2017./2018.",
+          headTeacher: "ddd fff",
+          school: "ccccccc cccccc ddddddd",
           finalGrade: 5,
           opened: true,
         },
       ],
       classes: [
         {
-          url: "a",
-          headTeacher: "asd asd",
+          url: "aaa",
           subjects: [
             {
               name: "",
@@ -169,7 +187,6 @@ export interface User {
 
 export interface Class {
   url: string;
-  headTeacher: string;
   subjects: Subject[];
   notes: ClassNote[];
   exams: Exam[];
@@ -240,6 +257,7 @@ export interface ClassInfo {
   url: string;
   name: string;
   year: string;
+  headTeacher: string;
   school: string;
   finalGrade: number;
   opened: boolean;

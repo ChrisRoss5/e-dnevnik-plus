@@ -21,42 +21,24 @@
     >
       Dobro došli!
     </div>
-    <div v-else id="nav-mid">
-      <router-link to="/razred/_">
-        <span class="material-icons"> school </span>
-        <div class="text" style="--order: 2">Razred</div>
-      </router-link>
-      <router-link to="/statistika">
-        <span class="material-icons"> equalizer </span>
-        <div class="text" style="--order: 3">Statistika ocjena</div>
-      </router-link>
-      <router-link to="/kalkulator-bodova">
-        <span class="material-icons"> functions </span>
-        <div class="text" style="--order: 4">Kalkulator bodova</div>
-      </router-link>
+    <div
+      v-else
+      id="nav-mid"
+      ref="navMid"
+      :class="{ overflowing: navMidOverflowing }"
+    >
+      <NavbarList :list="linksTop" rootLink="/" :order="2"></NavbarList>
       <span id="more-horiz" class="material-icons"> more_horiz </span>
-      <router-link to="/stranica/školska-stranica">
-        <span id="school" class="material-icons"> home </span>
-        <div class="text" style="--order: 5">Školska stranica</div>
-      </router-link>
-      <router-link to="/stranica/loomen">
-        <span class="material-icons"> apps </span>
-        <div class="text" style="--order: 6">Loomen</div>
-      </router-link>
-      <router-link to="/stranica/srednja-hr">
-        <span class="material-icons"> thumb_up </span>
-        <div class="text" style="--order: 7">Srednja.hr</div>
-      </router-link>
-      <router-link to="/stranica/školski-e-rudnik">
-        <span class="material-icons"> bubble_chart </span>
-        <div class="text" style="--order: 8">Školski e-Rudnik</div>
-      </router-link>
+      <div id="sites">
+        <NavbarList :list="pages" rootLink="/stranica/" :order="5"></NavbarList>
+      </div>
     </div>
     <div id="nav-bottom">
-      <router-link to="/postavke" v-if="$route.name != 'Login'">
-        <span class="material-icons"> settings </span>
-        <div class="text" style="--order: 9">Postavke</div>
-      </router-link>
+      <NavbarList
+        :list="linksBottom.slice($route.name == 'Login' ? -1 : 0)"
+        rootLink="/"
+        :order="9"
+      ></NavbarList>
       <a id="collapse" @click="navCollapsed = !navCollapsed">
         <div id="collapse-arrow" class="material-icons">chevron_left</div>
       </a>
@@ -66,14 +48,71 @@
 
 <script lang="ts" scoped>
 import { defineComponent } from "vue";
+import NavbarList from "./NavbarList.vue";
 
 export default defineComponent({
   name: "Navbar",
+  components: { NavbarList },
   data() {
     return {
       navCollapsed: false,
-      openedClassYear: "20/21",
+      navMidOverflowing: false,
+      linksTop: [
+        {
+          name: "Razred",
+          icon: "school",
+        },
+        {
+          name: "Statistika ocjena",
+          icon: "equalizer",
+        },
+        {
+          name: "Kalkulator bodova",
+          icon: "functions",
+        },
+      ],
+      pages: [
+        {
+          name: "Školska stranica",
+          icon: "home",
+        },
+        {
+          name: "Loomen",
+          icon: "apps",
+        },
+        {
+          name: "Srednja.hr",
+          icon: "thumb_up",
+        },
+        {
+          name: "Školski e-Rudnik",
+          icon: "bubble_chart",
+        },
+      ],
+      linksBottom: [
+        {
+          name: "Postavke",
+          icon: "settings",
+        },
+        {
+          name: "O aplikaciji",
+          icon: "help_outline",
+        },
+      ],
     };
+  },
+  mounted() {
+    new (window as any).ResizeObserver(this.customListChanged).observe(
+      this.$refs.navMid as HTMLElement,
+    );
+  },
+  methods: {
+    customListChanged() {
+      const navMid = this.$refs.navMid as HTMLElement | undefined;
+      this.navMidOverflowing = navMid
+        ? navMid.offsetHeight < navMid.scrollHeight
+        : false;
+    },
   },
 });
 </script>
@@ -97,19 +136,36 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   max-width: 350px;
   transition: max-width $collapse-duration;
 }
+
 #nav-top,
-#nav-bottom > a,
-#nav-mid > a {
+#nav-bottom::v-deep a,
+#nav-mid::v-deep a {
   display: flex;
   align-items: center;
+  height: 60px;
   padding: 20px 30px;
   box-shadow: $nav-shadow-bottom;
 }
+
 #nav-top {
   user-select: none;
 }
-#nav-mid > a,
-#nav-bottom > a:not(#collapse) {
+
+#nav-mid {
+  flex: 1;
+  overflow: hidden auto;
+
+  &.overflowing {
+    box-shadow: 0 0 5px 1px #476282;
+  }
+}
+
+#nav-bottom {
+  box-shadow: $nav-shadow-top !important;
+}
+
+#nav-mid::v-deep a,
+#nav-bottom::v-deep a:not(#collapse) {
   color: $navbar-color;
   transition: background-color 150ms, opacity 150ms;
 
@@ -122,11 +178,10 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
     background-color: #ffffff14;
   }
 }
-#nav-bottom {
-  user-select: none;
-  margin-top: auto;
-  box-shadow: $nav-shadow-top !important;
-  cursor: pointer;
+
+#nav-top,
+#collapse {
+  height: 110px !important;
 }
 
 #more-horiz {
@@ -137,9 +192,9 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   box-shadow: $nav-shadow-bottom;
 }
 
-.text {
-  transition: transform 150ms calc(200ms + var(--order) * 25ms),
-    opacity 150ms calc(200ms + var(--order) * 25ms), color 150ms;
+::v-deep .text {
+  transition: transform 150ms calc(150ms + var(--order) * 20ms),
+    opacity 150ms calc(150ms + var(--order) * 20ms), color 150ms;
 }
 
 #carnet-logo {
@@ -171,6 +226,15 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   pointer-events: none;
 }
 
+#collapse {
+  flex-basis: 100%;
+  cursor: pointer;
+
+  &:hover #collapse-arrow {
+    color: white;
+  }
+}
+
 #collapse-arrow {
   margin-left: auto;
   font-size: 50px;
@@ -179,12 +243,9 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   box-shadow: none !important;
   transition: color 150ms, transform $collapse-duration;
 }
-#collapse:hover #collapse-arrow {
-  color: white;
-}
 
 .router-link-active {
-  background: $navbar-selected ;
+  background: $navbar-selected;
   color: $navbar-selected-text-color !important;
 }
 
@@ -208,10 +269,15 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
     transform: scale(-1);
   }
 
-  .text {
+  ::v-deep .text {
     transform: translateY(10px);
     opacity: 0;
     transition: transform 150ms, opacity 150ms;
   }
+}
+
+#sites {
+  /* box-shadow: inset -5px 0px 1px 1px white;
+  border-radius: 0 8px 8px 0; */
 }
 </style>

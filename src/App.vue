@@ -1,5 +1,4 @@
 <template>
-  <!-- <iframe sr="chttps://www.youtube.com"></iframe> -->
   <!--     /* chrome.runtime.sendMessage({greeting: "hello"}, function(response: string) {
       console.log(response);
     }); */ -->
@@ -23,7 +22,13 @@ export default defineComponent({
   },
   mounted() {
     window.onresize = () => this.$emitter.emit("window-resized");
-    this.$router.push('/razred/4.c');
+    window.onclick = (e: MouseEvent) => {
+      const path = ((e as any).path || (e.composedPath && e.composedPath())) as
+        | HTMLElement[]
+        | false;
+      path && this.$emitter.emit("window-clicked", path);
+    };
+    this.$router.push("/razred/4.c");
   },
 });
 </script>

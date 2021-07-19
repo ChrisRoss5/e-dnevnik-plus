@@ -1,21 +1,25 @@
 <template>
-  <div v-if="openedClassInfo" id="class-container" ref="classContainer">
+  <div v-if="user" id="class-container">
     <div id="class-info">
-      <div>{{ openedClassInfo.name }}</div>
-      <div>
-        <div class="expand-arrow material-icons">arrow_drop_down</div>
-        <div class="title">Godina:</div>
-        <div class="name">{{ openedClassInfo.year }}</div>
+      <div id="class-title">
+        {{ openedClassInfo ? openedClassInfo.name : "" }}
       </div>
-      <div v-if="openedClass">
-        <div class="expand-arrow material-icons">arrow_drop_down</div>
-        <div class="title">Razrednik:</div>
-        <div class="name">{{ openedClass.headTeacher }}</div>
-      </div>
-      <div>
-        <div class="expand-arrow material-icons">arrow_drop_down</div>
-        <div class="title">Škola:</div>
-        <div class="name">{{ openedClassInfo.school }}</div>
+      <div v-for="(dropdown, i) in dropdowns" :key="i" class="dropdown-info">
+        <div
+          :id="dropdown.id"
+          class="expand-arrow material-icons hovered-text-button"
+          @click="visibleDropdown = dropdown.id"
+        >
+          arrow_drop_down
+        </div>
+        <div class="title">{{ dropdown.title }}</div>
+        <div class="name">{{ dropdown.name }}</div>
+        <Dropdown
+          :visible="visibleDropdown == dropdown.id"
+          :list="dropdown.list"
+          :sourceElementId="dropdown.id"
+          @close="closeDropdown(dropdown.id)"
+        ></Dropdown>
       </div>
     </div>
     <div id="sections" ref="sections">
@@ -31,7 +35,7 @@
       <div id="line"></div>
       <div id="selected-line" ref="selectedLine"></div>
     </div>
-    <div id="class-section">
+    <div id="section">
       <router-view></router-view>
     </div>
   </div>
@@ -39,11 +43,22 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { ClassInfo, Class } from "@/store/state";
+import { User, ClassInfo, Class } from "@/store/state";
+import Dropdown, { DropdownItem } from "@/components/Dropdown.vue";
 /* import { mapGetters } from "vuex"; */
+
+interface DropdownInfo {
+  id: string;
+  title: string;
+  name: string;
+  list: DropdownItem[];
+}
 
 export default defineComponent({
   name: "Class",
+  components: {
+    Dropdown,
+  },
   data() {
     return {
       tabs: [
@@ -55,15 +70,18 @@ export default defineComponent({
         { name: "Raspored", icon: "date_range" },
         { name: "Statistika", icon: "show_chart" },
       ],
+      visibleDropdown: "",
     };
   },
   mounted() {
-    (
-      (this.$refs.classContainer as HTMLElement).parentElement as HTMLElement
-    ).onscroll = this.mainScrolled;
+    this.$emitter.on("main-scrolled", this.mainScrolled);
     new (window as any).ResizeObserver(this.navResized).observe(
       this.$refs.sections as HTMLElement,
     );
+  },
+  beforeUnmount() {
+    this.$emitter.off("main-scrolled", this.mainScrolled);
+    /* ResizeObserver is automatically unobserved on reference deletion! */
   },
   methods: {
     userNavigated(e: MouseEvent | HTMLElement) {
@@ -76,25 +94,83 @@ export default defineComponent({
     },
     navResized() {
       const sections = this.$refs.sections as HTMLElement;
+      if (!sections) return;
       const activeSection = sections.querySelector(".router-link-active");
       if (activeSection) this.userNavigated(activeSection as HTMLElement);
     },
-    mainScrolled(e: Event) {
-      const main = e.target as HTMLElement;
-      const user = document.getElementById("user") as HTMLElement;
+    mainScrolled() {
       const sections = this.$refs.sections as HTMLElement;
+      if (!sections) return;
+      const main = document.getElementById("main")!;
+      const user = document.getElementById("user")!;
       const short = main.scrollTop > 30;
-      sections.style.paddingRight = short ? user.offsetWidth + 80 + "px" : "";
-      user.className = short ? "card" : "";
+      sections.style.paddingRight = short ? user.offsetWidth + 40 + "px" : "";
+      user.classList[short ? "add" : "remove"]("card");
+    },
+    closeDropdown(id: string) {
+      if (id == this.visibleDropdown) this.visibleDropdown = "";
+    },
+    mapClassesForDropdown(classes: ClassInfo[]): DropdownItem[] {
+      return classes.map(({ name, year }) => ({
+        name: year,
+        nameRight: name,
+      }));
     },
   },
   computed: {
     /* ...mapGetters(["openedClassInfo", "openedClass"]), // TODO: FIX TYPES */
+    user(): User | undefined {
+      return this.$store.getters.user;
+    },
     openedClassInfo(): ClassInfo | undefined {
       return this.$store.getters.openedClassInfo;
     },
     openedClass(): Class | undefined {
       return this.$store.getters.openedClass;
+    },
+    classesList(): ClassInfo[] {
+      return this.user ? this.user.classesList : [];
+    },
+    headTeacher(): string {
+      return this.openedClassInfo ? this.openedClassInfo.headTeacher : "";
+    },
+    school(): string {
+      return this.openedClassInfo ? this.openedClassInfo.school : "";
+    },
+    dropdowns(): DropdownInfo[] {
+      return [
+        {
+          id: "year",
+          title: "Godina:",
+          name: this.openedClassInfo ? this.openedClassInfo.year : "",
+          list: this.classesList.map(({ name, year }) => ({
+            name: year,
+            nameRight: name,
+          })),
+        },
+        {
+          id: "teacher",
+          title: "Razrednik:",
+          name: this.headTeacher,
+          list: this.classesList
+            .filter((c) => c.headTeacher == this.headTeacher)
+            .map((c) => ({
+              name: this.headTeacher,
+              nameRight: c.name,
+            })),
+        },
+        {
+          id: "school",
+          title: "Škola:",
+          name: this.school,
+          list: this.classesList
+            .filter((c) => c.school == this.school)
+            .map((c) => ({
+              name: this.school,
+              nameRight: c.name,
+            })),
+        },
+      ];
     },
   },
 });
@@ -109,40 +185,43 @@ export default defineComponent({
   display: flex;
   align-items: center;
   margin: 20px 30px 0;
+}
 
-  & > div:first-child {
-    display: inline-block;
-    font-size: 55px;
-    font-weight: bold;
-    color: #1b3a57;
-    line-height: 55px;
-    height: 55px;
-  }
+#class-title {
+  display: inline-block;
+  font-size: 55px;
+  font-weight: bold;
+  color: #1b3a57;
+  line-height: 55px;
+  height: 55px;
+}
 
-  & > div:not(:first-child) {
-    display: inline-grid;
-    gap: 0px 0px;
-    grid-auto-flow: row;
-    color: #78909c;
-    border-left: 1px solid #c3cfdd;
-    padding-left: 20px;
-    margin-left: 20px;
-  }
+.dropdown-info {
+  position: relative;
+  display: inline-grid;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  color: #78909c;
+  border-left: 1px solid #c3cfdd;
+  padding-left: 20px;
+  margin-left: 20px;
 }
 
 .expand-arrow {
   grid-area: 1 / 2 / 3 / 3;
   font-size: 30px;
   padding-left: 15px;
-  transition: color 150ms;
 
-  &:hover {
-    &,
-    & ~ * {
-      cursor: pointer;
-      color: #1b3a57;
-    }
+  &:hover ~ .title,
+  &:hover ~ .name {
+    cursor: pointer;
+    color: $hovered-text-button;
   }
+}
+
+.title,
+.name {
+  transition: color 150ms;
 }
 
 .title {
@@ -215,7 +294,7 @@ a {
   z-index: 1;
 }
 
-#class-section {
+#section {
   height: 200vh;
   /* background: linear-gradient(white, blue); */
 }

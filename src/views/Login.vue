@@ -183,7 +183,7 @@ export default defineComponent({
   vertical-align: bottom;
 }
 
-/* https://v3.vuejs.org/guide/transitions-enterleave.html#transition-classes */
+/* transitions */
 
 .error-enter-active {
   transition: all 600ms, transform 300ms;
