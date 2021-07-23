@@ -28,7 +28,7 @@ export default defineComponent({
         | false;
       path && this.$emitter.emit("window-clicked", path);
     };
-    this.$router.push("/razred/4.c");
+    /* this.$router.push("/razred/4.c"); */
   },
 });
 </script>
@@ -36,6 +36,12 @@ export default defineComponent({
 <style lang="scss">
 #app {
   display: flex;
-  height: 100vh;
+  height: 100%;
+}
+
+@media screen and (max-width: 1600px) {
+  #app {
+    zoom: 0.8;
+  }
 }
 </style>

@@ -62,7 +62,7 @@ export default defineComponent({
   right: 0;
   padding: 0 40px 0 20px;
   border-radius: 8px 0 0 8px;
-  color: #476282;
+  color: $user-color;
   user-select: none;
   transition: box-shadow 150ms, color 150ms;
 

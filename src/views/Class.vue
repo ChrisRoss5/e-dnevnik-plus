@@ -27,7 +27,6 @@
         v-for="(tab, i) in tabs"
         :key="i"
         :to="tab.name.toLowerCase()"
-        @click.self="userNavigated($event)"
       >
         <span class="material-icons"> {{ tab.icon }} </span>
         <div>{{ tab.name }}</div>
@@ -36,7 +35,11 @@
       <div id="selected-line" ref="selectedLine"></div>
     </div>
     <div id="section">
-      <router-view></router-view>
+      <router-view v-slot="{ Component }">
+        <transition :name="sectionTransition">
+          <component :is="Component" />
+        </transition>
+      </router-view>
     </div>
   </div>
 </template>
@@ -71,11 +74,13 @@ export default defineComponent({
         { name: "Statistika", icon: "show_chart" },
       ],
       visibleDropdown: "",
+      sectionTransition: "",
     };
   },
   mounted() {
+    this.userNavigated();
     this.$emitter.on("main-scrolled", this.mainScrolled);
-    new (window as any).ResizeObserver(this.navResized).observe(
+    new (window as any).ResizeObserver(() => this.userNavigated()).observe(
       this.$refs.sections as HTMLElement,
     );
   },
@@ -84,19 +89,16 @@ export default defineComponent({
     /* ResizeObserver is automatically unobserved on reference deletion! */
   },
   methods: {
-    userNavigated(e: MouseEvent | HTMLElement) {
-      const target = (e as MouseEvent).target;
-      const { offsetLeft, offsetWidth } = (target || e) as HTMLElement;
-      const line = this.$refs.selectedLine as HTMLElement;
-      line.style.transition = target ? "width 500ms, transform 500ms" : "none";
-      line.style.transform = `translateX(${offsetLeft}px)`;
-      line.style.width = offsetWidth + "px";
-    },
-    navResized() {
+    userNavigated(to?: string) {
       const sections = this.$refs.sections as HTMLElement;
       if (!sections) return;
-      const activeSection = sections.querySelector(".router-link-active");
-      if (activeSection) this.userNavigated(activeSection as HTMLElement);
+      const { offsetLeft, offsetWidth } = ((to &&
+        [...sections.children].find((s) => s.getAttribute("href") == to)) ||
+        sections.querySelector(".router-link-active")) as HTMLElement;
+      const line = this.$refs.selectedLine as HTMLElement;
+      line.style.transition = to ? "width 500ms, transform 500ms" : "none";
+      line.style.transform = `translateX(${offsetLeft}px)`;
+      line.style.width = offsetWidth + "px";
     },
     mainScrolled() {
       const sections = this.$refs.sections as HTMLElement;
@@ -105,16 +107,24 @@ export default defineComponent({
       const user = document.getElementById("user")!;
       const short = main.scrollTop > 30;
       sections.style.paddingRight = short ? user.offsetWidth + 40 + "px" : "";
+      sections.className = short ? "sticky" : "";
       user.classList[short ? "add" : "remove"]("card");
     },
     closeDropdown(id: string) {
       if (id == this.visibleDropdown) this.visibleDropdown = "";
     },
-    mapClassesForDropdown(classes: ClassInfo[]): DropdownItem[] {
-      return classes.map(({ name, year }) => ({
-        name: year,
-        nameRight: name,
+    getDropdownList(filterBy?: "headTeacher" | "school"): DropdownItem[] {
+      return (
+        filterBy
+          ? this.classesList.filter((c) => c[filterBy] == this[filterBy])
+          : this.classesList
+      ).map((c) => ({
+        name: filterBy ? this[filterBy] : c.year,
+        alignRight: c.name,
       }));
+    },
+    getPathName(path: string): string {
+      return path.slice(path.lastIndexOf("/") + 1);
     },
   },
   computed: {
@@ -143,34 +153,32 @@ export default defineComponent({
           id: "year",
           title: "Godina:",
           name: this.openedClassInfo ? this.openedClassInfo.year : "",
-          list: this.classesList.map(({ name, year }) => ({
-            name: year,
-            nameRight: name,
-          })),
+          list: this.getDropdownList(),
         },
         {
           id: "teacher",
           title: "Razrednik:",
           name: this.headTeacher,
-          list: this.classesList
-            .filter((c) => c.headTeacher == this.headTeacher)
-            .map((c) => ({
-              name: this.headTeacher,
-              nameRight: c.name,
-            })),
+          list: this.getDropdownList("headTeacher"),
         },
         {
           id: "school",
           title: "Škola:",
           name: this.school,
-          list: this.classesList
-            .filter((c) => c.school == this.school)
-            .map((c) => ({
-              name: this.school,
-              nameRight: c.name,
-            })),
+          list: this.getDropdownList("school"),
         },
       ];
+    },
+    tabNames(): string[] {
+      return this.tabs.map((tab) => tab.name.toLowerCase());
+    },
+  },
+  watch: {
+    $route(to, from) {
+      this.userNavigated(to.href);
+      const fromIdx = this.tabNames.indexOf(this.getPathName(from.path));
+      const toIdx = this.tabNames.indexOf(this.getPathName(to.path));
+      this.sectionTransition = toIdx < fromIdx ? "slide-right" : "slide-left";
     },
   },
 });
@@ -201,7 +209,7 @@ export default defineComponent({
   display: inline-grid;
   gap: 0px 0px;
   grid-auto-flow: row;
-  color: #78909c;
+  color: $light-gray-text;
   border-left: 1px solid #c3cfdd;
   padding-left: 20px;
   margin-left: 20px;
@@ -254,10 +262,6 @@ a {
   padding: 0 15px 15px;
   transition: color 500ms;
 
-  * {
-    pointer-events: none;
-  }
-
   .material-icons {
     padding-right: 5px;
   }
@@ -295,7 +299,11 @@ a {
 }
 
 #section {
-  height: 200vh;
-  /* background: linear-gradient(white, blue); */
+  height: 1000px;
+  box-shadow: 0px 0px 200px #cecece;
+  border: 1px solid gray;
+  margin: 20px 80px;
 }
+
+/* transitions */
 </style>

@@ -3,10 +3,12 @@
     <div id="forms">
       <transition name="error">
         <div v-if="!valid" id="error">
-          <div class="card">Neispravno korisničko ime ili lozinka.</div>
+          <div class="card" ref="errorCard">
+            Neispravno korisničko ime ili lozinka.
+          </div>
         </div>
       </transition>
-      <div class="card" id="students">
+      <form class="card" id="students">
         <div class="card-title">
           <span class="material-icons"> person </span>
           Učenici
@@ -19,6 +21,8 @@
             spellcheck="false"
             class="card"
             @keypress="inputKeyPressed"
+            autocomplete="on"
+            autofocus
           />
           <div class="skolehr">@skole.hr</div>
         </div>
@@ -29,16 +33,21 @@
           spellcheck="false"
           class="card"
           @keypress="inputKeyPressed"
+          autocomplete="on"
         />
         <div
           class="button"
-          :class="{ 'disabled-button': !loginReady, loggingIn: loggingIn }"
+          :class="{
+            'disabled-button': !loginReady || loggingIn,
+            loggingIn: loggingIn,
+          }"
           :tabindex="loginReady ? 0 : -1"
           @click="loginStudent"
+          v-wave
         >
           Prijava
         </div>
-      </div>
+      </form>
       <div class="card" id="parents">
         <div class="card-title">
           <span class="material-icons"> supervisor_account </span>
@@ -54,7 +63,11 @@
           Iz pedagoških razloga, ocjene se prikazuju s vremenskim odmakom od 48
           sati.
         </div>
-        <a href="https://ocjene.skole.hr/nias" target="_blank" class="button"
+        <a
+          href="https://ocjene.skole.hr/nias"
+          target="_blank"
+          class="button"
+          v-wave
           >Prijava</a
         >
       </div>
@@ -64,6 +77,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { login } from "@/scripts/scrapers";
 
 export default defineComponent({
   name: "Login",
@@ -79,42 +93,50 @@ export default defineComponent({
     inputKeyPressed(e: KeyboardEvent) {
       e.key == "Enter" && this.loginStudent();
     },
-    loginStudent() {
-      if (!this.loginReady) return;
+    async loginStudent() {
+      this.$router.push("razred");
+      /* if (!this.loginReady) return;
       this.loggingIn = true;
-      this.$router.push("ocjene");
-
-      const loginRequest = new XMLHttpRequest();
-      const parser = new DOMParser();
-      loginRequest.open("GET", "https://ocjene.skole.hr/login", true);
-      loginRequest.send();
-      loginRequest.onload = () => {
-        const doc: HTMLDocument = parser.parseFromString(
-          loginRequest.responseText,
-          "text/html"
-        );
-        console.log(doc);
-
-        this.loggingIn = false;
-        /* if (true) {
-
-        } else {
-
-        } */
-      };
+      const errorCard = this.$refs.errorCard as HTMLElement;
+      const valid = await login(this.username, this.password);
+      if (valid) {
+        console.log("OCJENE");
+        this.$router.push("ocjene");
+      } else {
+        if (!this.valid) {
+          errorCard.style.animation = "none";
+          errorCard.offsetWidth; // NOSONAR: reflow trigger
+          errorCard.style.animation = "error-red 1s";
+        }
+        this.valid = this.loggingIn = false;
+      } */
     },
   },
   computed: {
     loginReady(): boolean {
-      return !!this.username && !!this.password;
+      return (!!this.username && !!this.password) || true;
     },
   },
 });
 </script>
 
+<style>
+@keyframes error-red {
+  0%,
+  50%,
+  100% {
+    border: 1px solid transparent;
+  }
+  25%,
+  75% {
+    border: 1px solid red;
+  }
+}
+</style>
+
 <style lang="scss" scoped>
 #login {
-  height: 100vh;
+  height: 100%;
 }
 
 #forms {
@@ -131,9 +153,9 @@ export default defineComponent({
     text-align: center;
     color: red;
     background: #fff;
+    border: 1px solid transparent;
   }
 }
-
 .card:not(input) {
   display: flex;
   flex-direction: column;
@@ -163,19 +185,16 @@ export default defineComponent({
 }
 
 .loggingIn {
-  background: linear-gradient(to right, #8eb5e9 40%, #1a73e8 50%, #8eb5e9 60%);
-  background-size: 300%;
-  background-position: right;
+  background: #8eb5e9;
   animation: loggingIn 1s infinite linear;
 }
 
 @keyframes loggingIn {
   50% {
-    background-size: 400%;
+    opacity: 0.6;
   }
   100% {
-    background-size: 600%;
-    background-position: left;
+    opacity: 1;
   }
 }
 

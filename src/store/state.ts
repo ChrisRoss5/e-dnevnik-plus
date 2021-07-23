@@ -73,7 +73,7 @@ export const state: State = {
           headTeacher: "asd asd",
           school: "ccccccc cccccc ddddddd",
           finalGrade: 5,
-          opened: true,
+          opened: false,
         },
         {
           url: "bbb",
@@ -82,7 +82,7 @@ export const state: State = {
           headTeacher: "asd asd",
           school: "ccccccc ggggggg ddddddd",
           finalGrade: 5,
-          opened: true,
+          opened: false,
         },
         {
           url: "ccc",

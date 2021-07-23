@@ -11,7 +11,7 @@
       >
         <span v-if="row.icon" class="material-icons"> {{ row.icon }} </span>
         {{ row.name }}
-        <div v-if="row.nameRight" class="name-right">{{ row.nameRight }}</div>
+        <div v-if="row.alignRight" class="align-right">{{ row.alignRight }}</div>
       </component>
     </div>
   </transition>
@@ -22,7 +22,7 @@ import { defineComponent, PropType } from "vue";
 
 export interface DropdownItem {
   name: string;
-  nameRight?: string;
+  alignRight?: string;
   icon?: string;
   link?: string;
 }
@@ -92,8 +92,9 @@ export default defineComponent({
 
   & > a {
     display: flex;
-    color: inherit;
+    color: $light-gray-text;
     padding: 8px 20px;
+    transition: color 150ms;
 
     & > span {
       padding-right: 20px;
@@ -106,7 +107,7 @@ export default defineComponent({
   }
 }
 
-.name-right {
+.align-right {
   margin-left: auto;
   padding-left: 25px;
   font-weight: bold;

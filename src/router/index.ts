@@ -21,13 +21,13 @@ https://next.router.vuejs.org/guide/essentials/history-mode.html#hash-mode
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "Login",
+    name: "login",
     component: Login,
-    meta: { transition: "slide-to-sides" },
+/*     meta: { transition: "slide-to-sides" }, */
   },
   {
     path: "/razred",
-    redirect: "/razred/:class/ocjene",
+    redirect: "/razred/-/ocjene",
   },
   {
     path: "/razred/:class",
@@ -35,7 +35,7 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: "",
-        redirect: "/razred/:class/ocjene",
+        redirect: "/razred/-/ocjene",
       },
       {
         path: "ocjene",

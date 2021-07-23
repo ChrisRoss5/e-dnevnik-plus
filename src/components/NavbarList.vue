@@ -14,6 +14,8 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 
+// TODO: fix v-tooltip empty divs
+
 export default defineComponent({
   name: "NavbarList",
   props: {

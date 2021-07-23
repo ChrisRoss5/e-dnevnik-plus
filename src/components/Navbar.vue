@@ -13,29 +13,42 @@
         e-Dnevnik
       </a>
     </div>
-    <div
-      v-if="$route.name == 'Login'"
-      id="welcome"
-      class="flex-center text"
-      style="--order: 5"
-    >
-      Dobro došli!
-    </div>
-    <div
-      v-else
-      id="nav-mid"
-      ref="navMid"
-      :class="{ overflowing: navMidOverflowing }"
-    >
-      <NavbarList :list="linksTop" rootLink="/" :order="2"></NavbarList>
-      <span id="more-horiz" class="material-icons"> more_horiz </span>
-      <div id="sites">
+    <transition name="navbar" mode="out-in">
+      <div
+        v-if="$route.name == 'login'"
+        id="welcome"
+        class="flex-center text"
+        style="--order: 5"
+      >
+        Dobro došli!
+      </div>
+      <div
+        v-else
+        id="nav-mid"
+        ref="navMid"
+        :class="{ overflowing: navMidOverflowing }"
+      >
+        <router-link v-tooltip.right="navCollapsed ? 'LOL' : ''" to="" v-wave>
+          <div class="text">awdawdawdawdadwwad</div>
+        </router-link>
+        <NavbarList :list="linksTop" rootLink="/" :order="2"></NavbarList>
+        <span id="more-horiz" class="material-icons"> more_horiz </span>
         <NavbarList :list="pages" rootLink="/stranica/" :order="5"></NavbarList>
       </div>
-    </div>
+    </transition>
     <div id="nav-bottom">
+      <transition name="navbar" mode="out-in">
+        <div v-if="$route.name != 'login'">
+          <NavbarList
+            :list="linksBottom.slice(0, -1)"
+            rootLink="/"
+            :order="8"
+          ></NavbarList>
+        </div>
+        <div v-else></div>
+      </transition>
       <NavbarList
-        :list="linksBottom.slice($route.name == 'Login' ? -1 : 0)"
+        :list="linksBottom.slice(-1)"
         rootLink="/"
         :order="9"
       ></NavbarList>
@@ -138,8 +151,8 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 }
 
 #nav-top,
-#nav-bottom::v-deep a,
-#nav-mid::v-deep a {
+#nav-bottom :deep(a),
+#nav-mid :deep(a) {
   display: flex;
   align-items: center;
   height: 60px;
@@ -164,8 +177,8 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   box-shadow: $nav-shadow-top !important;
 }
 
-#nav-mid::v-deep a,
-#nav-bottom::v-deep a:not(#collapse) {
+#nav-mid :deep(a),
+#nav-bottom :deep(a:not(#collapse)) {
   color: $navbar-color;
   transition: background-color 150ms, opacity 150ms;
 
@@ -192,7 +205,7 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   box-shadow: $nav-shadow-bottom;
 }
 
-::v-deep .text {
+:deep(.text) {
   transition: transform 150ms calc(150ms + var(--order) * 20ms),
     opacity 150ms calc(150ms + var(--order) * 20ms), color 150ms;
 }
@@ -265,19 +278,31 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   }
 
   #collapse-arrow {
-    margin: auto;
     transform: scale(-1);
   }
 
-  ::v-deep .text {
+  :deep(.text) {
     transform: translateY(10px);
     opacity: 0;
     transition: transform 150ms, opacity 150ms;
   }
 }
 
-#sites {
-  /* box-shadow: inset -5px 0px 1px 1px white;
-  border-radius: 0 8px 8px 0; */
+/* transitions */
+
+.navbar-enter-active,
+.navbar-leave-active {
+  transition: opacity $views-transition;
+}
+
+.navbar-enter-from,
+.navbar-leave-to {
+  opacity: 0;
+
+  :deep(.text) {
+    transform: translateY(10px);
+    opacity: 0;
+    transition: transform 150ms, opacity 150ms;
+  }
 }
 </style>
