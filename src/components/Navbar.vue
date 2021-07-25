@@ -13,36 +13,43 @@
         e-Dnevnik
       </a>
     </div>
-    <transition name="navbar" mode="out-in">
+    <transition
+      :name="transitionName"
+      mode="out-in"
+      @enter="initResizeObserver"
+    >
       <div
-        v-if="$route.name == 'login'"
-        id="welcome"
-        class="flex-center text"
-        style="--order: 5"
-      >
-        Dobro došli!
-      </div>
-      <div
-        v-else
+        v-if="!isLoginPage"
         id="nav-mid"
         ref="navMid"
         :class="{ overflowing: navMidOverflowing }"
       >
-        <router-link v-tooltip.right="navCollapsed ? 'LOL' : ''" to="" v-wave>
-          <div class="text">awdawdawdawdadwwad</div>
-        </router-link>
-        <NavbarList :list="linksTop" rootLink="/" :order="2"></NavbarList>
+        <NavbarList
+          :list="linksTop"
+          rootLink="/"
+          :order="2"
+          :navCollapsed="navCollapsed"
+        ></NavbarList>
         <span id="more-horiz" class="material-icons"> more_horiz </span>
-        <NavbarList :list="pages" rootLink="/stranica/" :order="5"></NavbarList>
+        <NavbarList
+          :list="pages"
+          rootLink="/stranica/"
+          :order="5"
+          :navCollapsed="navCollapsed"
+        ></NavbarList>
+      </div>
+      <div v-else id="welcome" class="flex-center text" style="--order: 5">
+        Dobro došli!
       </div>
     </transition>
     <div id="nav-bottom">
-      <transition name="navbar" mode="out-in">
-        <div v-if="$route.name != 'login'">
+      <transition :name="transitionName" mode="out-in">
+        <div v-if="!isLoginPage">
           <NavbarList
             :list="linksBottom.slice(0, -1)"
             rootLink="/"
             :order="8"
+            :navCollapsed="navCollapsed"
           ></NavbarList>
         </div>
         <div v-else></div>
@@ -51,6 +58,7 @@
         :list="linksBottom.slice(-1)"
         rootLink="/"
         :order="9"
+        :navCollapsed="navCollapsed"
       ></NavbarList>
       <a id="collapse" @click="navCollapsed = !navCollapsed">
         <div id="collapse-arrow" class="material-icons">chevron_left</div>
@@ -68,6 +76,7 @@ export default defineComponent({
   components: { NavbarList },
   data() {
     return {
+      transitionName: "",
       navCollapsed: false,
       navMidOverflowing: false,
       linksTop: [
@@ -115,16 +124,26 @@ export default defineComponent({
     };
   },
   mounted() {
-    new (window as any).ResizeObserver(this.customListChanged).observe(
-      this.$refs.navMid as HTMLElement,
-    );
+    setTimeout(() => (this.transitionName = "navbar"), 500);
+    this.initResizeObserver();
   },
   methods: {
+    initResizeObserver() {
+      !this.isLoginPage &&
+        new (window as any).ResizeObserver(this.customListChanged).observe(
+          this.$refs.navMid as HTMLElement,
+        );
+    },
     customListChanged() {
       const navMid = this.$refs.navMid as HTMLElement | undefined;
       this.navMidOverflowing = navMid
         ? navMid.offsetHeight < navMid.scrollHeight
         : false;
+    },
+  },
+  computed: {
+    isLoginPage() {
+      return this.$route.name == "login";
     },
   },
 });
@@ -167,6 +186,7 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 #nav-mid {
   flex: 1;
   overflow: hidden auto;
+  transition: box-shadow 150ms;
 
   &.overflowing {
     box-shadow: 0 0 5px 1px #476282;
@@ -298,11 +318,5 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 .navbar-enter-from,
 .navbar-leave-to {
   opacity: 0;
-
-  :deep(.text) {
-    transform: translateY(10px);
-    opacity: 0;
-    transition: transform 150ms, opacity 150ms;
-  }
 }
 </style>

@@ -31,11 +31,10 @@ export default defineComponent({
       type: Number,
       required: true,
     },
+    navCollapsed: {
+      type: Boolean,
+      required: true,
+    },
   },
-  computed: {
-    navCollapsed(): boolean {
-      return (this.$parent as any).$data.navCollapsed;
-    }
-  }
 });
 </script>

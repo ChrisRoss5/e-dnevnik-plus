@@ -15,7 +15,7 @@ import { getSubjects } from "@/scripts/scrapers";
 export default defineComponent({
   name: "Subjects",
   mounted() {
-    console.log(getSubjects());
+    /* console.log(getSubjects()); */
   },
   computed: {
     finalGrade(): string {
