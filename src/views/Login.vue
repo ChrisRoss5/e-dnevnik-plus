@@ -16,7 +16,7 @@
         <div>Korisničko ime:</div>
         <div style="position: relative">
           <input
-            v-model="username"
+            v-model="email"
             type="text"
             spellcheck="false"
             class="card"
@@ -83,25 +83,28 @@ export default defineComponent({
   name: "Login",
   data() {
     return {
-      username: "",
+      email: "",
       password: "",
       valid: true,
       loggingIn: false,
     };
+  },
+  mounted() {
+    if (this.$store.getters.user) this.$router.replace("/razred");
   },
   methods: {
     inputKeyPressed(e: KeyboardEvent) {
       e.key == "Enter" && this.loginStudent();
     },
     async loginStudent() {
-      this.$router.push("razred");
-      /* if (!this.loginReady) return;
+      this.$router.push("/razred");
+
+/*       if (!this.loginReady || this.loggingIn) return;
       this.loggingIn = true;
       const errorCard = this.$refs.errorCard as HTMLElement;
-      const valid = await login(this.username, this.password);
-      if (valid) {
-        console.log("OCJENE");
-        this.$router.push("ocjene");
+      const loggedIn = await login(this.email, this.password);
+      if (loggedIn) {
+        this.$router.push("/razred");
       } else {
         if (!this.valid) {
           errorCard.style.animation = "none";
@@ -114,7 +117,7 @@ export default defineComponent({
   },
   computed: {
     loginReady(): boolean {
-      return (!!this.username && !!this.password) || true;
+      return (!!this.email && !!this.password) || true;
     },
   },
 });
@@ -156,6 +159,7 @@ export default defineComponent({
     border: 1px solid transparent;
   }
 }
+
 .card:not(input) {
   display: flex;
   flex-direction: column;
@@ -187,6 +191,10 @@ export default defineComponent({
 .loggingIn {
   background: #8eb5e9;
   animation: loggingIn 1s infinite linear;
+}
+
+#students {
+  transition: margin $views-transition;
 }
 
 @keyframes loggingIn {

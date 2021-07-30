@@ -13,11 +13,7 @@
         e-Dnevnik
       </a>
     </div>
-    <transition
-      :name="transitionName"
-      mode="out-in"
-      @enter="initResizeObserver"
-    >
+    <transition name="navbar">
       <div
         v-if="!isLoginPage"
         id="nav-mid"
@@ -38,12 +34,12 @@
           :navCollapsed="navCollapsed"
         ></NavbarList>
       </div>
-      <div v-else id="welcome" class="flex-center text" style="--order: 5">
+      <div v-else id="welcome" class="abs-center text" style="--order: 5">
         Dobro došli!
       </div>
     </transition>
     <div id="nav-bottom">
-      <transition :name="transitionName" mode="out-in">
+      <transition name="navbar">
         <div v-if="!isLoginPage">
           <NavbarList
             :list="linksBottom.slice(0, -1)"
@@ -76,9 +72,9 @@ export default defineComponent({
   components: { NavbarList },
   data() {
     return {
-      transitionName: "",
       navCollapsed: false,
       navMidOverflowing: false,
+      mounted: false,
       linksTop: [
         {
           name: "Razred",
@@ -124,7 +120,7 @@ export default defineComponent({
     };
   },
   mounted() {
-    setTimeout(() => (this.transitionName = "navbar"), 500);
+    setTimeout(() => (this.mounted = true), 1000);
     this.initResizeObserver();
   },
   methods: {
@@ -142,8 +138,8 @@ export default defineComponent({
     },
   },
   computed: {
-    isLoginPage() {
-      return this.$route.name == "login";
+    isLoginPage(): boolean {
+      return this.$route.path == "/" || !this.mounted;
     },
   },
 });
@@ -154,7 +150,14 @@ $collapse-duration: 500ms;
 $nav-shadow-top: 0 1px 0 #ffffff1a inset;
 $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 
+@mixin text-hidden {
+  transform: translateY(10px);
+  opacity: 0;
+  transition: transform 150ms, opacity 150ms;
+}
+
 #navbar {
+  position: relative;
   color: white;
   background-attachment: fixed;
   background-color: $main-color;
@@ -179,10 +182,6 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   box-shadow: $nav-shadow-bottom;
 }
 
-#nav-top {
-  user-select: none;
-}
-
 #nav-mid {
   flex: 1;
   overflow: hidden auto;
@@ -194,6 +193,7 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 }
 
 #nav-bottom {
+  margin-top: auto;
   box-shadow: $nav-shadow-top !important;
 }
 
@@ -215,6 +215,7 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 #nav-top,
 #collapse {
   height: 110px !important;
+  user-select: none;
 }
 
 #more-horiz {
@@ -253,7 +254,6 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 }
 
 #welcome {
-  flex: 1;
   font-size: 24px;
   letter-spacing: 2px;
   pointer-events: none;
@@ -286,15 +286,15 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   max-width: 84px !important;
 
   #carnet-logo img {
-    transform: scale(0.65) translate(-40px, -12px);
+    transform: scale(0.65) translate(-40px, -5px);
 
     &:hover {
-      transform: scale(0.65) translate(-42px, -12px) rotate(360deg);
+      transform: scale(0.65) translate(-42px, -5px) rotate(360deg);
     }
   }
 
   #welcome {
-    opacity: 0;
+    transform: translate(-50%, calc(-50% + 10px)) !important;
   }
 
   #collapse-arrow {
@@ -302,9 +302,7 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   }
 
   :deep(.text) {
-    transform: translateY(10px);
-    opacity: 0;
-    transition: transform 150ms, opacity 150ms;
+    @include text-hidden;
   }
 }
 
@@ -312,11 +310,15 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 
 .navbar-enter-active,
 .navbar-leave-active {
-  transition: opacity $views-transition;
+  transition: opacity $views-transition !important;
 }
 
 .navbar-enter-from,
 .navbar-leave-to {
   opacity: 0;
+
+  :deep(.text) {
+    @include text-hidden;
+  }
 }
 </style>

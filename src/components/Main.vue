@@ -1,7 +1,7 @@
 <template>
   <div id="main" ref="main">
-    <router-view v-slot="{ Component, route }">
-      <transition :name="route.meta.transition || 'main'" mode="out-in">
+    <router-view v-slot="{ Component }">
+      <transition :name="transitionName" mode="out-in">
         <component :is="Component" />
       </transition>
     </router-view>
@@ -15,7 +15,7 @@ export default defineComponent({
   name: "Main",
   data() {
     return {
-      transitionName: "login",
+      transitionName: "",
     };
   },
   mounted() {
@@ -23,11 +23,10 @@ export default defineComponent({
       this.$emitter.emit("main-scrolled");
   },
   watch: {
-    $route(/* to, from */) {
-      /* const toDepth = to.path;
-      const fromDepth = from.path;
-      console.log(to, from);
-      this.transitionName = toDepth < fromDepth ? "slide-right" : "slide-left"; */
+    $route(to, from) {
+      if (to.path == "/") this.transitionName = "logged-out";
+      else if (from.path == "/") this.transitionName = "logged-in";
+      else this.transitionName = "main";
     },
   },
 });
@@ -38,25 +37,33 @@ export default defineComponent({
   position: relative;
   overflow-y: scroll;
   flex: 1;
+
+  /* root views */
+  & > div {
+    transition: opacity $views-transition, transform $views-transition;
+  }
 }
 
 /* transitions */
 
-.main-enter-active,
-.main-leave-active {
-  transition: opacity $views-transition;
-
-  #students {
-    transition: margin $views-transition;
-  }
+.logged-in-leave-to #students,
+.logged-out-enter-from #students {
+  margin-right: 50px;
 }
 
+.logged-in-enter-from,
+.logged-out-leave-to,
+.main-enter-from,
+.main-leave-to {
+  transform: scale(0.97);
+}
+
+.logged-out-enter-from,
+.logged-in-enter-from,
+.logged-out-leave-to,
+.logged-in-leave-to,
 .main-enter-from,
 .main-leave-to {
   opacity: 0;
-
-  #students {
-    margin-right: 50px;
-  }
 }
 </style>

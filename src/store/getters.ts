@@ -1,31 +1,22 @@
 import { GetterTree } from "vuex";
-import { State, User, ClassInfo, Class } from "./state";
+import { State, User, ClassInfo } from "./state";
 
 export type Getters = {
   user(state: State): User | undefined;
   classInfo(
     state: State,
     _getters: any,
-  ): (url: string) => ClassInfo | undefined;
-  openedClassInfo(state: State, _getters: any): ClassInfo | undefined;
-  openedClass(state: State, _getters: any): Class | undefined;
+  ): (nameAndYear: string) => ClassInfo | undefined;
 };
 
 export const getters: GetterTree<State, State> & Getters = {
   user: (state) => state.users.find((user) => user.signedIn),
-  classInfo: (state, _getters) => (_url) => {
+  classInfo: (state, _getters) => (nameAndYear) => {
     const user: User = _getters.user;
-    if (user) return user.classesList.find(({ url }) => url == _url);
-  },
-  openedClassInfo: (state, _getters) => {
-    const user: User = _getters.user;
-    if (user) return user.classesList.find(({ opened }) => opened);
-  },
-  openedClass: (state, _getters) => {
-    const user: User = _getters.user;
+    const [name, year] = nameAndYear.split("-");
     if (user)
-      return user.classes.find(
-        ({ url }) => url == _getters.openedClassInfo.url,
+      return user.classesList.find(
+        (c) => c.name == name && c.year.slice(0, 2) == year.slice(-2),
       );
   },
 };

@@ -21,9 +21,7 @@ https://next.router.vuejs.org/guide/essentials/history-mode.html#hash-mode
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "login",
     component: Login,
-/*     meta: { transition: "slide-to-sides" }, */
   },
   {
     path: "/razred",

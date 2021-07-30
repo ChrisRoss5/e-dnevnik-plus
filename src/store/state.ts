@@ -1,171 +1,16 @@
 export const state: State = {
-  settings: {},
-  users: [
-    {
-      signedIn: true,
-      email: "kristijan.rosandic@skole.hr",
-      password: "grandayyy",
-      fullName: "Kristijan Rosandić",
-      settings: {},
-      updates: {
-        personalData: {
-          lastUpdated: 0,
-          maxAge: 0,
-        },
-        classesList: {
-          lastUpdated: 0,
-          maxAge: 0,
-        },
-        classes: {
-          lastUpdated: 0,
-          maxAge: 0,
-        },
-        subjects: {
-          lastUpdated: 0,
-          maxAge: 0,
-        },
-        subject: {
-          lastUpdated: 0,
-          maxAge: 0,
-        },
-        notes: {
-          lastUpdated: 0,
-          maxAge: 0,
-        },
-        exams: {
-          lastUpdated: 0,
-          maxAge: 0,
-        },
-        absences: {
-          lastUpdated: 0,
-          maxAge: 0,
-        },
-        conduct: {
-          lastUpdated: 0,
-          maxAge: 0,
-        },
-        schedule: {
-          lastUpdated: 0,
-          maxAge: 0,
-        },
-      },
-      personalData: {
-        student: [
-          {
-            key: "",
-            value: "",
-          },
-        ],
-        contacts: [
-          [
-            {
-              key: "",
-              value: "",
-            },
-          ],
-        ],
-      },
-      classesList: [
-        {
-          url: "aaa",
-          name: "4.a",
-          year: "2019./2020.",
-          headTeacher: "asd asd",
-          school: "ccccccc cccccc ddddddd",
-          finalGrade: 5,
-          opened: false,
-        },
-        {
-          url: "bbb",
-          name: "4.b",
-          year: "2018./2019.",
-          headTeacher: "asd asd",
-          school: "ccccccc ggggggg ddddddd",
-          finalGrade: 5,
-          opened: false,
-        },
-        {
-          url: "ccc",
-          name: "4.c",
-          year: "2017./2018.",
-          headTeacher: "ddd fff",
-          school: "ccccccc cccccc ddddddd",
-          finalGrade: 5,
-          opened: true,
-        },
-      ],
-      classes: [
-        {
-          url: "aaa",
-          subjects: [
-            {
-              name: "",
-              teacher: "",
-              categories: [
-                {
-                  name: "",
-                  grades: [0],
-                },
-              ],
-              finalGrade: 0,
-              notes: [
-                {
-                  note: "",
-                  date: "",
-                  grade: 0,
-                },
-              ],
-            },
-          ],
-          notes: [
-            {
-              title: "",
-              note: "",
-            },
-          ],
-          exams: [
-            {
-              subject: "",
-              note: "",
-              date: "",
-            },
-          ],
-          absences: [
-            {
-              hour: 0,
-              subject: "",
-              status: "",
-              cause: "",
-            },
-          ],
-          conduct: {
-            final: "",
-            measures: [
-              {
-                name: "",
-                info: "",
-                date: "",
-              },
-            ],
-          },
-          schedule: {
-            A: [
-              {
-                hour: 0,
-                subject: "",
-              },
-            ],
-            B: [
-              {
-                hour: 0,
-                subject: "",
-              },
-            ],
-          },
-        },
-      ],
-    },
-  ],
+  settings: {
+    classTabsOrder: [
+      "Ocjene",
+      "Bilješke",
+      "Ispiti",
+      "Izostanci",
+      "Vladanja",
+      "Raspored",
+      "Statistika",
+    ],
+  },
+  users: [],
 };
 
 export interface State {
@@ -180,7 +25,6 @@ export interface User {
   fullName: string;
   settings: Settings;
   updates: Updates;
-  personalData: PersonalData;
   classesList: ClassInfo[];
   classes: Class[];
 }
@@ -257,10 +101,9 @@ export interface ClassInfo {
   url: string;
   name: string;
   year: string;
-  headTeacher: string;
+  headTeacher?: string;
   school: string;
-  finalGrade: number;
-  opened: boolean;
+  finalGrade?: number;
 }
 
 export interface PersonalData {
@@ -274,16 +117,7 @@ export interface StudentPersonalInfo {
 }
 
 export interface Updates {
-  personalData: PageUpdateInfo;
-  classesList: PageUpdateInfo;
-  classes: PageUpdateInfo;
-  subjects: PageUpdateInfo;
-  subject: PageUpdateInfo;
-  notes: PageUpdateInfo;
-  exams: PageUpdateInfo;
-  absences: PageUpdateInfo;
-  conduct: PageUpdateInfo;
-  schedule: PageUpdateInfo;
+  classGrades: PageUpdateInfo;
 }
 
 export interface PageUpdateInfo {
@@ -292,6 +126,5 @@ export interface PageUpdateInfo {
 }
 
 export interface Settings {
-  // eslint-disable-next-line
-  [key: string]: any;
+  classTabsOrder: string[];
 }
