@@ -97,9 +97,7 @@ export default defineComponent({
       e.key == "Enter" && this.loginStudent();
     },
     async loginStudent() {
-      this.$router.push("/razred");
-
-/*       if (!this.loginReady || this.loggingIn) return;
+      if (!this.loginReady || this.loggingIn) return;
       this.loggingIn = true;
       const errorCard = this.$refs.errorCard as HTMLElement;
       const loggedIn = await login(this.email, this.password);
@@ -112,7 +110,7 @@ export default defineComponent({
           errorCard.style.animation = "error-red 1s";
         }
         this.valid = this.loggingIn = false;
-      } */
+      }
     },
   },
   computed: {

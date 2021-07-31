@@ -6,7 +6,7 @@
         :key="i"
         :is="row.link ? 'router-link' : 'a'"
         :to="row.link"
-        @click="close"
+        @click="close(row.name)"
         v-wave
       >
         <span v-if="row.icon" class="material-icons"> {{ row.icon }} </span>
@@ -66,8 +66,8 @@ export default defineComponent({
         this.close();
       }
     },
-    close() {
-      this.$emit("close");
+    close(rowName?: string) {
+      this.$emit("close", rowName);
     },
   },
 });

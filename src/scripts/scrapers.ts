@@ -8,8 +8,9 @@ const toast = useToast();
 const parser = new DOMParser();
 const urls = {
   login: "https://ocjene.skole.hr/login",
-  classes: "https://ocjene.skole.hr/class",
-};
+  logout: "https://ocjene.skole.hr/logout",
+  classes: "https://ocjene.skole.hr/class"
+,};
 
 function formEncodedBody(obj: Record<string, string>): string {
   return Object.keys(obj)
@@ -45,6 +46,7 @@ export async function login(
   password: string,
   fetch1?: Response,
 ): Promise<boolean> {
+  //
   // Login GET
   fetch1 = fetch1 || (await fetch(urls.login));
   if (!fetch1.url.includes("login")) return true; // User is already signed in
@@ -56,7 +58,7 @@ export async function login(
     return false;
   }
   const csrf_token = (csrfElement as HTMLInputElement).value;
-
+  //
   // Login POST
   const fetch2 = await fetch(urls.login, {
     method: "POST",
@@ -65,16 +67,18 @@ export async function login(
   });
   const loggedIn = !fetch2.url.includes("login");
   if (!loggedIn) return false;
-  const nextPage = await fetch2.text(); // Either /class or /course
+  //
+  // Either /class or /course
+  const nextPage = await fetch2.text();
   const fullName = getElText(
     parser.parseFromString(nextPage, "text/html").querySelector(".user-name"),
   );
   const user = store.state.users.find((u) => u.email == email);
+  //
+  // Old or new user
   if (user) {
-    user.signedIn = true;
-    //store.commit(MutationTypes.SET_USER_SIGNIN, true);
+    store.commit(MutationTypes.UPDATE_USER_STATUS, { user, status: true });
   } else {
-    // NEW USER
     const classesList = await getClassesList();
     if (!classesList) {
       toast.error("Greška u prijavi: Popis razreda je nedostupan!");
@@ -86,6 +90,12 @@ export async function login(
     );
   }
   return true;
+}
+
+export async function logout(user: User): Promise<boolean> {
+  const success = (await fetch(urls.logout)).url.includes("login");
+  if (!success) toast.error("Greška u odjavi! Pokušajte ponovo.")
+  return success;
 }
 
 export async function getClassesList(): Promise<ClassInfo[] | undefined> {

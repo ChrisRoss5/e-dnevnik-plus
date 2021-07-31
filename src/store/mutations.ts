@@ -2,19 +2,20 @@ import { MutationTree } from "vuex";
 import { State, User } from "./state";
 import { getters } from "./getters";
 
-function getUser() {
-  return getters.user;
-}
-
 export enum MutationTypes {
   INIT = "INIT",
   ADD_USER = "ADD_USER",
+  UPDATE_USER_STATUS = "UPDATE_USER_STATUS",
   UPDATE_CLASS_TABS_ORDER = "UPDATE_CLASS_TABS_ORDER",
 }
 
 export type Mutations<S = State> = {
   [MutationTypes.INIT](state: S, newState: S): void;
   [MutationTypes.ADD_USER](state: S, user: User): void;
+  [MutationTypes.UPDATE_USER_STATUS](
+    state: S,
+    { user, status }: { user: User; status: boolean },
+  ): void;
   [MutationTypes.UPDATE_CLASS_TABS_ORDER](
     state: S,
     classTabsOrder: string[],
@@ -27,6 +28,9 @@ export const mutations: MutationTree<State> & Mutations = {
   },
   [MutationTypes.ADD_USER](state, user) {
     state.users.push(user);
+  },
+  [MutationTypes.UPDATE_USER_STATUS](state, { user, status }) {
+    user.signedIn = status;
   },
   [MutationTypes.UPDATE_CLASS_TABS_ORDER](state, classTabsOrder) {
     const user = getters.user(state);

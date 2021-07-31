@@ -2,8 +2,8 @@ const state = {
   settings: {},
   users: [
     {
-      signedIn: true,
-      email: "kristijan.rosandic@skole.hr",
+      signedIn: false,
+      email: "kristijan.rosandicc@skole.hr",
       password: "grandayyy",
       fullName: "Kristijan Rosandić",
       settings: {

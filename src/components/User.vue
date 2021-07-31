@@ -12,12 +12,13 @@
       :list="dropdown"
       customClass="right"
       sourceElementId="user"
-      @close="showDropdown = false"
+      @close="dropdownClosed"
     ></Dropdown>
   </div>
 </template>
 
 <script lang="ts">
+import { MutationTypes } from "@/store/mutations";
 import { defineComponent } from "vue";
 import { User } from "@/store/state";
 import Dropdown from "./Dropdown.vue";
@@ -39,10 +40,20 @@ export default defineComponent({
         {
           name: "Odjava",
           icon: "exit_to_app",
-          link: "/",
         },
       ],
     };
+  },
+  methods: {
+    dropdownClosed(rowName: string) {
+      this.showDropdown = false;
+      if (rowName == "Odjava" && this.user) {
+        this.$store.commit(MutationTypes.UPDATE_USER_STATUS, {
+          user: this.user,
+          status: false,
+        });
+      }
+    },
   },
   computed: {
     user(): User | undefined {
