@@ -78,7 +78,7 @@ table {
 
 ::-webkit-scrollbar-thumb {
   background: $user-color;
-  border-radius: 4px;
+  border-radius: 4px 0 0 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -104,7 +104,7 @@ table {
 
 .card {
   border-radius: 8px;
-  box-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%);
+  box-shadow: $card-shadow;
 }
 
 .button {
@@ -146,4 +146,16 @@ table {
     cursor: pointer;
     color: $hovered-text-button !important;
   }
+}
+
+/* transitions */
+
+.opacity-enter-active,
+.opacity-leave-active {
+  transition: opacity $views-transition;
+}
+
+.opacity-enter-from,
+.opacity-leave-to {
+  opacity: 0;
 }

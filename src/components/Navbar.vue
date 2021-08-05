@@ -1,5 +1,11 @@
 <template>
-  <div id="navbar" :class="{ 'nav-collapsed': navCollapsed }">
+  <div
+    id="navbar"
+    :class="{
+      'nav-collapsed': navCollapsed,
+      shadow: $route.path.includes('/stranica/'),
+    }"
+  >
     <div id="nav-top">
       <a id="carnet-logo" href="https://www.carnet.hr/" target="_blank">
         <img src="@/assets/img/carnet-logo-2.png" />
@@ -13,7 +19,7 @@
         e-Dnevnik
       </a>
     </div>
-    <transition name="navbar">
+    <transition name="navbar" @enter="initResizeObserver">
       <div
         v-if="!isLoginPage"
         id="nav-mid"
@@ -120,8 +126,8 @@ export default defineComponent({
     };
   },
   mounted() {
+    // Always show a "welcome" message for a second
     setTimeout(() => (this.mounted = true), 1000);
-    this.initResizeObserver();
   },
   methods: {
     initResizeObserver() {
@@ -169,7 +175,12 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   white-space: nowrap;
   overflow: hidden;
   max-width: 350px;
-  transition: max-width $collapse-duration;
+  transition: max-width $collapse-duration, box-shadow $views-transition;
+  z-index: 1;
+
+  &.shadow {
+    box-shadow: 0 0 10px black;
+  }
 }
 
 #nav-top,
@@ -200,7 +211,7 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 #nav-mid :deep(a),
 #nav-bottom :deep(a:not(#collapse)) {
   color: $navbar-color;
-  transition: background-color 150ms, opacity 150ms;
+  transition: background-color 150ms, color 150ms, opacity 150ms;
 
   .material-icons {
     padding-right: 15px;
@@ -275,11 +286,6 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   color: $user-color;
   box-shadow: none !important;
   transition: color 150ms, transform $collapse-duration;
-}
-
-.router-link-active {
-  background: $navbar-selected;
-  color: $navbar-selected-text-color !important;
 }
 
 .nav-collapsed {

@@ -6,12 +6,20 @@
         :key="i"
         :is="row.link ? 'router-link' : 'a'"
         :to="row.link"
+        :class="{ active: row.active }"
         @click="close(row.name)"
+        v-tooltip.right="{
+          content: row.tooltip,
+          disabled: !row.tooltip,
+          html: true,
+        }"
         v-wave
       >
         <span v-if="row.icon" class="material-icons"> {{ row.icon }} </span>
         {{ row.name }}
-        <div v-if="row.alignRight" class="align-right">{{ row.alignRight }}</div>
+        <div v-if="row.alignRight" class="align-right">
+          {{ row.alignRight }}
+        </div>
       </component>
     </div>
   </transition>
@@ -24,7 +32,9 @@ export interface DropdownItem {
   name: string;
   alignRight?: string;
   icon?: string;
-  link?: string;
+  link?: string | { params: Record<string, string> };
+  tooltip?: string;
+  active?: boolean;
 }
 
 export default defineComponent({
@@ -48,7 +58,7 @@ export default defineComponent({
       default: "dropdown",
     },
   },
-  emits: ["row-click", "close"],
+  emits: ["close"],
   mounted() {
     this.$emitter.on("main-scrolled", this.close);
     this.$emitter.on("window-clicked", this.windowClicked);
@@ -58,10 +68,11 @@ export default defineComponent({
     this.$emitter.off("window-clicked", this.windowClicked);
   },
   methods: {
-    windowClicked(path: HTMLElement[]) {
+    windowClicked(path?: HTMLElement[]) {
       if (
-        !path.includes(this.$refs.dropdown as HTMLElement) &&
-        !path.includes(document.getElementById(this.sourceElementId)!)
+        !path ||
+        (!path.includes(this.$refs.dropdown as HTMLElement) &&
+          !path.includes(document.getElementById(this.sourceElementId)!))
       ) {
         this.close();
       }
@@ -100,7 +111,11 @@ export default defineComponent({
       padding-right: 20px;
     }
 
-    &:hover {
+    &.active {
+      color: $navbar-selected-text-color;
+    }
+
+    &:not(.active):hover {
       cursor: pointer;
       color: $hovered-text-button !important;
     }

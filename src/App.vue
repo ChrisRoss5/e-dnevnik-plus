@@ -44,9 +44,9 @@ export default defineComponent({
   height: 100%;
 }
 
-@media screen and (max-width: 1200px) {
+/* @media screen and (max-width: 1200px) {
   #app {
     zoom: 0.8;
   }
-}
+} */
 </style>

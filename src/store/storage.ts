@@ -2,8 +2,8 @@ const state = {
   settings: {},
   users: [
     {
-      signedIn: false,
-      email: "kristijan.rosandicc@skole.hr",
+      signedIn: true,
+      email: "kristijan.rosandic@skole.hr",
       password: "grandayyy",
       fullName: "Kristijan Rosandić",
       settings: {
@@ -17,15 +17,9 @@ const state = {
           "Statistika",
         ],
       },
-      updates: {
-        classGrades: {
-          lastUpdated: 0,
-          maxAge: 0,
-        },
-      },
       classesList: [
         {
-          url: "aaa",
+          url: "aaa123",
           name: "4.a",
           year: "19/20",
           headTeacher: "asd asd",
@@ -33,7 +27,7 @@ const state = {
           finalGrade: 5,
         },
         {
-          url: "bbb",
+          url: "bbb234",
           name: "4.b",
           year: "2018./2019.",
           headTeacher: "asd asd",
@@ -42,7 +36,7 @@ const state = {
           opened: false,
         },
         {
-          url: "ccc",
+          url: "ccc345",
           name: "4.c",
           year: "2017./2018.",
           headTeacher: "ddd fff",
@@ -65,7 +59,3 @@ export default function chromeLocalStorage(data?: State) {
 }
 
 // TODO: chrome.storage.sync
-
-/* chrome.runtime.sendMessage({greeting: "hello"}, function(response: string) {
-  console.log(response);
-}); */

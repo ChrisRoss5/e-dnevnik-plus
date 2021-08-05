@@ -83,13 +83,14 @@ export default defineComponent({
   name: "Login",
   data() {
     return {
-      email: "",
-      password: "",
+      email: "kristijan.rosandic",
+      password: "grandayyy",
       valid: true,
       loggingIn: false,
     };
   },
   mounted() {
+    this.$router.push("/razred");  // todo: delete line
     if (this.$store.getters.user) this.$router.replace("/razred");
   },
   methods: {
@@ -100,7 +101,11 @@ export default defineComponent({
       if (!this.loginReady || this.loggingIn) return;
       this.loggingIn = true;
       const errorCard = this.$refs.errorCard as HTMLElement;
-      const loggedIn = await login(this.email, this.password);
+      const domain = this.email.indexOf("@");
+      const email =
+        (domain == -1 ? this.email : this.email.slice(0, domain)) + "@skole.hr";
+      const loggedIn = await login(email, this.password);
+
       if (loggedIn) {
         this.$router.push("/razred");
       } else {
@@ -197,10 +202,7 @@ export default defineComponent({
 
 @keyframes loggingIn {
   50% {
-    opacity: 0.6;
-  }
-  100% {
-    opacity: 1;
+    opacity: 0.9;
   }
 }
 

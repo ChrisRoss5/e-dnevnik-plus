@@ -48,12 +48,19 @@
       <div id="line"></div>
       <div class="selected-line" ref="selectedLine"></div>
     </div>
+
+    <!-- @/views/class components -->
     <div id="section">
-      <router-view v-slot="{ Component }">
-        <transition :name="sectionTransition">
+      <router-view
+        v-slot="{ Component }"
+        :classURL="classURL"
+        @sectionLoaded="showSpinner = false"
+      >
+        <transition :name="sectionTransition" mode="out-in">
           <component :is="Component" />
         </transition>
       </router-view>
+      <Spinner :visible="showSpinner" :size="'125px'"></Spinner>
     </div>
   </div>
 </template>
@@ -64,6 +71,7 @@ import { User, ClassInfo } from "@/store/state";
 import { MutationTypes } from "@/store/mutations";
 import Dropdown, { DropdownItem } from "@/components/Dropdown.vue";
 import { SlickList, SlickItem } from "vue-slicksort";
+import Spinner from "@/components/Spinner.vue";
 
 interface DropdownInfo {
   id: string;
@@ -78,9 +86,12 @@ export default defineComponent({
     Dropdown,
     SlickList,
     SlickItem,
+    Spinner,
   },
   data() {
     return {
+      classURL: "",
+      showSpinner: false,
       tabs: [
         { name: "Ocjene", icon: "grade" },
         { name: "Bilješke", icon: "edit" },
@@ -95,13 +106,13 @@ export default defineComponent({
     };
   },
   beforeMount() {
-    if (this.user) {
-      const _tabs = this.user.settings.classTabsOrder;
-      this.tabs.forEach((tab, i) => (tab.name = _tabs[i]));
-    }
+    if (!this.user) return;
+    const _tabs = this.user.settings.classTabsOrder;
+    if (!_tabs) return;
+    this.tabs = _tabs.map((name) => this.tabs.find((tab) => tab.name == name)!);
   },
   mounted() {
-    this.classChanged();
+    this.$nextTick(this.classChanged);
     this.userNavigated();
     this.$emitter.on("main-scrolled", this.mainScrolled);
     new (window as any).ResizeObserver(() => this.userNavigated()).observe(
@@ -118,24 +129,33 @@ export default defineComponent({
       const sections = this.getSectionsContainer();
       for (const anchor of sections.querySelectorAll("a")) {
         const _line = anchor.lastElementChild as HTMLElement;
-        _line.style.display =
-          started && anchor.classList.contains("router-link-active")
-            ? "block"
-            : "none";
+        const s = started && anchor.classList.contains("router-link-active");
+        _line.style.display = s ? "block" : "none";
       }
       line.style.display = started ? "none" : "block";
     },
     tabsOrderChanged() {
-      this.$store.commit(
-        MutationTypes.UPDATE_CLASS_TABS_ORDER,
-        this.tabs.map((tab) => tab.name),
-      );
+      this.user &&
+        this.$store.commit(MutationTypes.UPDATE_CLASS_TABS_ORDER, {
+          user: this.user,
+          tabs: this.tabs.map((tab) => tab.name),
+        });
       const sections = this.getSectionsContainer();
       sections.classList.add("no-transition");
       this.$nextTick(() => {
         this.userNavigated();
         sections.classList.remove("no-transition");
       });
+    },
+    classChanged() {
+      if (!this.user) return;
+      let classId = this.$route.params.classId as string;
+      if (classId == "-") {
+        // Match the newest class by default
+        classId = this.user.classesList[0].url.match(/\d+/)![0];
+        this.$router.replace({ params: { classId } });
+      }
+      this.classURL = classId;
     },
     userNavigated(to?: string) {
       const line = this.$refs.selectedLine as HTMLElement;
@@ -160,15 +180,7 @@ export default defineComponent({
       sections.className = short ? "sticky" : "";
       user.classList[short ? "add" : "remove"]("card");
     },
-    classChanged() {
-      if (!this.user) return;
-      const classInfo = this.user.classesList[0];
-      this.$router.replace({
-        params: {
-          class: classInfo.name + "-20" + classInfo.year.slice(0, 2),
-        },
-      });
-    },
+
     closeDropdown(id: string) {
       if (id == this.visibleDropdown) this.visibleDropdown = "";
     },
@@ -177,9 +189,11 @@ export default defineComponent({
         filterBy
           ? this.classesList.filter((c) => c[filterBy] == this[filterBy])
           : this.classesList
-      ).map((c) => ({
-        name: filterBy ? this[filterBy] : c.year,
-        alignRight: c.name,
+      ).map((classInfo) => ({
+        name: filterBy ? this[filterBy] : classInfo.year,
+        alignRight: classInfo.name,
+        link: { params: { classId: classInfo.url.match(/\d+/)![0] } },
+        active: classInfo.url.includes(this.classURL),
       }));
     },
     getPathName(path: string): string {
@@ -195,7 +209,9 @@ export default defineComponent({
       return this.$store.getters.user;
     },
     openedClassInfo(): ClassInfo | undefined {
-      return this.$store.getters.classInfo(this.$route.params.class as string);
+      return this.$store.getters.classInfo(
+        this.$route.params.classId as string,
+      );
     },
     classesList(): ClassInfo[] {
       return this.user ? this.user.classesList : [];
@@ -234,11 +250,12 @@ export default defineComponent({
   },
   watch: {
     $route(to, from) {
-      this.userNavigated(to.href);
       this.classChanged();
+      this.userNavigated(to.href);
       const fromIdx = this.tabNames.indexOf(this.getPathName(from.path));
       const toIdx = this.tabNames.indexOf(this.getPathName(to.path));
       this.sectionTransition = toIdx < fromIdx ? "slide-right" : "slide-left";
+      this.showSpinner = true;
     },
   },
 });
@@ -253,6 +270,9 @@ body > div:last-child .router-link-active .tab-drag {
 <style lang="scss" scoped>
 #class-container {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 #class-info {
@@ -268,6 +288,7 @@ body > div:last-child .router-link-active .tab-drag {
   color: #1b3a57;
   line-height: 55px;
   height: 55px;
+  margin-right: 20px;
 }
 
 .dropdown-info {
@@ -278,13 +299,12 @@ body > div:last-child .router-link-active .tab-drag {
   color: $light-gray-text;
   border-left: 1px solid #c3cfdd;
   padding-left: 20px;
-  margin-left: 20px;
 }
 
 .expand-arrow {
   grid-area: 1 / 2 / 3 / 3;
   font-size: 30px;
-  padding-left: 15px;
+  padding: 0 15px;
 
   &:hover ~ .title,
   &:hover ~ .name {
@@ -343,16 +363,6 @@ a {
     padding-right: 5px;
   }
 
-  &:first-child {
-    padding-left: 0;
-    margin-left: 0;
-  }
-
-  &:last-child {
-    padding-right: 0;
-    margin-right: 0;
-  }
-
   &.router-link-active {
     color: $button-color;
   }
@@ -382,11 +392,27 @@ a {
 }
 
 #section {
-  height: 1000px;
-  box-shadow: 0px 0px 200px #cecece;
-  border: 1px solid gray;
-  margin: 20px 80px;
+  position: relative;
+  flex: 1;
+  padding: 40px 30px;
+  overflow: hidden;
+
+  & > div {
+    transition: opacity $views-transition, transform $views-transition;
+  }
 }
 
 /* transitions */
+
+.slide-left-leave-to,
+.slide-right-enter-from {
+  transform: translateX(-50px);
+  opacity: 0;
+}
+
+.slide-left-enter-from,
+.slide-right-leave-to {
+  transform: translateX(50px);
+  opacity: 0;
+}
 </style>

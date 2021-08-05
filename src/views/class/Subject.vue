@@ -1,18 +1,14 @@
 <template>
-  <div id="notes"></div>
+  <div id="subject">PREDMET</div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: "Notes",
+  name: "Subject",
 });
 </script>
 
 <style lang="scss" scoped>
-#notes {
-  /* background: blue;
-  height: 200px; */
-}
 </style>

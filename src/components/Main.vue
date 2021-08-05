@@ -1,5 +1,11 @@
 <template>
-  <div id="main" ref="main">
+  <div
+    id="main"
+    ref="main"
+    :class="{
+      'no-overflow': $route.path.includes('/stranica/'),
+    }"
+  >
     <router-view v-slot="{ Component }">
       <transition :name="transitionName" mode="out-in">
         <component :is="Component" />
@@ -37,6 +43,10 @@ export default defineComponent({
   position: relative;
   overflow-y: scroll;
   flex: 1;
+
+  &.no-overflow {
+    overflow: hidden;
+  }
 
   /* root views */
   & > div {

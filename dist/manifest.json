@@ -10,8 +10,7 @@
     "declarativeNetRequest"
   ],
   "optional_permissions": [
-    "notifications",
-    "background"
+    "notifications"
   ],
   "host_permissions": [
     "*://*/*"

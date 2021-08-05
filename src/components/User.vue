@@ -4,6 +4,7 @@
     id="user"
     class="hovered-text-button"
     @click.self="showDropdown = !showDropdown"
+    ref="user"
   >
     {{ user.fullName }}
     <span class="material-icons"> account_circle </span>
@@ -18,10 +19,11 @@
 </template>
 
 <script lang="ts">
-import { MutationTypes } from "@/store/mutations";
 import { defineComponent } from "vue";
-import { User } from "@/store/state";
 import Dropdown from "./Dropdown.vue";
+import { MutationTypes } from "@/store/mutations";
+import { User } from "@/store/state";
+import { logout } from "@/scripts/scrapers";
 
 export default defineComponent({
   name: "User",
@@ -45,19 +47,29 @@ export default defineComponent({
     };
   },
   methods: {
-    dropdownClosed(rowName: string) {
+    async dropdownClosed(rowName: string) {
       this.showDropdown = false;
-      if (rowName == "Odjava" && this.user) {
+      if (rowName == "Odjava" && this.user && (await logout())) {
         this.$store.commit(MutationTypes.UPDATE_USER_STATUS, {
           user: this.user,
           status: false,
         });
+        this.$router.replace("/");
       }
+    },
+    showCard(show: boolean) {
+      const userEl = this.$refs.user as HTMLElement;
+      userEl && userEl.classList[show ? "add" : "remove"]("card");
     },
   },
   computed: {
     user(): User | undefined {
       return this.$store.getters.user;
+    },
+  },
+  watch: {
+    $route(to) {
+      this.showCard(to.path.includes("/stranica/"));
     },
   },
 });

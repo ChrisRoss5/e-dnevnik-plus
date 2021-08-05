@@ -2,13 +2,14 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import Login from "../views/Login.vue";
 import Class from "../views/Class.vue";
 import Subjects from "../views/class/Subjects.vue";
+import Subject from "../views/class/Subject.vue";
 import Notes from "../views/class/Notes.vue";
 import Exams from "../views/class/Exams.vue";
 import Absences from "../views/class/Absences.vue";
 import Conduct from "../views/class/Conduct.vue";
 import Schedule from "../views/class/Schedule.vue";
 import Stats from "../views/class/Stats.vue";
-import Website from "../views/Website.vue";
+import Websites from "../views/Websites.vue";
 
 /*
 No lazy loading:
@@ -28,7 +29,7 @@ const routes: Array<RouteRecordRaw> = [
     redirect: "/razred/-/ocjene",
   },
   {
-    path: "/razred/:class",
+    path: "/razred/:classId",
     component: Class,
     children: [
       {
@@ -38,6 +39,12 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "ocjene",
         component: Subjects,
+        children: [
+          {
+            path: ":subjectId",
+            component: Subject
+          },
+        ]
       },
       {
         path: "bilješke",
@@ -67,7 +74,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/stranica/:website",
-    component: Website,
+    component: Websites,
   },
   {
     path: "/:pathMatch(.*)",

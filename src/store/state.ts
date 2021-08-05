@@ -1,15 +1,5 @@
 export const state: State = {
-  settings: {
-    classTabsOrder: [
-      "Ocjene",
-      "Bilješke",
-      "Ispiti",
-      "Izostanci",
-      "Vladanja",
-      "Raspored",
-      "Statistika",
-    ],
-  },
+  settings: {},
   users: [],
 };
 
@@ -24,107 +14,41 @@ export interface User {
   password: string;
   fullName: string;
   settings: Settings;
-  updates: Updates;
   classesList: ClassInfo[];
-  classes: Class[];
 }
 
-export interface Class {
-  url: string;
-  subjects: Subject[];
-  notes: ClassNote[];
-  exams: Exam[];
-  absences: Absence[];
-  conduct: Conduct;
-  schedule: Schedule;
-}
-
-export interface Schedule {
-  A: ScheduleSubjectInfo[];
-  B: ScheduleSubjectInfo[];
-}
-
-export interface ScheduleSubjectInfo {
-  hour: number;
-  subject: string;
-}
-
-export interface Conduct {
-  final: string;
-  measures: ConductMeasure[];
-}
-
-export interface ConductMeasure {
-  name: string;
-  info: string;
-  date: string;
-}
-
-export interface Absence {
-  hour: number;
-  subject: string;
-  status: string;
-  cause: string;
-}
-
-export interface Exam {
-  subject: string;
-  note: string;
-  date: string;
-}
-
-export interface ClassNote {
-  title: string;
-  note: string;
-}
-
-export interface Subject {
-  name: string;
-  teacher: string;
-  categories: SubjectGradesPerCategory[];
-  finalGrade: number;
-  notes: SubjectNote[];
-}
-
-export interface SubjectNote {
-  note: string;
-  date: string;
-  grade: number;
-}
-
-export interface SubjectGradesPerCategory {
-  name: string;
-  grades: number[];
+export interface Settings {
+  classTabsOrder?: string[];
 }
 
 export interface ClassInfo {
   url: string;
   name: string;
   year: string;
-  headTeacher?: string;
   school: string;
+  headTeacher?: string;
   finalGrade?: number;
+  cache?: SubjectCache[];
+  lastUpdated?: number;
 }
 
-export interface PersonalData {
-  student: StudentPersonalInfo[];
-  contacts: StudentPersonalInfo[][];
+export interface SubjectCache {
+  url: string;
+  name: string;
+  teachers: string;
+  grades?: CategoryGrades[];
+  finalGrade?: number;
+  lastNote?: Note;
+  lastUpdated?: number;
 }
 
-export interface StudentPersonalInfo {
-  key: string;
-  value: string;
+export interface CategoryGrades {
+  name: string;
+  grades: number[][]
 }
 
-export interface Updates {
-  classGrades: PageUpdateInfo;
-}
-
-export interface PageUpdateInfo {
-  lastUpdated: number;
-  maxAge: number;
-}
-
-export interface Settings {
-  classTabsOrder: string[];
+export interface Note {
+  note: string;
+  date: string;
+  grade: string;
 }

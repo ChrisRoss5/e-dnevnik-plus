@@ -7,27 +7,10 @@ interface InitData {
   classesList: ClassInfo[];
 }
 
-export default function newUser(info: InitData): User {
+export default function newUser(initData: InitData): User {
   return {
-    ...info,
+    ...initData,
     signedIn: true,
-    settings: {
-      classTabsOrder: [
-        "Ocjene",
-        "Bilješke",
-        "Ispiti",
-        "Izostanci",
-        "Vladanja",
-        "Raspored",
-        "Statistika",
-      ],
-    },
-    updates: {
-      classGrades: {
-        lastUpdated: 0,
-        maxAge: 0,
-      },
-    },
-    classes: [],
+    settings: {},
   };
 }

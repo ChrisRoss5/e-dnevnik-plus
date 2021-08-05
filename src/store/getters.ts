@@ -1,4 +1,3 @@
-import { GetterTree } from "vuex";
 import { State, User, ClassInfo } from "./state";
 
 export type Getters = {
@@ -6,17 +5,13 @@ export type Getters = {
   classInfo(
     state: State,
     _getters: any,
-  ): (nameAndYear: string) => ClassInfo | undefined;
+  ): (classId: string) => ClassInfo | undefined;
 };
 
-export const getters: GetterTree<State, State> & Getters = {
+export const getters: Getters = {
   user: (state) => state.users.find((user) => user.signedIn),
-  classInfo: (state, _getters) => (nameAndYear) => {
+  classInfo: (state, _getters) => (classId) => {
     const user: User = _getters.user;
-    const [name, year] = nameAndYear.split("-");
-    if (user)
-      return user.classesList.find(
-        (c) => c.name == name && c.year.slice(0, 2) == year.slice(-2),
-      );
+    if (user) return user.classesList.find((c) => c.url.includes(classId));
   },
 };

@@ -3,6 +3,10 @@
     v-for="({ name, icon }, i) in list"
     :key="i"
     :to="rootLink + name.replaceAll(' ', '-').toLowerCase()"
+    :class="{
+      'router-link-active':
+        $route.href && $route.href.includes('razred') && name == 'Razred',
+    }"
     v-tooltip.right="navCollapsed ? name : ''"
     v-wave
   >
@@ -14,7 +18,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 
-// TODO: fix v-tooltip empty divs
+// TODO: fix v-tooltip empty divs in <body>
 
 export default defineComponent({
   name: "NavbarList",
@@ -38,3 +42,10 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+.router-link-active {
+  background: $navbar-selected;
+  color: $navbar-selected-text-color !important;
+}
+</style>
