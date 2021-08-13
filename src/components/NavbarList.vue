@@ -47,5 +47,9 @@ export default defineComponent({
 .router-link-active {
   background: $navbar-selected;
   color: $navbar-selected-text-color !important;
+
+  .material-icons {
+    text-shadow: 0 0 15px;
+  }
 }
 </style>

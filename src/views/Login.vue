@@ -2,7 +2,7 @@
   <div id="login" class="flex-center">
     <div id="forms">
       <transition name="error">
-        <div v-if="!valid" id="error">
+        <div v-if="!firstAttempt" id="error">
           <div class="card" ref="errorCard">
             Neispravno korisničko ime ili lozinka.
           </div>
@@ -20,7 +20,7 @@
             type="text"
             spellcheck="false"
             class="card"
-            @keypress="inputKeyPressed"
+            @keyup.enter="loginStudent"
             autocomplete="on"
             autofocus
           />
@@ -32,7 +32,7 @@
           type="password"
           spellcheck="false"
           class="card"
-          @keypress="inputKeyPressed"
+          @keyup.enter="loginStudent"
           autocomplete="on"
         />
         <div
@@ -85,18 +85,11 @@ export default defineComponent({
     return {
       email: "kristijan.rosandic",
       password: "grandayyy",
-      valid: true,
+      firstAttempt: true,
       loggingIn: false,
     };
   },
-  mounted() {
-    this.$router.push("/razred");  // todo: delete line
-    if (this.$store.getters.user) this.$router.replace("/razred");
-  },
   methods: {
-    inputKeyPressed(e: KeyboardEvent) {
-      e.key == "Enter" && this.loginStudent();
-    },
     async loginStudent() {
       if (!this.loginReady || this.loggingIn) return;
       this.loggingIn = true;
@@ -109,12 +102,12 @@ export default defineComponent({
       if (loggedIn) {
         this.$router.push("/razred");
       } else {
-        if (!this.valid) {
+        if (!this.firstAttempt) {
           errorCard.style.animation = "none";
-          errorCard.offsetWidth; // NOSONAR: reflow trigger
+          errorCard.offsetWidth; // nosonar: reflow trigger
           errorCard.style.animation = "error-red 1s";
         }
-        this.valid = this.loggingIn = false;
+        this.firstAttempt = this.loggingIn = false;
       }
     },
   },

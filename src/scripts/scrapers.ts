@@ -1,59 +1,21 @@
+// @ts-nocheck
+
 import { useToast } from "vue-toastification";
 import { MutationTypes } from "@/store/mutations";
 import { User, ClassInfo, SubjectCache } from "@/store/state";
 import { store } from "@/store";
 import newUser from "./new-user";
+import * as UTILS from "./utils";
 
 const toast = useToast();
-const parser = new DOMParser();
 const URLS = {
+  base: "https://ocjene.skole.hr",
   login: "https://ocjene.skole.hr/login",
   logout: "https://ocjene.skole.hr/logout",
   classes: "https://ocjene.skole.hr/class",
 };
 
-function formEncodedBody(obj: Record<string, string>): string {
-  return Object.keys(obj)
-    .map((k) => encodeURIComponent(k) + "=" + encodeURIComponent(obj[k]))
-    .join("&");
-}
-
-function getElText(el: Element | null): string {
-  return el ? (el.textContent as string).trim() : "";
-}
-
-function parseNum(num: string): number {
-  return parseFloat(num.replace(",", "."));
-}
-
-function updateClassesTeacher(user: User) {
-  user.classesList.forEach(async (classInfo) => {
-    if (classInfo.headTeacher) return;
-    const classDoc = await authFetch(classInfo.url);
-    if (!classDoc) return;
-    const teacher = classDoc.querySelector(".schoolyear .black");
-    teacher &&
-      store.commit(MutationTypes.UPDATE_CLASS_TEACHER, {
-        classInfo,
-        teacher,
-      });
-  });
-}
-
-async function authFetch(url: string): Promise<undefined | Document> {
-  const fetch1 = await fetch(url);
-  if (fetch1.url.includes("login")) {
-    const user = store.getters.user as User | undefined;
-    if (!user) return;
-    if (!(await login(user.email, user.password, fetch1))) {
-      toast.error("Greška u prijavi: Promijenili ste lozinku!");
-      return;
-    }
-  }
-  return parser.parseFromString(await fetch1.text(), "text/html");
-}
-
-export async function login(
+async function login(
   email: string,
   password: string,
   fetch1?: Response,
@@ -67,7 +29,7 @@ export async function login(
     // Logout GET
     return (await logout()) && login(email, password);
   }
-  const loginDoc = parser.parseFromString(await fetch1.text(), "text/html");
+  const loginDoc = UTILS.parseDoc(await fetch1.text(), fetch1.url);
   const csrfElement = loginDoc.getElementsByName("csrf_token")[0];
   if (!csrfElement) {
     toast.error("Greška u prijavi: Nedostaje CSRF token!");
@@ -79,13 +41,13 @@ export async function login(
   const fetch2 = await fetch(URLS.login, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: formEncodedBody({ username: email, password, csrf_token }),
+    body: UTILS.formEncodedBody({ username: email, password, csrf_token }),
   });
   const loggedIn = !fetch2.url.includes("login");
   if (!loggedIn) return false;
   //
   // Either /class or /course
-  const nextDoc = parser.parseFromString(await fetch2.text(), "text/html");
+  const nextDoc = UTILS.parseDoc(await fetch2.text(), fetch2.url);
   const classesList = await getClassesList(
     fetch2.url == URLS.classes ? nextDoc : undefined,
   );
@@ -99,20 +61,41 @@ export async function login(
   if (user) {
     store.commit(MutationTypes.UPDATE_CLASSES_LIST, { user, classesList });
   } else {
-    const fullName = getElText(nextDoc.querySelector(".user-name"));
+    const fullName = UTILS.getElText(nextDoc.querySelector(".user-name"));
     store.commit(
       MutationTypes.ADD_USER,
       newUser({ email, password, fullName, classesList }),
     );
+    setTimeout(() => {
+      toast.success(
+        "Automatska prijava je omogućena!\nOpciju promijenite u postavkama ⚙️",
+        { timeout: false },
+      );
+    }, 1000);
   }
-  user && updateClassesTeacher(user);
-  return true; // Login successful
+  await updateClassesHeadteacher(classesList, !user);
+  return true;
 }
 
-export async function logout(): Promise<boolean> {
+async function logout(): Promise<boolean> {
   const success = (await fetch(URLS.logout)).url.includes("login");
   if (!success) toast.error("Greška u odjavi! Pokušajte ponovo.");
   return success;
+}
+
+async function authFetch(url: string): Promise<undefined | Document> {
+  const fetch1 = await fetch(url);
+  if (fetch1.url.includes("login")) {
+    const user = store.getters.user as User | undefined;
+    if (!user) return;
+    if (!(await login(user.email, user.password, fetch1))) {
+      const error = `Greška u prijavi: Promijenili ste lozinku za ${user.email}!`;
+      toast.error(error, { timeout: false });
+      store.commit(MutationTypes.UPDATE_USER_STATUS, { user, status: false });
+      return;
+    }
+  }
+  return UTILS.parseDoc(await fetch1.text(), fetch1.url);
 }
 
 async function getClassesList(
@@ -125,27 +108,40 @@ async function getClassesList(
   for (const menu of classMenus) {
     const classInfo: ClassInfo = {
       url: (menu.querySelector(".school") as HTMLAnchorElement).href,
-      name: getElText(menu.querySelector(".class > .bold")),
-      year: getElText(menu.querySelector(".class-schoolyear")),
-      school: getElText(menu.querySelector(".school-name")),
+      name: UTILS.getElText(menu.querySelector(".class > .bold")),
+      year: UTILS.getElText(menu.querySelector(".class-schoolyear")),
+      school: UTILS.getElText(menu.querySelector(".school-name")),
     };
     const [start, end] = classInfo.year.split("/");
     if (start && end) classInfo.year = "20" + start + "./20" + end + ".";
     const finalGrade = menu.querySelector(".overall-grade .bold");
-    if (finalGrade) classInfo.finalGrade = parseNum(getElText(finalGrade));
+    if (finalGrade) classInfo.finalGrade = UTILS.getElText(finalGrade);
     classesList.push(classInfo);
   }
   return classesList;
 }
 
-export async function updateSubjects(classInfo: ClassInfo): Promise<boolean> {
-  const cache = classInfo.cache || [];
+async function updateSubjects(
+  classInfo: ClassInfo,
+  forceUpdate?: true,
+): Promise<boolean> {
+  return true;
+
+  const cachedSubjects = classInfo.cachedSubjects || [];
   const lastUpdated = classInfo.lastUpdated;
   const timestamp = Date.now() / 1000;
   const updateAllSubjects = !lastUpdated || timestamp - lastUpdated > 1800;
   const promises: Promise<boolean>[] = [];
+  const saveSubject = (updatedSubject: SubjectCache | false) => {
+    updatedSubject &&
+      store.commit(MutationTypes.UPDATE_SUBJECT, {
+        classInfo,
+        updatedSubject,
+      });
+    return !!updatedSubject;
+  };
 
-  if (updateAllSubjects) {
+  if (updateAllSubjects || forceUpdate) {
     classInfo.lastUpdated = timestamp;
 
     // Default: 30 minutes; TODO: add settings
@@ -155,32 +151,28 @@ export async function updateSubjects(classInfo: ClassInfo): Promise<boolean> {
       return false;
     }
 
-    classDoc
-      .querySelectorAll(".content a[href^='/grade/']")
-      .forEach((anchor) => {
+    // TODO: delete slice
+    [...classDoc.querySelectorAll(".content a[href^='/grade/']")]
+      .slice(0, 3)
+      .forEach((anchor) =>
         promises.push(
           updateSubject({
             url: (anchor as HTMLAnchorElement).href,
-            name: getElText(anchor.children[0]),
-            teachers: getElText(anchor.children[1]),
-          }).then((updatedSubject) => {
-            if (!updatedSubject) return false;
-            updatedSubject.lastUpdated = timestamp;
-            store.commit(MutationTypes.UPDATE_SUBJECT, {
-              classInfo,
-              updatedSubject,
-            });
-            return true;
-          }),
-        );
-      });
+            name: UTILS.getElText(anchor.children[0]),
+            teachers: UTILS.getElText(anchor.children[1]),
+            lastUpdated: timestamp,
+          }).then(saveSubject),
+        ),
+      );
   } else {
-    classInfo.cache;
+    for (const subject of cachedSubjects) {
+      timestamp - subject.lastUpdated > 1800 &&
+        promises.push(updateSubject(subject).then(saveSubject));
+    }
   }
 
   const success = await Promise.allSettled(promises);
   console.log(success);
-
   return true;
 }
 
@@ -192,28 +184,50 @@ async function updateSubject(
     toast.error("Greška: Predmet ne postoji!");
     return false;
   }
-  subject.grades = [];
+  subject.gradesByCategory = [];
   subjectDoc.querySelectorAll(".grades-table > .row").forEach((rowEl) => {
     if (rowEl.classList.contains("final-grade")) {
-      const finalGrade = getElText(rowEl.lastElementChild).match(/\d/);
+      const finalGrade = UTILS.getElText(rowEl.lastElementChild).match(/\d/);
       if (finalGrade) subject.finalGrade = parseInt(finalGrade[0]);
       return;
     }
-    const grades = [];
-    for (let i = 1; i < rowEl.children.length; i++) {
-      grades.push(
-        (getElText(rowEl.children[i]).match(/\d/g) || []).map(Number),
-      );
-    }
-    subject.grades?.push({
-      name: getElText(rowEl.firstElementChild),
-      grades,
+    subject.gradesByCategory?.push({
+      name: UTILS.capitalize(UTILS.getElText(rowEl.firstElementChild)),
+      grades: [...rowEl.children]
+        .slice(1)
+        .map((cell) => (UTILS.getElText(cell).match(/\d/g) || []).map(Number)),
     });
   });
   const lastNoteEl = subjectDoc.querySelector(".notes-table > .row");
   if (lastNoteEl) {
-    const info = [...lastNoteEl.children].map(getElText);
+    const info = [...lastNoteEl.children].map(UTILS.getElText);
     subject.lastNote = { note: info[0], date: info[1], grade: info[2] };
   }
   return subject;
 }
+
+async function updateClassesHeadteacher(
+  classesList: ClassInfo[],
+  firstLogin: boolean,
+) {
+  firstLogin && toast("Prva prijava može potrajati malo duže.");
+
+  // Because the class response is 302, requests must go 1 by 1
+  // prettier-ignore
+  for (let i = 0; i < classesList.length; i++) { // nosonar: for of
+    if (classesList[i].headTeacher) continue;
+    const classDoc = await authFetch(classesList[i].url);
+    if (!classDoc) {
+      toast.error("Greška pri dobavljanju razreda!");
+      return;
+    }
+    const headteacher = classDoc.querySelector(".schoolyear .black");
+    headteacher &&
+      store.commit(MutationTypes.UPDATE_CLASS_HEADTEACHER, {
+        classInfo: classesList[i],
+        headteacher: UTILS.getElText(headteacher),
+      });
+  }
+}
+
+export { login, logout, updateSubjects };

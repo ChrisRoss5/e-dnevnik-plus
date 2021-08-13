@@ -11,7 +11,7 @@
         <img src="@/assets/img/carnet-logo-2.png" />
       </a>
       <a
-        href="https://www.carnet.hr/usluga/e-dnevnik-za-ucenike-i-roditelje/"
+        href="https://ednevnik.plus"
         target="_blank"
         class="title text"
         style="--order: 1"
@@ -92,7 +92,7 @@ export default defineComponent({
         },
         {
           name: "Kalkulator bodova",
-          icon: "functions",
+          icon: "table_view",
         },
       ],
       pages: [
@@ -106,7 +106,7 @@ export default defineComponent({
         },
         {
           name: "Srednja.hr",
-          icon: "thumb_up",
+          icon: "whatshot",
         },
         {
           name: "Školski e-Rudnik",
@@ -174,7 +174,7 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   flex-direction: column;
   white-space: nowrap;
   overflow: hidden;
-  max-width: 350px;
+  max-width: $navbar-max-width;
   transition: max-width $collapse-duration, box-shadow $views-transition;
   z-index: 1;
 
@@ -191,6 +191,10 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   height: 60px;
   padding: 20px 30px;
   box-shadow: $nav-shadow-bottom;
+}
+
+#nav-top {
+  align-items: flex-start;
 }
 
 #nav-mid {
@@ -243,24 +247,40 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 }
 
 #carnet-logo {
+  margin-right: 25px;
+
   img {
-    height: 70px;
-    padding-right: 25px;
+    height: 50px;
     transition: transform $collapse-duration - 100ms;
-    transform-origin: 40% 50%;
-  }
-
-  & + .title {
-    font-size: 35px;
-    color: white;
-
-    &:hover {
-      color: #fffc;
-    }
+    transform-origin: 55% 50%;
   }
 
   &:hover img {
     transform: rotate(360deg);
+  }
+}
+
+.title {
+  position: relative;
+  font-size: 35px;
+  line-height: 35px;
+  color: white;
+  text-shadow: 0 0 20px $plus-color;
+
+  &:hover {
+    color: #fffc;
+  }
+
+  &::after {
+    content: "Plus";
+    position: absolute;
+    right: 0;
+    top: 100%;
+    font-style: italic;
+    font-size: 18px;
+    line-height: 15px;
+    color: $plus-color;
+    text-shadow: 0 0 20px white;
   }
 }
 
@@ -292,10 +312,10 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   max-width: 84px !important;
 
   #carnet-logo img {
-    transform: scale(0.65) translate(-40px, -5px);
+    transform: scale(0.8) translate(-17px, 2px);
 
     &:hover {
-      transform: scale(0.65) translate(-42px, -5px) rotate(360deg);
+      transform: scale(0.8) translate(-17px, 2px) rotate(360deg);
     }
   }
 

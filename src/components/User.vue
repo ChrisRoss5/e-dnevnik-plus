@@ -54,7 +54,6 @@ export default defineComponent({
           user: this.user,
           status: false,
         });
-        this.$router.replace("/");
       }
     },
     showCard(show: boolean) {
@@ -88,6 +87,7 @@ export default defineComponent({
   color: $user-color;
   user-select: none;
   transition: box-shadow 150ms, color 150ms;
+  z-index: 99;
 
   & > .material-icons {
     pointer-events: none;

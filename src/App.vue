@@ -35,6 +35,11 @@ export default defineComponent({
       path && this.$emitter.emit("window-clicked", path);
     };
   },
+  watch: {
+    "$store.getters.user"(user) {
+      if (!user) this.$router.replace("/");
+    },
+  },
 });
 </script>
 

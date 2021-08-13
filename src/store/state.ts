@@ -27,8 +27,8 @@ export interface ClassInfo {
   year: string;
   school: string;
   headTeacher?: string;
-  finalGrade?: number;
-  cache?: SubjectCache[];
+  finalGrade?: string;
+  cachedSubjects?: SubjectCache[];
   lastUpdated?: number;
 }
 
@@ -36,13 +36,13 @@ export interface SubjectCache {
   url: string;
   name: string;
   teachers: string;
-  grades?: CategoryGrades[];
+  gradesByCategory?: GradesByCategory[];
   finalGrade?: number;
   lastNote?: Note;
-  lastUpdated?: number;
+  lastUpdated: number;
 }
 
-export interface CategoryGrades {
+export interface GradesByCategory {
   name: string;
   grades: number[][]
 }

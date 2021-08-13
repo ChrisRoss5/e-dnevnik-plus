@@ -1,12 +1,12 @@
 import { State, User, ClassInfo, SubjectCache } from "./state";
-import { getters } from "./getters";
+import { MutationTree } from "vuex";
 
 export enum MutationTypes {
   INIT = "INIT",
   ADD_USER = "ADD_USER",
   UPDATE_USER_STATUS = "UPDATE_USER_STATUS",
   UPDATE_CLASSES_LIST = "UPDATE_CLASSES_LIST",
-  UPDATE_CLASS_TEACHER = "UPDATE_CLASS_TEACHER",
+  UPDATE_CLASS_HEADTEACHER = "UPDATE_CLASS_HEADTEACHER",
   UPDATE_CLASS_TABS_ORDER = "UPDATE_CLASS_TABS_ORDER",
   UPDATE_SUBJECT = "UPDATE_SUBJECT",
 }
@@ -22,9 +22,9 @@ export type Mutations<S = State> = {
     state: S,
     { user, classesList }: { user: User; classesList: ClassInfo[] },
   ): void;
-  [MutationTypes.UPDATE_CLASS_TEACHER](
+  [MutationTypes.UPDATE_CLASS_HEADTEACHER](
     state: S,
-    { classInfo, teacher }: { classInfo: ClassInfo; teacher: string },
+    { classInfo, headteacher }: { classInfo: ClassInfo; headteacher: string },
   ): void;
   [MutationTypes.UPDATE_CLASS_TABS_ORDER](
     state: S,
@@ -39,7 +39,8 @@ export type Mutations<S = State> = {
   ): void;
 };
 
-export const mutations: Mutations = {
+// prettier-ignore
+export const mutations: MutationTree<State> & Mutations = { // nosonar: index signature
   [MutationTypes.INIT](state, newState) {
     Object.assign(state, newState);
   },
@@ -53,24 +54,24 @@ export const mutations: Mutations = {
     user.classesList = { ...user.classesList, ...classesList };
     user.signedIn = true;
   },
-  [MutationTypes.UPDATE_CLASS_TEACHER](state, { classInfo, teacher }) {
-    classInfo.headTeacher = teacher;
+  [MutationTypes.UPDATE_CLASS_HEADTEACHER](state, { classInfo, headteacher }) {
+    classInfo.headTeacher = headteacher;
   },
   [MutationTypes.UPDATE_CLASS_TABS_ORDER](state, { user, tabs }) {
     user.settings.classTabsOrder = tabs;
   },
   [MutationTypes.UPDATE_SUBJECT](state, { classInfo, updatedSubject }) {
-    if (!classInfo.cache) {
-      classInfo.cache = [updatedSubject];
+    if (!classInfo.cachedSubjects) {
+      classInfo.cachedSubjects = [updatedSubject];
       return;
     }
-    const cachedSubjectIdx = classInfo.cache.findIndex(
+    const cachedSubjectIdx = classInfo.cachedSubjects.findIndex(
       (subject) => subject.url == updatedSubject.url,
     );
     if (cachedSubjectIdx == -1) {
-      classInfo.cache.push(updatedSubject);
+      classInfo.cachedSubjects.push(updatedSubject);
       return;
     }
-    classInfo.cache[cachedSubjectIdx] = updatedSubject;
+    classInfo.cachedSubjects[cachedSubjectIdx] = updatedSubject;
   },
 };

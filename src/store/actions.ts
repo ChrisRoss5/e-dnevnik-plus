@@ -11,17 +11,25 @@ type AugmentedActionContext = {
 } & Omit<ActionContext<State, State>, "commit">;
 
 export enum ActionTypes {
-  INIT = "INIT"
+  INIT = "INIT",
 }
 export interface Actions {
   [ActionTypes.INIT]({ commit }: AugmentedActionContext): Promise<boolean>;
 }
 
-export const actions: ActionTree<State, State> & Actions = {
+// prettier-ignore
+export const actions: ActionTree<State, State> & Actions = { // nosonar: Index signature
   async [ActionTypes.INIT]({ commit }) {
     const state = (await chromeLocalStorage()) as State;
+    console.log("LOCAL STORAGE: ", state);
+
+    //await pause(3000);
     if (!state) return false;
     commit(MutationTypes.INIT, state);
     return !!state.users.find((user) => user.signedIn);
-  }
+  },
 };
+
+function pause(t: number) {
+  return new Promise((res) => setTimeout(res, t));
+}

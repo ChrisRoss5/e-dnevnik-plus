@@ -1,26 +1,36 @@
 <template>
   <div id="class-container">
-    <div id="class-info">
+    <div id="class-info" ref="classInfo">
       <div id="class-title">
         {{ openedClassInfo ? openedClassInfo.name : "" }}
       </div>
-      <div v-for="(dropdown, i) in dropdowns" :key="i" class="dropdown-info">
-        <div
-          :id="dropdown.id"
-          class="expand-arrow material-icons hovered-text-button"
-          @click="visibleDropdown = dropdown.id"
-          v-wave
-        >
-          arrow_drop_down
+      <div>
+        <div v-for="(dropdown, i) in dropdowns" :key="i" class="dropdown-info">
+          <div
+            :id="dropdown.id"
+            class="expand-arrow material-icons hovered-text-button"
+            @click="visibleDropdown = dropdown.id"
+            v-wave
+          >
+            arrow_drop_down
+          </div>
+          <div class="title">{{ dropdown.title }}</div>
+          <div class="name">{{ dropdown.name }}</div>
+          <Dropdown
+            :visible="visibleDropdown == dropdown.id"
+            :list="dropdown.list"
+            :sourceElementId="dropdown.id"
+            @close="closeDropdown(dropdown.id)"
+          ></Dropdown>
         </div>
-        <div class="title">{{ dropdown.title }}</div>
-        <div class="name">{{ dropdown.name }}</div>
-        <Dropdown
-          :visible="visibleDropdown == dropdown.id"
-          :list="dropdown.list"
-          :sourceElementId="dropdown.id"
-          @close="closeDropdown(dropdown.id)"
-        ></Dropdown>
+      </div>
+      <div
+        v-if="confirmedFinalGrade"
+        id="confirmedFinalGrade"
+        class="card"
+        v-tooltip="'Potvrđeni završni uspjeh (na svjedodžbi)'"
+      >
+        {{ confirmedFinalGrade }}
       </div>
     </div>
     <div id="sections-container" ref="sectionsContainer">
@@ -37,13 +47,33 @@
         @sort-cancel="tabsSortingEvent(false)"
         @update:list="tabsOrderChanged"
       >
-        <SlickItem v-for="(tab, i) in tabs" :key="i" :index="i">
-          <router-link :to="tab.name.toLowerCase()" draggable="false">
+        <SlickItem
+          v-for="(tab, i) in tabs"
+          :key="i"
+          :index="i"
+          class="section-item"
+        >
+          <router-link
+            :to="getSectionPath(tab.name)"
+            draggable="false"
+            :class="{
+              'router-link-active': $route.path.includes(
+                tab.name.toLowerCase(),
+              ),
+            }"
+          >
             <span class="material-icons"> {{ tab.icon }} </span>
-            <div>{{ tab.name }}</div>
+            <div class="section-name">{{ tab.name }}</div>
             <div class="selected-line tab-drag"></div>
           </router-link>
         </SlickItem>
+        <span
+          id="sort"
+          class="material-icons"
+          v-tooltip.bottom-end="'Sortiraj kartice povlačenjem'"
+        >
+          swap_horiz
+        </span>
       </SlickList>
       <div id="line"></div>
       <div class="selected-line" ref="selectedLine"></div>
@@ -54,13 +84,14 @@
       <router-view
         v-slot="{ Component }"
         :classURL="classURL"
+        @sectionLoading="showSpinner = true"
         @sectionLoaded="showSpinner = false"
       >
         <transition :name="sectionTransition" mode="out-in">
           <component :is="Component" />
         </transition>
       </router-view>
-      <Spinner :visible="showSpinner" :size="'125px'"></Spinner>
+      <Spinner :visible="showSpinner" :size="'125px'" background></Spinner>
     </div>
   </div>
 </template>
@@ -72,6 +103,7 @@ import { MutationTypes } from "@/store/mutations";
 import Dropdown, { DropdownItem } from "@/components/Dropdown.vue";
 import { SlickList, SlickItem } from "vue-slicksort";
 import Spinner from "@/components/Spinner.vue";
+import { formatNum } from "@/scripts/utils";
 
 interface DropdownInfo {
   id: string;
@@ -113,11 +145,10 @@ export default defineComponent({
   },
   mounted() {
     this.$nextTick(this.classChanged);
-    this.userNavigated();
     this.$emitter.on("main-scrolled", this.mainScrolled);
-    new (window as any).ResizeObserver(() => this.userNavigated()).observe(
-      this.getSectionsContainer(),
-    );
+    new (window as any).ResizeObserver(() =>
+      this.positionSelectedLine(),
+    ).observe(this.getSectionsContainer());
   },
   beforeUnmount() {
     this.$emitter.off("main-scrolled", this.mainScrolled);
@@ -143,7 +174,7 @@ export default defineComponent({
       const sections = this.getSectionsContainer();
       sections.classList.add("no-transition");
       this.$nextTick(() => {
-        this.userNavigated();
+        this.positionSelectedLine();
         sections.classList.remove("no-transition");
       });
     },
@@ -157,18 +188,22 @@ export default defineComponent({
       }
       this.classURL = classId;
     },
-    userNavigated(to?: string) {
+    positionSelectedLine(transition?: true) {
       const line = this.$refs.selectedLine as HTMLElement;
       const sections = this.getSectionsContainer();
       if (!sections) return;
-      const { offsetLeft, offsetWidth } = ((to &&
-        [...sections.querySelectorAll("a")].find(
-          (s) => s.getAttribute("href") == to,
-        )) ||
-        sections.querySelector(".router-link-active")) as HTMLElement;
-      line.style.transition = to ? "width 500ms, transform 500ms" : "none";
-      line.style.transform = `translateX(${offsetLeft}px)`;
+      const { offsetLeft, offsetWidth } = sections.querySelector(
+        ".router-link-active",
+      ) as HTMLElement;
+      line.style.transition = transition
+        ? "width 500ms, transform 500ms"
+        : "none";
+      line.style.transform = "translateX(" + (offsetLeft + 30) + "px)";
       line.style.width = offsetWidth + "px";
+      const user = document.getElementById("user");
+      if (user)
+        (this.$refs.classInfo as HTMLElement).style.marginRight =
+          user.offsetWidth + "px";
     },
     mainScrolled() {
       const sections = this.getSectionsContainer();
@@ -180,7 +215,6 @@ export default defineComponent({
       sections.className = short ? "sticky" : "";
       user.classList[short ? "add" : "remove"]("card");
     },
-
     closeDropdown(id: string) {
       if (id == this.visibleDropdown) this.visibleDropdown = "";
     },
@@ -196,8 +230,11 @@ export default defineComponent({
         active: classInfo.url.includes(this.classURL),
       }));
     },
-    getPathName(path: string): string {
-      return path.slice(path.lastIndexOf("/") + 1);
+    getSectionPath(name: string): string {
+      return "/razred/" + this.$route.params.classId + "/" + name.toLowerCase();
+    },
+    getSectionName(path: string): string {
+      return path.replace(/\/razred\/\d+\//, "").replace(/\/\d+$/, "");
     },
     getSectionsContainer(): HTMLElement {
       return this.$refs.sectionsContainer as HTMLElement;
@@ -231,7 +268,7 @@ export default defineComponent({
           list: this.getDropdownList(),
         },
         {
-          id: "teacher",
+          id: "headteacher",
           title: "Razrednik:",
           name: this.headTeacher,
           list: this.getDropdownList("headTeacher"),
@@ -244,26 +281,35 @@ export default defineComponent({
         },
       ];
     },
+    confirmedFinalGrade(): string {
+      const finalGrade =
+        this.openedClassInfo && this.openedClassInfo.finalGrade;
+      return finalGrade ? formatNum(finalGrade) : "";
+    },
     tabNames(): string[] {
       return this.tabs.map((tab) => tab.name.toLowerCase());
     },
   },
   watch: {
     $route(to, from) {
+      /* this.showSpinner = true; */
       this.classChanged();
-      this.userNavigated(to.href);
-      const fromIdx = this.tabNames.indexOf(this.getPathName(from.path));
-      const toIdx = this.tabNames.indexOf(this.getPathName(to.path));
+      this.$nextTick(() => this.positionSelectedLine(true));
+      const fromIdx = this.tabNames.indexOf(this.getSectionName(from.path));
+      const toIdx = this.tabNames.indexOf(this.getSectionName(to.path));
       this.sectionTransition = toIdx < fromIdx ? "slide-right" : "slide-left";
-      this.showSpinner = true;
     },
   },
 });
 </script>
 
-<style>
-body > div:last-child .router-link-active .tab-drag {
-  display: block !important;
+<style lang="scss">
+body > div:last-child {
+  z-index: 5 !important;
+
+  .router-link-active .tab-drag {
+    display: block !important;
+  }
 }
 </style>
 
@@ -272,7 +318,7 @@ body > div:last-child .router-link-active .tab-drag {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100%;
 }
 
 #class-info {
@@ -294,11 +340,9 @@ body > div:last-child .router-link-active .tab-drag {
 .dropdown-info {
   position: relative;
   display: inline-grid;
-  gap: 0px 0px;
-  grid-auto-flow: row;
   color: $light-gray-text;
-  border-left: 1px solid #c3cfdd;
-  padding-left: 20px;
+  border-left: 1px solid $light-border-color;
+  padding: 2px 0 2px 20px;
 }
 
 .expand-arrow {
@@ -326,15 +370,23 @@ body > div:last-child .router-link-active .tab-drag {
   grid-area: 2 / 1 / 3 / 2;
 }
 
+#confirmedFinalGrade {
+  background: #4caf50;
+  color: white;
+  padding: 5px 10px;
+  margin-left: 15px;
+}
+
 #sections-container {
   position: sticky;
   top: 0;
-  padding: 30px 30px 0;
+  padding: 25px 30px 0;
   transition: padding 150ms;
+  z-index: 5;
 
   &.sticky {
     backdrop-filter: blur(5px);
-    background: #ffffffd1;
+    background: #ffffff75;
   }
 
   &.no-transition a {
@@ -343,11 +395,22 @@ body > div:last-child .router-link-active .tab-drag {
 }
 
 #sections {
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
+}
 
-  & > div {
-    flex: 1;
+.section-item {
+  flex: 1;
+  z-index: 1;
+}
+
+.section-name {
+  padding-left: 5px;
+}
+
+@media screen and (max-width: 1200px) {
+  .section-name {
+    display: none;
   }
 }
 
@@ -355,23 +418,27 @@ a {
   position: relative;
   display: flex;
   justify-content: center;
-  color: #476282;
+  color: $user-color;
   padding: 0 15px 15px;
   transition: color 500ms;
-
-  .material-icons {
-    padding-right: 5px;
-  }
 
   &.router-link-active {
     color: $button-color;
   }
 }
 
+#sort {
+  position: absolute;
+  top: -20px;
+  right: 0;
+  color: #47628282;
+  z-index: 1;
+}
+
 #line {
   width: 100%;
   height: 1.5px;
-  background: #c3cfdd;
+  background: $light-border-color;
 }
 
 .selected-line {
@@ -394,7 +461,7 @@ a {
 #section {
   position: relative;
   flex: 1;
-  padding: 40px 30px;
+  padding: 40px 20px;
   overflow: hidden;
 
   & > div {

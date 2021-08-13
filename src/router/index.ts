@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
+import { store } from "@/store";
 import Login from "../views/Login.vue";
 import Class from "../views/Class.vue";
 import Subjects from "../views/class/Subjects.vue";
@@ -42,9 +43,9 @@ const routes: Array<RouteRecordRaw> = [
         children: [
           {
             path: ":subjectId",
-            component: Subject
+            component: Subject,
           },
-        ]
+        ],
       },
       {
         path: "bilješke",
@@ -85,6 +86,14 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHashHistory(process.env.BASE_URL),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = !!store.getters.user;
+  const isLoginPage = to.path == "/";
+  if (!isLoginPage && !isAuthenticated) next({ path: "/" });
+  else if (isLoginPage && isAuthenticated) next(false);
+  else next();
 });
 
 export default router;

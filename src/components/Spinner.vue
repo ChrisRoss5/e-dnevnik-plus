@@ -38,13 +38,14 @@ export default defineComponent({
   left: 0;
   right: 0;
   bottom: 0;
-
-  &.background {
-    background: white;
-  }
-
-  /* Experimental */
   transform: translate3d(0, 0, 0);
   will-change: opacity, transform;
+  transition: background-color 500ms, backdrop-filter 500ms;
+  z-index: 2;
+
+  &.background {
+    background: #ffffff73;
+    backdrop-filter: blur(3px);
+  }
 }
 </style>
