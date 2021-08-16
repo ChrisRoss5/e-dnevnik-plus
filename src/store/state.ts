@@ -15,6 +15,7 @@ export interface User {
   fullName: string;
   settings: Settings;
   classesList: ClassInfo[];
+  lastLoadedClassUrl?: string;
 }
 
 export interface Settings {
@@ -39,7 +40,7 @@ export interface SubjectCache {
   gradesByCategory?: GradesByCategory[];
   finalGrade?: number;
   lastNote?: Note;
-  lastUpdated: number;
+  lastUpdated?: number;
 }
 
 export interface GradesByCategory {

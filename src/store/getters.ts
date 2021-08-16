@@ -11,7 +11,7 @@ export type Getters = {
 export const getters: Getters = {
   user: (state) => state.users.find((user) => user.signedIn),
   classInfo: (state, _getters) => (classId) => {
-    const user: User = _getters.user;
+    const user: User | undefined = _getters.user;
     if (user) return user.classesList.find((c) => c.url.includes(classId));
   },
 };

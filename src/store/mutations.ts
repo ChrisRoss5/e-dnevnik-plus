@@ -5,8 +5,9 @@ export enum MutationTypes {
   INIT = "INIT",
   ADD_USER = "ADD_USER",
   UPDATE_USER_STATUS = "UPDATE_USER_STATUS",
+  UPDATE_LAST_LOADED_CLASS_URL = "UPDATE_LAST_LOADED_CLASS_URL",
   UPDATE_CLASSES_LIST = "UPDATE_CLASSES_LIST",
-  UPDATE_CLASS_HEADTEACHER = "UPDATE_CLASS_HEADTEACHER",
+  UPDATE_CLASS_PROPERTY = "UPDATE_CLASS_PROPERTY",
   UPDATE_CLASS_TABS_ORDER = "UPDATE_CLASS_TABS_ORDER",
   UPDATE_SUBJECT = "UPDATE_SUBJECT",
 }
@@ -18,13 +19,21 @@ export type Mutations<S = State> = {
     state: S,
     { user, status }: { user: User; status: boolean },
   ): void;
+  [MutationTypes.UPDATE_LAST_LOADED_CLASS_URL](
+    state: S,
+    { user, url }: { user: User; url: string },
+  ): void;
   [MutationTypes.UPDATE_CLASSES_LIST](
     state: S,
     { user, classesList }: { user: User; classesList: ClassInfo[] },
   ): void;
-  [MutationTypes.UPDATE_CLASS_HEADTEACHER](
+  [MutationTypes.UPDATE_CLASS_PROPERTY](
     state: S,
-    { classInfo, headteacher }: { classInfo: ClassInfo; headteacher: string },
+    {
+      classInfo,
+      property,
+      value,
+    }: { classInfo: ClassInfo; property: string; value: string },
   ): void;
   [MutationTypes.UPDATE_CLASS_TABS_ORDER](
     state: S,
@@ -50,12 +59,15 @@ export const mutations: MutationTree<State> & Mutations = { // nosonar: index si
   [MutationTypes.UPDATE_USER_STATUS](state, { user, status }) {
     user.signedIn = status;
   },
+  [MutationTypes.UPDATE_LAST_LOADED_CLASS_URL](state, { user, url }) {
+    user.lastLoadedClassUrl = url;
+  },
   [MutationTypes.UPDATE_CLASSES_LIST](state, { user, classesList }) {
     user.classesList = { ...user.classesList, ...classesList };
     user.signedIn = true;
   },
-  [MutationTypes.UPDATE_CLASS_HEADTEACHER](state, { classInfo, headteacher }) {
-    classInfo.headTeacher = headteacher;
+  [MutationTypes.UPDATE_CLASS_PROPERTY](state, { classInfo, property, value }) {
+    (classInfo as any)[property] = value;
   },
   [MutationTypes.UPDATE_CLASS_TABS_ORDER](state, { user, tabs }) {
     user.settings.classTabsOrder = tabs;

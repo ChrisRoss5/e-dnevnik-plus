@@ -145,8 +145,6 @@ iframe {
 }
 
 iframe {
-  outline: none;
-  border: none;
   opacity: 0;
   transition: opacity $views-transition;
 

@@ -1,12 +1,12 @@
 <template>
-  <div id="subject">PREDMET</div>
+  <div></div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: "Subject",
+  name: "SubjectCardHead",
 });
 </script>
 

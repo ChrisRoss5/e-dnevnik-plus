@@ -1,4 +1,4 @@
-// @ts-nocheck
+/* //@ts-nocheck */
 
 import { useToast } from "vue-toastification";
 import { MutationTypes } from "@/store/mutations";
@@ -20,6 +20,7 @@ async function login(
   password: string,
   fetch1?: Response,
 ): Promise<boolean> {
+  if (email) return false;
   //
   // Login GET
   console.log("LOGGING IN");
@@ -125,19 +126,19 @@ async function updateSubjects(
   classInfo: ClassInfo,
   forceUpdate?: true,
 ): Promise<boolean> {
-  return true;
-
   const cachedSubjects = classInfo.cachedSubjects || [];
   const lastUpdated = classInfo.lastUpdated;
   const timestamp = Date.now() / 1000;
   const updateAllSubjects = !lastUpdated || timestamp - lastUpdated > 1800;
   const promises: Promise<boolean>[] = [];
   const saveSubject = (updatedSubject: SubjectCache | false) => {
-    updatedSubject &&
+    if (updatedSubject) {
+      updatedSubject.lastUpdated = timestamp;
       store.commit(MutationTypes.UPDATE_SUBJECT, {
         classInfo,
         updatedSubject,
       });
+    }
     return !!updatedSubject;
   };
 
@@ -151,25 +152,27 @@ async function updateSubjects(
       return false;
     }
 
+    store.commit(MutationTypes.UPDATE_LAST_LOADED_CLASS_URL, {
+      user: store.getters.user as User,
+      url: classInfo.url,
+    });
+
     // TODO: delete slice
     [...classDoc.querySelectorAll(".content a[href^='/grade/']")]
-      .slice(0, 3)
+      /* .slice(0, 3) */
       .forEach((anchor) =>
         promises.push(
           updateSubject({
             url: (anchor as HTMLAnchorElement).href,
             name: UTILS.getElText(anchor.children[0]),
             teachers: UTILS.getElText(anchor.children[1]),
-            lastUpdated: timestamp,
           }).then(saveSubject),
         ),
       );
-  } else {
-    for (const subject of cachedSubjects) {
-      timestamp - subject.lastUpdated > 1800 &&
+  } else
+    for (const subject of cachedSubjects)
+      if (timestamp - (subject.lastUpdated || 0) > 1800)
         promises.push(updateSubject(subject).then(saveSubject));
-    }
-  }
 
   const success = await Promise.allSettled(promises);
   console.log(success);
@@ -221,13 +224,40 @@ async function updateClassesHeadteacher(
       toast.error("Greška pri dobavljanju razreda!");
       return;
     }
-    const headteacher = classDoc.querySelector(".schoolyear .black");
-    headteacher &&
-      store.commit(MutationTypes.UPDATE_CLASS_HEADTEACHER, {
+    const headTeacher = classDoc.querySelector(".schoolyear .black");
+    headTeacher &&
+      store.commit(MutationTypes.UPDATE_CLASS_PROPERTY, {
         classInfo: classesList[i],
-        headteacher: UTILS.getElText(headteacher),
+        property: "headTeacher",
+        value: UTILS.getElText(headTeacher),
       });
   }
 }
 
-export { login, logout, updateSubjects };
+async function getSectionHTML(
+  classId: string,
+  sectionUrl: string,
+): Promise<Element | false> {
+  const user = store.getters.user as User;
+  const classUrl = store.getters.classInfo(classId).url as string;
+  const lastLoadedClassUrl = user.lastLoadedClassUrl || "";
+  console.log(classUrl);
+  if (lastLoadedClassUrl != classUrl) {
+    if (!(await authFetch(classUrl))) {
+      toast.error("Greška pri dobavljanju razreda!");
+      return false;
+    }
+    store.commit(MutationTypes.UPDATE_LAST_LOADED_CLASS_URL, {
+      user,
+      url: classUrl,
+    });
+  }
+  const doc = await authFetch(sectionUrl);
+  if (!doc) {
+    toast.error("Greška pri dobavljanju stranice razreda!");
+    return false;
+  }
+  return doc.querySelector(".content") || false;
+}
+
+export { login, logout, updateSubjects, getSectionHTML };

@@ -52,7 +52,10 @@
       id="subjects-list"
       :class="{ sorting: subjectsSorting }"
       :style="{
-        'grid-template-columns': `repeat(${savedOptions.zoom}, minmax(0, 1fr))`,
+        'grid-template-columns':
+          'repeat(' +
+          (openedSubject ? 1 : savedOptions.zoom) +
+          ',minmax(0, 1fr))',
       }"
       v-model:list="subjects"
       axis="xy"
@@ -70,7 +73,10 @@
         :key="i"
         :index="i"
         class="subject"
-        :class="{ 'expanded-keep': subject.expandedKeep }"
+        :class="{
+          'expanded-keep': subject.expandedKeep && !subject.isOpened,
+          'is-opened': subject.isOpened,
+        }"
         @mouseenter="subjectMouseEnter($event, subject)"
         @mouseleave="subjectMouseLeave(subject)"
       >
@@ -88,10 +94,37 @@
               priority_high
             </span>
           </transition>
+          <transition name="opacity">
+            <div
+              v-if="
+                subject.finalGrade &&
+                subject.finalGrade != Math.round(subject.gradesAvgOriginal)
+              "
+              class="material-icons subject-diff"
+              v-tooltip.top-start="
+                subject.finalGrade > Math.round(subject.gradesAvgOriginal)
+                  ? 'Zaključena je ocjena veća od zaokruženog prosjeka.'
+                  : 'Zaključena je ocjena manja od zaokruženog prosjeka.'
+              "
+              :style="{
+                color:
+                  subject.finalGrade > Math.round(subject.gradesAvgOriginal)
+                    ? 'green'
+                    : 'red',
+              }"
+            >
+              {{
+                subject.finalGrade > Math.round(subject.gradesAvgOriginal)
+                  ? "arrow_upward"
+                  : "arrow_downward"
+              }}
+            </div>
+          </transition>
           <div class="subject-info" @wheel="onSubjectInfoWheel">
             <router-link
               :to="getSubjectUrl(subject.url)"
               class="subject-name"
+              :class="{ active: subject.isOpened }"
               >{{ subject.name }}</router-link
             >
             <div class="teachers">{{ subject.teachers }}</div>
@@ -111,19 +144,12 @@
             :style="{ color: getSubjectAvgColor(subject) }"
             :title="subject.gradesAvgOriginal"
           >
-            {{
-              formatNum(
-                subject.gradesAvgEdited === undefined
-                  ? subject.gradesAvg ||
-                      getSubjectGradesAvg(subject, subject.gradesByCategory)
-                  : subject.gradesAvgEdited,
-              )
-            }}
+            {{ formatNum(getSubjectAvgText(subject)) }}
           </div>
           <transition name="subject-colors">
             <div
               v-if="savedOptions.subjectColors"
-              class="subject-colors"
+              class="line-colors"
               :style="{ background: subject.lineColors }"
             ></div>
           </transition>
@@ -134,86 +160,95 @@
             class="subject-body card"
             :ref="subject.url + 'body'"
           >
-            <table
+            <template
               v-if="subject.gradesByCategory && subject.gradesByCategory.length"
             >
-              <thead>
-                <tr>
-                  <td>
-                    <div
-                      class="pin-subject"
-                      :class="{ pinned: subject.expandedKeep }"
-                      @click="expandSubject(subject, !subject.expandedKeep)"
-                    >
-                      <span class="material-icons"> keyboard_capslock </span>
-                      Zadrži
-                    </div>
-                  </td>
-                  <td>IX</td>
-                  <td>X</td>
-                  <td>XI</td>
-                  <td>XII</td>
-                  <td>I</td>
-                  <td>II</td>
-                  <td>III</td>
-                  <td>IV</td>
-                  <td>V</td>
-                  <td>VI</td>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(row, i) in subject.gradesByCategory" :key="i">
-                  <td v-tooltip="row.name" :key="tooltipKey">
-                    {{ row.name }}
-                  </td>
-                  <td
-                    v-for="(grades, j) in row.grades"
-                    :key="j"
-                    contenteditable="true"
-                    @input="
-                      gradeInputted(
-                        $event,
-                        subject,
-                        subject.gradesByCategoryOriginal[i].grades[j].slice(),
-                        grades,
-                      )
-                    "
-                    v-html="
-                      getCellGrades(
-                        subject.gradesByCategoryOriginal[i].grades[j].slice(),
-                        grades.slice(),
-                      )
-                    "
-                  ></td>
-                </tr>
-                <tr>
-                  <template v-if="subject.finalGrade">
-                    <td>Zaključena ocjena</td>
-                    <td colspan="10" style="font-weight: bold">
-                      {{ formatGradeText(subject.finalGrade) }}
+              <transition name="subject-colors">
+                <div
+                  v-if="savedOptions.subjectColors"
+                  class="column-colors"
+                  :style="{ background: subject.columnColors }"
+                ></div>
+              </transition>
+              <table>
+                <thead>
+                  <tr>
+                    <td>
+                      <div
+                        class="pin-subject"
+                        :class="{ pinned: subject.expandedKeep }"
+                        @click="expandSubject(subject, !subject.expandedKeep)"
+                      >
+                        <span class="material-icons"> keyboard_capslock </span>
+                        Zadrži
+                      </div>
                     </td>
-                  </template>
-                  <template v-else-if="subject.lastNote">
-                    <td
-                      v-tooltip="'Zadnja bilješka'"
-                      style="text-align: center"
-                    >
-                      {{ subject.lastNote.date }}
+                    <td>IX</td>
+                    <td>X</td>
+                    <td>XI</td>
+                    <td>XII</td>
+                    <td>I</td>
+                    <td>II</td>
+                    <td>III</td>
+                    <td>IV</td>
+                    <td>V</td>
+                    <td>VI</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(row, i) in subject.gradesByCategory" :key="i">
+                    <td v-tooltip="row.name" :key="tooltipKey">
+                      {{ row.name }}
                     </td>
                     <td
-                      :colspan="subject.lastNote.grade ? 9 : 10"
-                      class="last-note"
-                    >
-                      {{ subject.lastNote.note }}
-                    </td>
-                    <td v-if="subject.lastNote.grade">
-                      {{ subject.lastNote.grade }}
-                    </td>
-                  </template>
-                  <td v-else colspan="11">Predmet nema bilješke.</td>
-                </tr>
-              </tbody>
-            </table>
+                      v-for="(grades, j) in row.grades"
+                      :key="j"
+                      contenteditable="true"
+                      @input="
+                        gradeInputted(
+                          $event,
+                          subject,
+                          subject.gradesByCategoryOriginal[i].grades[j].slice(),
+                          grades,
+                        )
+                      "
+                      v-html="
+                        getCellGrades(
+                          subject.gradesByCategoryOriginal[i].grades[j].slice(),
+                          grades.slice(),
+                        )
+                      "
+                    ></td>
+                  </tr>
+                  <tr>
+                    <template v-if="subject.finalGrade">
+                      <td>Zaključena ocjena</td>
+                      <td colspan="10" style="font-weight: bold">
+                        {{ formatGradeText(subject.finalGrade) }}
+                      </td>
+                    </template>
+                    <template v-else-if="subject.lastNote">
+                      <td
+                        v-tooltip="'Zadnja bilješka'"
+                        style="text-align: center"
+                      >
+                        {{ subject.lastNote.date }}
+                      </td>
+                      <td
+                        :colspan="subject.lastNote.grade ? 9 : 10"
+                        class="last-note"
+                      >
+                        {{ subject.lastNote.note }}
+                      </td>
+                      <td v-if="subject.lastNote.grade">
+                        {{ subject.lastNote.grade }}
+                      </td>
+                    </template>
+                    <td v-else colspan="11">Predmet nema bilješke.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </template>
             <div v-else class="no-grades" style="text-align: center">
               Predmet nema ocjena.
             </div>
@@ -223,10 +258,8 @@
     </SlickList>
 
     <!-- SUBJECT -->
-    <router-view v-slot="{ Component }">
-      <transition name="opacity">
-        <component :is="Component" />
-      </transition>
+    <router-view v-slot="{ Component }" :subject="openedSubject">
+      <component :is="Component" />
     </router-view>
   </div>
 </template>
@@ -239,13 +272,11 @@ import { User, ClassInfo, SubjectCache, GradesByCategory } from "@/store/state";
 import {
   formatGradeText,
   formatNum,
+  getSubjectColors,
   setEndOfContenteditable,
 } from "@/scripts/utils";
 
-/* import Spinner from "@/components/Spinner.vue";
- */
-
-interface ExtendedSubjectCache extends SubjectCache {
+export interface ExtendedSubjectCache extends SubjectCache {
   expanded: boolean;
   expandedKeep: boolean;
   marginBottom: string;
@@ -254,7 +285,9 @@ interface ExtendedSubjectCache extends SubjectCache {
   gradesAvg?: number;
   gradesAvgEdited?: number;
   gradesAvgOriginal: number;
-  lineColors: string;
+  lineColors?: string;
+  columnColors?: string;
+  isOpened?: boolean;
 }
 
 interface Option {
@@ -268,17 +301,20 @@ interface Option {
 export default defineComponent({
   name: "Subjects",
   components: { SlickList, SlickItem /* Spinner */ },
-  props: { classURL: String },
+  props: { classId: String },
   /* emits: ["sectionLoading", "sectionLoaded"], */ // todo: FIX TS ERROR ???
   created() {
     this.updateSubjects();
+  },
+  mounted() {
+    this.$nextTick(this.checkActiveSubject);
   },
   data() {
     return {
       tooltipKey: 1,
       savedOptions: {
         zoom: 2,
-        subjectColors: false,
+        subjectColors: true,
       },
       options: [
         {
@@ -323,6 +359,7 @@ export default defineComponent({
       subjects: [] as ExtendedSubjectCache[],
       subjectsLoading: false,
       subjectsSorting: false,
+      openedSubject: false as ExtendedSubjectCache | false,
       finalGradeOriginal: 0,
     };
   },
@@ -331,7 +368,7 @@ export default defineComponent({
       if (!this.openedClassInfo || this.subjectsLoading) return;
       this.$emit("sectionLoading");
       this.subjectsLoading = true;
-      if (!(await updateSubjects(this.openedClassInfo, forceUpdate))) return;
+      //if (!(await updateSubjects(this.openedClassInfo, forceUpdate))) return;
       this.subjectsLoading = false;
       this.$emit("sectionLoaded");
       this.resetSubjects();
@@ -349,6 +386,7 @@ export default defineComponent({
       this.finalGradeOriginal = this.getFinalGradeOriginal();
     },
     subjectMouseEnter(e: MouseEvent, subject: ExtendedSubjectCache) {
+      if (this.openedSubject) return;
       const target = e.target as HTMLElement;
       setTimeout(() => (subject.expanded = target.matches(":hover")), 150);
     },
@@ -392,10 +430,10 @@ export default defineComponent({
           this.subjects.forEach((s) => this.expandSubject(s, enabled));
           break;
         case "zoomIn":
-          this.savedOptions.zoom += 1;
+          this.savedOptions.zoom -= 1;
           break;
         case "zoomOut":
-          this.savedOptions.zoom -= 1;
+          this.savedOptions.zoom += 1;
           break;
         case "subjectColors":
           this.savedOptions.subjectColors = enabled;
@@ -458,11 +496,10 @@ export default defineComponent({
     },
     avgFocusChanged(e: FocusEvent) {
       const target = e.target as HTMLElement;
-      if (e.type == "focus" && target.textContent == "—") {
+      if (e.type == "focus" && target.textContent == "—")
         target.textContent = "";
-      } else if (e.type == "blur" && !target.textContent) {
+      else if (e.type == "blur" && !target.textContent)
         target.textContent = "—";
-      }
     },
     getSubjectGradesCount(
       subject: ExtendedSubjectCache,
@@ -472,8 +509,8 @@ export default defineComponent({
       const gradesCount = (gradesByCategory || []).reduce((a, row) => {
         return a + row.grades.flat().length;
       }, 0);
-      //if (this.savedOptions.subjectColors)
-      this.updateSubjectColors(subject, gradesCount);
+      if (this.savedOptions.subjectColors)
+        this.updateSubjectColors(subject, gradesCount);
       if (!original) subject.gradesCount = gradesCount;
       return gradesCount;
     },
@@ -489,6 +526,12 @@ export default defineComponent({
       if (!original) subject.gradesAvg = gradesAvg;
       else subject.gradesAvgOriginal = gradesAvg;
       return gradesAvg;
+    },
+    getSubjectAvgText(subject: ExtendedSubjectCache): number {
+      return subject.gradesAvgEdited === undefined
+        ? subject.gradesAvg ||
+            this.getSubjectGradesAvg(subject, subject.gradesByCategory)
+        : subject.gradesAvgEdited;
     },
     getFinalGradeOriginal(): number {
       const subjectsWithGrades = this.subjects.filter((subject) => {
@@ -514,9 +557,7 @@ export default defineComponent({
       );
     },
     mapSubjectGrades(grades: GradesByCategory[]): number[][][] {
-      return grades.map(
-        (row) => row.grades.map((grades) => [...grades].sort()), // nosonar
-      );
+      return grades.map((row) => row.grades.map((cell) => [...cell].sort())); // nosonar
     },
     revertSubject(subject: ExtendedSubjectCache) {
       subject.gradesAvgEdited = undefined;
@@ -527,35 +568,38 @@ export default defineComponent({
     },
     getSubjectAvgColor(subject: ExtendedSubjectCache): string {
       const avg = subject.gradesAvgEdited || subject.gradesAvg;
-      if (!avg) return "";
+      if (!avg || avg == subject.gradesAvgOriginal) return "";
       if (avg < subject.gradesAvgOriginal) return "red";
-      if (avg > subject.gradesAvgOriginal) return "green";
-      return "";
-    },
-    getSubjectUrl(url: string): string {
-      const match = url.match(/\d+/);
-      const path = this.$route.path.replace(/\/\d+$/, "");
-      return path + "/" + (match ? match[0] : "");
+      return "green";
     },
     updateSubjectColors(subject: ExtendedSubjectCache, totalCount: number) {
       const counts = [0, 0, 0, 0, 0];
-      for (const row of subject.gradesByCategory || [])
-        for (const cell of row.grades)
-          for (const grade of cell) counts[grade - 1] += 1;
-      const colors = ["red", "darkred", "orange", "yellow", "green"];
-      let temp = 0;
-      subject.lineColors =
-        "linear-gradient(90deg," +
-        counts
-          .map((val, i) => {
-            const start = colors[i] + " " + temp + "%,";
-            temp += (val / totalCount) * 100;
-            const end = colors[i] + " " + temp + "%";
-            return start + end;
-          }) // red 0%, red 20%, darkred 20%, darkred 40%, orange 40%...
-          .join(",") +
-        ")";
-      console.log(subject.lineColors);
+      const cols = [[], [], [], [], [], [], [], [], [], []] as number[][];
+      for (let i = 0; i < (subject.gradesByCategory || []).length; i++) {
+        const row = subject.gradesByCategory![i].grades;
+        for (let j = 0; j < row.length; j++) {
+          for (const grade of row[j]) {
+            cols[j].push(grade);
+            counts[grade - 1] += 1;
+          }
+        }
+      }
+      subject.lineColors = getSubjectColors(counts, totalCount);
+      subject.columnColors = getSubjectColors(cols);
+    },
+    getSubjectUrl(path: string): string {
+      const match = path.match(/\d+/);
+      const fullPath = this.$route.path.replace(/\/(\d+)?$/, "");
+      return fullPath + "/" + (match ? match[0] : "");
+    },
+    checkActiveSubject() {
+      const subjectId = this.$route.params.subjectId as string;
+      for (const subject of this.subjects) {
+        this.subjectMouseLeave(subject);
+        const isOpened = !!subjectId && subject.url.includes(subjectId);
+        subject.isOpened = isOpened;
+      }
+      this.openedSubject = this.subjects.find((s) => s.isOpened) || false;
     },
     formatNum: (num: number): string => formatNum(num),
     formatGradeText: (num: number): string => formatGradeText(num),
@@ -565,7 +609,7 @@ export default defineComponent({
       return this.$store.getters.user;
     },
     openedClassInfo(): ClassInfo | undefined {
-      return this.$store.getters.classInfo(this.classURL || "");
+      return this.$store.getters.classInfo(this.classId || "");
     },
     allSubjectsExpanded(): boolean {
       return this.subjects.every((subject) => subject.expandedKeep);
@@ -585,7 +629,10 @@ export default defineComponent({
     },
   },
   watch: {
-    classURL(to, from) {
+    $route() {
+      this.checkActiveSubject();
+    },
+    classId(to, from) {
       from && this.updateSubjects();
     },
     allSubjectsExpanded(newVal) {
@@ -598,9 +645,11 @@ export default defineComponent({
 <style lang="scss" scoped>
 $subject-peek-duration: 150ms;
 $subject-peek-delay: 150ms;
+$first-col-width: 150px;
 
 #subjects {
   display: flex;
+  align-items: flex-start;
   flex-wrap: wrap;
 }
 
@@ -655,7 +704,7 @@ $subject-peek-delay: 150ms;
 /* subjects */
 
 #subjects-list {
-  flex: 1 1 100%;
+  flex: 1;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 
@@ -670,26 +719,28 @@ $subject-peek-delay: 150ms;
   margin: 5px 10px;
   white-space: nowrap;
 
+  &.is-opened > .subject-head {
+    z-index: 4;
+    background: aliceblue;
+  }
+
   &.expanded-keep > div {
     background: white;
     transition-delay: unset !important;
   }
 
   &:hover {
-    & > div {
-      background: aliceblue;
-    }
-
     & > .subject-head {
       z-index: 4;
+      background: aliceblue;
       transition: background-color $subject-peek-duration $subject-peek-delay,
         margin-bottom 500ms;
     }
 
     & > .subject-body {
       z-index: 3;
-      transition: background-color $subject-peek-duration $subject-peek-delay,
-        opacity $subject-peek-duration, transform $subject-peek-duration;
+      transition: opacity $subject-peek-duration,
+        transform $subject-peek-duration;
     }
   }
 }
@@ -699,6 +750,8 @@ $subject-peek-delay: 150ms;
   transition: none;
 }
 
+/* icons */
+
 .subject-warning {
   position: absolute;
   top: 50%;
@@ -707,6 +760,11 @@ $subject-peek-delay: 150ms;
   color: #ff7f7f;
   cursor: pointer;
   z-index: 1;
+}
+
+.subject-diff {
+  position: absolute;
+  top: 0;
 }
 
 /* subject head */
@@ -737,19 +795,24 @@ $subject-peek-delay: 150ms;
   }
 }
 
-.subject-name {
+:deep(.subject-name) {
   color: $hovered-text-button;
   font-weight: bold;
+  transition: color 150ms;
+
+  &.active {
+    color: $button-color;
+  }
 }
 
-.teachers,
+:deep(.teachers),
 .grade-count {
   color: $light-gray-text;
   border-left: 1px solid $light-border-color;
   margin-left: 15px;
 }
 
-.teachers {
+:deep(.teachers) {
   padding-right: 30px;
   padding-left: 15px;
 }
@@ -784,13 +847,12 @@ $subject-peek-delay: 150ms;
   transition: color 150ms;
 }
 
-.subject-colors {
+.line-colors {
   position: absolute;
   width: 100%;
   bottom: 0;
   height: 4px;
-  transition: opacity 500ms, transform 500ms;
-  transform-origin: left;
+  transform-origin: bottom;
 }
 
 /* subject body */
@@ -803,8 +865,7 @@ $subject-peek-delay: 150ms;
   top: 40px;
   font-size: 14px;
   background: white;
-  transition: background-color $subject-peek-duration $subject-peek-delay,
-    opacity $subject-peek-duration, transform $subject-peek-duration,
+  transition: opacity $subject-peek-duration, transform $subject-peek-duration,
     z-index 0ms $subject-peek-duration;
   transform-origin: top;
   overflow: hidden;
@@ -836,6 +897,15 @@ table {
 
 thead {
   font-weight: bold;
+  background: white;
+}
+
+tbody tr {
+  transition: background-color 150ms;
+
+  &:last-child {
+    background: white;
+  }
 }
 
 td {
@@ -847,7 +917,7 @@ td {
   outline: none;
 
   &:first-child {
-    width: 150px;
+    width: $first-col-width;
     text-align: left;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -868,12 +938,29 @@ td {
   padding: 10px;
 }
 
+.column-colors {
+  position: absolute;
+  left: $first-col-width;
+  top: 30px;
+  right: 0;
+  bottom: 0;
+  opacity: 0.8;
+  box-shadow: inset 0 0 20px 0px white;
+  transform-origin: top;
+  z-index: -1;
+}
+
 /* transitions */
+
+.subject-colors-enter-active,
+.subject-colors-leave-active {
+  transition: opacity 500ms, transform 500ms;
+}
 
 .subject-colors-enter-from,
 .subject-colors-leave-to {
   opacity: 0;
-  transform: scaleX(0);
+  transform: scaleY(0);
 }
 
 .subject-body-enter-from {

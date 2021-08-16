@@ -1,5 +1,3 @@
-// vue.config.js
-
 /**
  * https://cli.vuejs.org/config/
  * @type {import('@vue/cli-service').ProjectOptions}

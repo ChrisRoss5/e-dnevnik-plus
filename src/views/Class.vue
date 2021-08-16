@@ -63,7 +63,7 @@
             }"
           >
             <span class="material-icons"> {{ tab.icon }} </span>
-            <div class="section-name">{{ tab.name }}</div>
+            <div v-if="!tabsIconOnly" class="section-name">{{ tab.name }}</div>
             <div class="selected-line tab-drag"></div>
           </router-link>
         </SlickItem>
@@ -83,7 +83,7 @@
     <div id="section">
       <router-view
         v-slot="{ Component }"
-        :classURL="classURL"
+        :classId="classId"
         @sectionLoading="showSpinner = true"
         @sectionLoaded="showSpinner = false"
       >
@@ -122,8 +122,9 @@ export default defineComponent({
   },
   data() {
     return {
-      classURL: "",
+      classId: "",
       showSpinner: false,
+      tabsIconOnly: false,
       tabs: [
         { name: "Ocjene", icon: "grade" },
         { name: "Bilješke", icon: "edit" },
@@ -186,7 +187,7 @@ export default defineComponent({
         classId = this.user.classesList[0].url.match(/\d+/)![0];
         this.$router.replace({ params: { classId } });
       }
-      this.classURL = classId;
+      this.classId = classId;
     },
     positionSelectedLine(transition?: true) {
       const line = this.$refs.selectedLine as HTMLElement;
@@ -204,6 +205,8 @@ export default defineComponent({
       if (user)
         (this.$refs.classInfo as HTMLElement).style.marginRight =
           user.offsetWidth + "px";
+      this.tabsIconOnly =
+        sections.offsetWidth - parseInt(sections.style.paddingRight) - 30 < 880;
     },
     mainScrolled() {
       const sections = this.getSectionsContainer();
@@ -211,7 +214,8 @@ export default defineComponent({
       const main = document.getElementById("main")!;
       const user = document.getElementById("user")!;
       const short = main.scrollTop > 30;
-      sections.style.paddingRight = short ? user.offsetWidth + 40 + "px" : "";
+      const paddingRight = user.offsetWidth + 40;
+      sections.style.paddingRight = short ? paddingRight + "px" : "";
       sections.className = short ? "sticky" : "";
       user.classList[short ? "add" : "remove"]("card");
     },
@@ -226,8 +230,8 @@ export default defineComponent({
       ).map((classInfo) => ({
         name: filterBy ? this[filterBy] : classInfo.year,
         alignRight: classInfo.name,
-        link: { params: { classId: classInfo.url.match(/\d+/)![0] } },
-        active: classInfo.url.includes(this.classURL),
+        link: "/razred/" + classInfo.url.match(/\d+/)![0] + "/ocjene",
+        active: classInfo.url.includes(this.classId),
       }));
     },
     getSectionPath(name: string): string {
@@ -383,6 +387,7 @@ body > div:last-child {
   padding: 25px 30px 0;
   transition: padding 150ms;
   z-index: 5;
+  will-change: padding;
 
   &.sticky {
     backdrop-filter: blur(5px);
@@ -397,6 +402,7 @@ body > div:last-child {
 #sections {
   position: relative;
   display: flex;
+  flex-wrap: wrap;
 }
 
 .section-item {
@@ -406,12 +412,6 @@ body > div:last-child {
 
 .section-name {
   padding-left: 5px;
-}
-
-@media screen and (max-width: 1200px) {
-  .section-name {
-    display: none;
-  }
 }
 
 a {
