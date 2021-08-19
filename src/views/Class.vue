@@ -28,7 +28,7 @@
         v-if="confirmedFinalGrade"
         id="confirmedFinalGrade"
         class="card"
-        v-tooltip="'Potvrđeni završni uspjeh (na svjedodžbi)'"
+        v-tooltip.bottom="'Potvrđeni završni uspjeh (na svjedodžbi)'"
       >
         {{ confirmedFinalGrade }}
       </div>
@@ -202,11 +202,10 @@ export default defineComponent({
       line.style.transform = "translateX(" + (offsetLeft + 30) + "px)";
       line.style.width = offsetWidth + "px";
       const user = document.getElementById("user");
-      if (user)
-        (this.$refs.classInfo as HTMLElement).style.marginRight =
-          user.offsetWidth + "px";
-      this.tabsIconOnly =
-        sections.offsetWidth - parseInt(sections.style.paddingRight) - 30 < 880;
+      const classInfo = this.$refs.classInfo as HTMLElement;
+      if (user) classInfo.style.marginRight = user.offsetWidth + "px";
+      const sectionsPadding = (parseInt(sections.style.paddingRight) || 0) - 30;
+      this.tabsIconOnly = sections.offsetWidth - sectionsPadding < 880;
     },
     mainScrolled() {
       const sections = this.getSectionsContainer();
@@ -308,8 +307,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-body > div:last-child {
-  z-index: 5 !important;
+body > .section-item {
+  z-index: 10 !important;
 
   .router-link-active .tab-drag {
     display: block !important;
@@ -386,11 +385,11 @@ body > div:last-child {
   top: 0;
   padding: 25px 30px 0;
   transition: padding 150ms;
-  z-index: 5;
+  z-index: 6;
   will-change: padding;
 
   &.sticky {
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(3px);
     background: #ffffff75;
   }
 

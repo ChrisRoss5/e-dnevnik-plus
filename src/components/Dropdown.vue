@@ -99,7 +99,7 @@ export default defineComponent({
   cursor: default;
   transform-origin: top left;
   transition: transform 250ms, opacity 250ms;
-  z-index: 6;
+  z-index: 99;
 
   & > a {
     display: flex;

@@ -16,7 +16,7 @@
         <div>Korisničko ime:</div>
         <div style="position: relative">
           <input
-            v-model="email"
+            v-model.trim="email"
             type="text"
             spellcheck="false"
             class="card"

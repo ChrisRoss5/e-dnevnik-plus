@@ -3,7 +3,7 @@ export async function addStyleTag(
   url: string,
   customStyle: string,
 ): Promise<void> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const docHead = doc.getElementsByTagName("head")[0];
     const link = doc.createElement("link");
     link.rel = "stylesheet";
@@ -43,12 +43,11 @@ export function parseNum(num: string): number {
 }
 
 export function formatNum(num: number | string): string {
-  let str = "";
   if (typeof num == "number") {
     if (isNaN(num)) return "—";
-    str = num.toFixed(2).toString();
+    num = num.toFixed(2).toString();
   }
-  return str.replace(".", ",");
+  return num.replace(".", ",");
 }
 
 export function formatGradeText(num: number): string {
@@ -63,7 +62,7 @@ export function formatGradeText(num: number): string {
 }
 
 export function capitalize(str: string): string {
-  return str[0].toUpperCase() + str.slice(1) || "";
+  return str[0].toUpperCase() + str.slice(1);
 }
 
 export function numberToColorHsl(i: number) {
