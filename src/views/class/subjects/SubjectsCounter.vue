@@ -5,7 +5,10 @@
         v-for="i in 5"
         :key="i"
         class="card"
-        v-tooltip.right="{content: gradeCounts[5 - i].subjects.join('<br>'), html: true}"
+        v-tooltip.right="{
+          content: gradeCounts[5 - i].subjects.join('<br>'),
+          html: true,
+        }"
       >
         <div>{{ gradeTitles[i - 1] }}:</div>
         <input
@@ -53,8 +56,6 @@ export default defineComponent({
         row.count += 1;
       }
     }
-    console.log(this.gradeCounts);
-
   },
   data() {
     return {

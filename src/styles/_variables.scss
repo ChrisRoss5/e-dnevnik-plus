@@ -11,12 +11,13 @@ $dark-text: #000000de;
 $light-gray-text: #78909c;
 
 $selected-option: #0000000a;
-$button-color: #1967D2;
+$button-color: #1967d2;
 $user-color: #476282;
 $plus-color: #2296da;
 $light-border-color: #c3cfdd;
 
-$card-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%);
+$card-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%),
+0 1px 3px 1px rgb(60 64 67 / 15%);
 
 $views-transition: 250ms;
 $subject-peek-duration: 150ms;
@@ -25,3 +26,32 @@ $subject-peek-delay: 150ms;
 $grade-green: #38b452;
 
 $navbar-max-width: 350px;
+
+$themes: (default: (white: white, hovered-text-button: $hovered-text-button),
+  dark: (white: #181A1B, hovered-text-button: #a4c7e3),
+);
+
+@mixin themed() {
+
+  @each $theme,
+  $map in $themes {
+    .theme--#{$theme} & {
+      $theme-map: () !global;
+
+      @each $key,
+      $submap in $map {
+        $value: map-get(map-get($themes, $theme), "#{$key}");
+        $theme-map: map-merge($theme-map,
+            ($key: $value,
+            )) !global;
+      }
+
+      @content;
+      $theme-map: null !global;
+    }
+  }
+}
+
+@function t($key) {
+  @return map-get($theme-map, $key);
+}

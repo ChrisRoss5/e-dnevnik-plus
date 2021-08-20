@@ -1,10 +1,14 @@
 export const state: State = {
-  settings: {},
+  settings: {
+    darkTheme: false,
+    appDisabled: false,
+    injectContent: false
+  },
   users: [],
 };
 
 export interface State {
-  settings: Settings;
+  settings: GlobalSettings;
   users: User[];
 }
 
@@ -20,6 +24,12 @@ export interface User {
 
 export interface Settings {
   classTabsOrder?: string[];
+}
+
+export interface GlobalSettings {
+  darkTheme: boolean;
+  appDisabled: boolean;
+  injectContent: boolean;
 }
 
 export interface ClassInfo {

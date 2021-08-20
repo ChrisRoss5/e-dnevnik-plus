@@ -6,7 +6,6 @@
 }
 
 .bottom-right {
-
   &.Vue-Toastification__container.bottom-right {
     margin-right: 15px;
   }
@@ -41,14 +40,20 @@ body {
 html {
   height: 100vh;
   overflow: hidden;
-  background: url("~@/assets/img/background.png");
-  background-size: cover;
-  background-repeat: no-repeat;
 }
 
 body {
   height: 100%;
+  background-image: url("~@/assets/img/background.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: $dark-text;
   font-size: 18px;
+
+  &.theme--dark {
+    background-image: url("~@/assets/img/background-dark.png");
+    color: white;
+  }
 }
 
 a {
@@ -109,6 +114,17 @@ iframe {
   background: transparent;
 }
 
+.title {
+  font-size: 55px;
+  line-height: 55px;
+  height: 55px;
+  font-weight: bold;
+
+  @include themed() {
+    color: t('hovered-text-button');
+  }
+}
+
 .abs-center {
   position: absolute;
   top: 50%;
@@ -164,7 +180,10 @@ iframe {
 
   &:hover {
     cursor: pointer;
-    color: $hovered-text-button !important;
+
+    @include themed() {
+      color: t('hovered-text-button');
+    }
   }
 }
 

@@ -13,7 +13,8 @@
       <a
         href="https://ednevnik.plus"
         target="_blank"
-        class="title text"
+        id="main-title"
+        class="text"
         style="--order: 1"
       >
         e-Dnevnik
@@ -260,7 +261,7 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   }
 }
 
-.title {
+#main-title {
   position: relative;
   font-size: 35px;
   line-height: 35px;

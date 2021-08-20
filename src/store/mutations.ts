@@ -1,4 +1,4 @@
-import { State, User, ClassInfo, SubjectCache } from "./state";
+import { State, User, ClassInfo, SubjectCache, GlobalSettings } from "./state";
 import { MutationTree } from "vuex";
 
 export enum MutationTypes {
@@ -10,6 +10,7 @@ export enum MutationTypes {
   UPDATE_CLASS_PROPERTY = "UPDATE_CLASS_PROPERTY",
   UPDATE_CLASS_TABS_ORDER = "UPDATE_CLASS_TABS_ORDER",
   UPDATE_SUBJECT = "UPDATE_SUBJECT",
+  UPDATE_GLOBAL_SETTING = "UPDATE_GLOBAL_SETTING",
 }
 
 export type Mutations<S = State> = {
@@ -45,6 +46,10 @@ export type Mutations<S = State> = {
       classInfo,
       updatedSubject,
     }: { classInfo: ClassInfo; updatedSubject: SubjectCache },
+  ): void;
+  [MutationTypes.UPDATE_GLOBAL_SETTING](
+    state: S,
+    { name, value }: { name: keyof GlobalSettings; value: boolean },
   ): void;
 };
 
@@ -85,5 +90,8 @@ export const mutations: MutationTree<State> & Mutations = { // nosonar: index si
       return;
     }
     classInfo.cachedSubjects[cachedSubjectIdx] = updatedSubject;
+  },
+  [MutationTypes.UPDATE_GLOBAL_SETTING](state, { name, value }) {
+    state.settings[name] = value;
   },
 };

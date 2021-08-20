@@ -18,7 +18,7 @@ export default defineComponent({
     Main,
     User,
   },
-  mounted() {
+  created() {
     this.$store.dispatch(ActionTypes.INIT, undefined).then((userSignedIn) => {
       const isLoginPage = window.location.hash == "#/";
       if (userSignedIn && isLoginPage) {
@@ -26,7 +26,10 @@ export default defineComponent({
       } else if (!userSignedIn && !isLoginPage) {
         this.$router.replace("/");
       }
+      this.enabledarkTheme(this.$store.state.settings.darkTheme);
     });
+  },
+  mounted() {
     window.onresize = () => this.$emitter.emit("window-resized");
     window.onclick = (e: MouseEvent) => {
       const path = ((e as any).path || (e.composedPath && e.composedPath())) as
@@ -35,9 +38,18 @@ export default defineComponent({
       path && this.$emitter.emit("window-clicked", path);
     };
   },
+  methods: {
+    enabledarkTheme(enabled: boolean) {
+      document.body.classList[enabled ? "add" : "remove"]("theme--dark");
+      document.body.classList[enabled ? "remove" : "add"]("theme--default");
+    },
+  },
   watch: {
     "$store.getters.user"(user) {
       if (!user) this.$router.replace("/");
+    },
+    "$store.state.settings.darkTheme"(enabled) {
+      this.enabledarkTheme(enabled);
     },
   },
 });
@@ -48,10 +60,4 @@ export default defineComponent({
   display: flex;
   height: 100%;
 }
-
-/* @media screen and (max-width: 1200px) {
-  #app {
-    zoom: 0.8;
-  }
-} */
 </style>

@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import { store } from "@/store";
 import Login from "../views/Login.vue";
 import Class from "../views/Class.vue";
+
 import Subjects from "../views/class/subjects/Subjects.vue";
 import Subject from "../views/class/subjects/Subject.vue";
 import Notes from "../views/class/Notes.vue";
@@ -10,7 +11,9 @@ import Absences from "../views/class/Absences.vue";
 import Conduct from "../views/class/Conduct.vue";
 import Schedule from "../views/class/Schedule.vue";
 import Stats from "../views/class/Stats.vue";
+
 import Websites from "../views/Websites.vue";
+import Settings from "../views/Settings.vue";
 
 /*
 No lazy loading:
@@ -76,6 +79,10 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/stranica/:website",
     component: Websites,
+  },
+  {
+    path: "/postavke",
+    component: Settings,
   },
   {
     path: "/:pathMatch(.*)",

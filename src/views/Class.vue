@@ -1,7 +1,7 @@
 <template>
   <div id="class-container">
     <div id="class-info" ref="classInfo">
-      <div id="class-title">
+      <div id="class-title" class="title">
         {{ openedClassInfo ? openedClassInfo.name : "" }}
       </div>
       <div>
@@ -14,8 +14,8 @@
           >
             arrow_drop_down
           </div>
-          <div class="title">{{ dropdown.title }}</div>
-          <div class="name">{{ dropdown.name }}</div>
+          <div class="dropdown-title">{{ dropdown.title }}</div>
+          <div class="dropdown-name">{{ dropdown.name }}</div>
           <Dropdown
             :visible="visibleDropdown == dropdown.id"
             :list="dropdown.list"
@@ -148,7 +148,7 @@ export default defineComponent({
     this.$nextTick(this.classChanged);
     this.$emitter.on("main-scrolled", this.mainScrolled);
     new (window as any).ResizeObserver(() =>
-      this.positionSelectedLine(),
+      this.positionSelectedLine(false),
     ).observe(this.getSectionsContainer());
   },
   beforeUnmount() {
@@ -189,7 +189,7 @@ export default defineComponent({
       }
       this.classId = classId;
     },
-    positionSelectedLine(transition?: true) {
+    positionSelectedLine(transition?: boolean) {
       const line = this.$refs.selectedLine as HTMLElement;
       const sections = this.getSectionsContainer();
       if (!sections) return;
@@ -331,12 +331,6 @@ body > .section-item {
 }
 
 #class-title {
-  display: inline-block;
-  font-size: 55px;
-  font-weight: bold;
-  color: #1b3a57;
-  line-height: 55px;
-  height: 55px;
   margin-right: 20px;
 }
 
@@ -353,23 +347,26 @@ body > .section-item {
   font-size: 30px;
   padding: 0 15px;
 
-  &:hover ~ .title,
-  &:hover ~ .name {
+  &:hover ~ .dropdown-title,
+  &:hover ~ .dropdown-name {
     cursor: pointer;
-    color: $hovered-text-button;
+
+    @include themed() {
+      color: t("hovered-text-button");
+    }
   }
 }
 
-.title,
-.name {
+.dropdown-title,
+.dropdown-name {
   transition: color 150ms;
 }
 
-.title {
+.dropdown-title {
   grid-area: 1 / 1 / 2 / 2;
 }
 
-.name {
+.dropdown-name {
   grid-area: 2 / 1 / 3 / 2;
 }
 

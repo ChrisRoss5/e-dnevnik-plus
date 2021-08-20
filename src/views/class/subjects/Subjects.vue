@@ -190,10 +190,10 @@ export default defineComponent({
       this.resetSubjects();
     },
     resetSubjects() {
-      const cached =
-        this.openedClassInfo && this.openedClassInfo.cachedSubjects;
+      let cached = this.openedClassInfo && this.openedClassInfo.cachedSubjects;
       if (!cached || !cached.length) return;
-      this.subjects = (cached as ExtendedSubjectCache[]).map((subject) => ({
+      cached = JSON.parse(JSON.stringify(cached)) as ExtendedSubjectCache[];
+      this.subjects = cached.map((subject: any) => ({
         ...subject,
         gradesByCategoryOriginal: JSON.parse(
           JSON.stringify(subject.gradesByCategory || []),
@@ -204,6 +204,8 @@ export default defineComponent({
           subject.gradesByCategory,
         ),
       }));
+      console.log("RESET");
+
       this.finalGradeOriginal = this.getFinalGradeOriginal();
     },
     subjectMouseEnter(e: MouseEvent, subject: ExtendedSubjectCache) {

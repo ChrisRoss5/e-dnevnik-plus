@@ -117,7 +117,10 @@ export default defineComponent({
 
     &:not(.active):hover {
       cursor: pointer;
-      color: $hovered-text-button !important;
+
+      @include themed() {
+        color: t('hovered-text-button') !important;
+      }
     }
   }
 }
