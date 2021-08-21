@@ -159,12 +159,15 @@ iframe {
   left: 20px;
   width: 44px;
   height: 44px;
-  background: white;
   border-radius: 8px;
   cursor: pointer;
 
   & > span {
     pointer-events: none;
+  }
+
+  @include themed() {
+    background: t("white-background");
   }
 }
 </style>

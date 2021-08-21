@@ -377,20 +377,29 @@ export default defineComponent({
 
   &.is-opened > .subject-head {
     z-index: 4;
-    background: aliceblue;
+
+    @include themed() {
+      background: t("alice-blue");
+    }
   }
 
   &.expanded-keep > div {
-    background: white;
     transition-delay: unset !important;
+
+    @include themed() {
+      background: t("white-background");
+    }
   }
 
   &:hover {
     & > .subject-head {
       z-index: 4;
-      background: aliceblue;
       transition: background-color $subject-peek-duration $subject-peek-delay,
         margin-bottom 500ms;
+
+      @include themed() {
+        background: t("alice-blue");
+      }
     }
 
     & > .subject-body {
@@ -402,32 +411,11 @@ export default defineComponent({
 }
 
 .dragged-subject > .subject-head {
-  background: white;
   transition: none;
-}
 
-/* subject head */
-
-:deep(.subject-name) {
-  color: $hovered-text-button;
-  font-weight: bold;
-  transition: color 150ms;
-
-  &.active {
-    color: $button-color;
+  @include themed() {
+    background: t("white-background");
   }
-}
-
-:deep(.teachers),
-:deep(.grade-count) {
-  color: $light-gray-text;
-  border-left: 1px solid $light-border-color;
-  margin-left: 15px;
-}
-
-:deep(.teachers) {
-  padding-right: 30px;
-  padding-left: 15px;
 }
 
 /* transitions */

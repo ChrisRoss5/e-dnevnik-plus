@@ -91,7 +91,7 @@
           <component :is="Component" />
         </transition>
       </router-view>
-      <Spinner :visible="showSpinner" :size="'125px'" background></Spinner>
+      <Spinner :visible="showSpinner" :size="'125px'" blur></Spinner>
     </div>
   </div>
 </template>
@@ -215,7 +215,7 @@ export default defineComponent({
       const short = main.scrollTop > 30;
       const paddingRight = user.offsetWidth + 40;
       sections.style.paddingRight = short ? paddingRight + "px" : "";
-      sections.className = short ? "sticky" : "";
+      sections.className = short ? "blur" : "";
       user.classList[short ? "add" : "remove"]("card");
     },
     closeDropdown(id: string) {
@@ -338,8 +338,11 @@ body > .section-item {
   position: relative;
   display: inline-grid;
   color: $light-gray-text;
-  border-left: 1px solid $light-border-color;
   padding: 2px 0 2px 20px;
+
+  @include themed() {
+    border-left: 1px solid t("light-border-color");
+  }
 }
 
 .expand-arrow {
@@ -352,7 +355,7 @@ body > .section-item {
     cursor: pointer;
 
     @include themed() {
-      color: t("hovered-text-button");
+      color: t("dark-blue");
     }
   }
 }
@@ -385,11 +388,6 @@ body > .section-item {
   z-index: 6;
   will-change: padding;
 
-  &.sticky {
-    backdrop-filter: blur(3px);
-    background: #ffffff75;
-  }
-
   &.no-transition a {
     transition: none !important;
   }
@@ -414,12 +412,15 @@ a {
   position: relative;
   display: flex;
   justify-content: center;
-  color: $user-color;
   padding: 0 15px 15px;
   transition: color 500ms;
 
-  &.router-link-active {
-    color: $button-color;
+  @include themed() {
+    color: t("gray-blue");
+
+    &.router-link-active {
+      color: t("strong-blue");
+    }
   }
 }
 
@@ -434,7 +435,10 @@ a {
 #line {
   width: 100%;
   height: 1.5px;
-  background: $light-border-color;
+
+  @include themed() {
+    background: t("light-border-color");
+  }
 }
 
 .selected-line {
@@ -443,7 +447,6 @@ a {
   left: 0;
   bottom: 0;
   border-radius: 3px 3px 0 0;
-  background: $button-color;
   transition-timing-function: cubic-bezier(0.35, 0, 0.25, 1);
   z-index: 1;
 
@@ -451,6 +454,10 @@ a {
     bottom: -1.5px;
     right: 0;
     display: none;
+  }
+
+  @include themed() {
+    background: t("strong-blue");
   }
 }
 

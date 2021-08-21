@@ -220,7 +220,10 @@ export default defineComponent({
     left: -45px;
     height: 100%;
     width: 30px;
-    background: linear-gradient(to right, transparent, white);
+
+    @include themed() {
+      background: linear-gradient(to right, transparent, t("white-background"));
+    }
   }
 }
 
@@ -229,13 +232,16 @@ export default defineComponent({
   height: 100%;
   line-height: 44px;
   width: 75px;
-  border-left: 1px solid $light-border-color;
   border-radius: 8px;
   text-align: center;
   box-shadow: 0 0 5px #cacccc;
   clip-path: inset(1px 1px 1px -5px);
   outline: none;
   transition: color 150ms;
+
+  @include themed() {
+    border-left: 1px solid t("light-border-color");
+  }
 }
 
 .line-colors {

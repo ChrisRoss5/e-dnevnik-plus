@@ -4,7 +4,7 @@
       v-if="visible"
       id="spinner"
       class="flex-center"
-      :class="{ background }"
+      :class="{ blur }"
     >
       <img
         src="@/assets/img/spinner.svg"
@@ -22,7 +22,7 @@ export default defineComponent({
   name: "Spinner",
   props: {
     visible: Boolean,
-    background: Boolean,
+    blur: Boolean,
     size: {
       type: String,
       default: "200px",
@@ -42,10 +42,5 @@ export default defineComponent({
   will-change: opacity, transform;
   transition: background-color 500ms, backdrop-filter 500ms;
   z-index: 2;
-
-  &.background {
-    background: #ffffff73;
-    backdrop-filter: blur(3px);
-  }
 }
 </style>

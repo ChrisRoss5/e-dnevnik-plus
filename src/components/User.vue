@@ -84,7 +84,6 @@ export default defineComponent({
   right: 0;
   padding: 0 40px 0 20px;
   border-radius: 8px 0 0 8px;
-  color: $user-color;
   user-select: none;
   transition: box-shadow 150ms, color 150ms;
   z-index: 99;
@@ -95,8 +94,12 @@ export default defineComponent({
     padding-left: 20px;
   }
 
-  &.card {
-    background: #fff;
+  @include themed() {
+    color: t("gray-blue");
+
+    &.card {
+      background: t("white-background");
+    }
   }
 }
 </style>

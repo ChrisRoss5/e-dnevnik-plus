@@ -1,7 +1,7 @@
 $bg-disabled-color: rgba(0, 0, 0, .26);
-$bg-enabled-color: rgba($button-color, .5);
+$bg-enabled-color: rgba(#1967d2, .5);
 $lever-disabled-color: #fff;
-$lever-enabled-color: $button-color;
+$lever-enabled-color: #1967d2;
 
 .switch {
   display: inline-block;

@@ -1,6 +1,6 @@
 export const state: State = {
   settings: {
-    darkTheme: false,
+    darkTheme: true,
     appDisabled: false,
     injectContent: false
   },

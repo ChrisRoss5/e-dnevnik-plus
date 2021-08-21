@@ -191,12 +191,15 @@ $first-col-width: 150px;
   padding-top: 10px;
   top: 40px;
   font-size: 14px;
-  background: white;
   transition: opacity $subject-peek-duration, transform $subject-peek-duration,
     z-index 0ms $subject-peek-duration;
   transform-origin: top;
   overflow: hidden;
   z-index: 1;
+
+  @include themed() {
+    background: t("white-background");
+  }
 }
 
 .pin-subject {
@@ -207,7 +210,9 @@ $first-col-width: 150px;
   transition: color 150ms;
 
   &.pinned {
-    color: $button-color;
+    @include themed() {
+      color: t("strong-blue");
+    }
   }
 
   span {
@@ -224,19 +229,23 @@ table {
 
 thead {
   font-weight: bold;
-  background: white;
+
+  @include themed() {
+    background: t("white-background");
+  }
 }
 
 tbody tr {
   transition: background-color 150ms;
 
   &:last-child {
-    background: white;
+    @include themed() {
+      background: t("white-background");
+    }
   }
 }
 
 td {
-  border: 1px solid #eeeeee;
   border-radius: 4px;
   text-align: center;
   padding: 3px 5px;
@@ -248,6 +257,16 @@ td {
     text-align: left;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+
+  @include themed() {
+    border: 1px solid t("light-light-border-color");
+  }
+}
+
+.column-colors ~ [contenteditable] {
+  @include themed() {
+    color: t("body-color");
   }
 }
 
@@ -272,7 +291,6 @@ td {
   right: 0;
   bottom: 0;
   opacity: 0.8;
-  box-shadow: inset 0 0 20px 0px white;
   transform-origin: top;
   z-index: -1;
 }
@@ -283,6 +301,7 @@ td {
   opacity: 0;
   transform: scaleY(0.5) translateY(-10px);
 }
+
 .subject-body-leave-to {
   opacity: 0;
   transform: scale(0.97);

@@ -93,7 +93,6 @@ export default defineComponent({
   padding: 8px 0;
   overflow: hidden;
   white-space: nowrap;
-  background: #fff;
   border-radius: 0 8px 8px 8px;
   box-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 2px 6px 2px rgb(60 64 67 / 15%);
   cursor: default;
@@ -119,9 +118,13 @@ export default defineComponent({
       cursor: pointer;
 
       @include themed() {
-        color: t('hovered-text-button') !important;
+        color: t("dark-blue") !important;
       }
     }
+  }
+
+  @include themed() {
+    background: t("white-background");
   }
 }
 

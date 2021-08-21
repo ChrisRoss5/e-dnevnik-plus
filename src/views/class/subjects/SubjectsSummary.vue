@@ -85,14 +85,21 @@ export default defineComponent({
   font-size: 24px;
   padding: 0 30px;
   margin: 0 10px 30px;
-  color: $main-color;
-  background: linear-gradient(
-      45deg,
-      transparent 55%,
-      #e3eaf1 65%,
-      aliceblue calc(65% + 10px)
-    ),
-    linear-gradient(-45deg, white 65%, #e3eaf1 calc(75% - 10px), aliceblue 75%);
+
+  @include themed() {
+    background: linear-gradient(
+        45deg,
+        transparent 55%,
+        t("alice-blue-light") 65%,
+        t("alice-blue") calc(65% + 10px)
+      ),
+      linear-gradient(
+        -45deg,
+        t("white-background") 65%,
+        t("alice-blue-light") calc(75% - 10px),
+        t("alice-blue") 75%
+      );
+  }
 }
 
 #final-grade-original {
@@ -100,14 +107,16 @@ export default defineComponent({
 }
 
 #final-grade {
-  border-left: 1px solid $light-border-color;
   padding-left: 10px;
   margin-left: 10px;
   transition: color 150ms;
+
+  @include themed() {
+    border-left: 1px solid t("light-border-color");
+  }
 }
 
 #options {
-  color: $user-color;
   margin-left: auto;
 
   & > span {
@@ -120,6 +129,10 @@ export default defineComponent({
       cursor: pointer;
       background: #dfebf5;
     }
+  }
+
+  @include themed() {
+    color: t("gray-blue");
   }
 }
 

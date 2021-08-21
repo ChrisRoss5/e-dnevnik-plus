@@ -1,49 +1,64 @@
-$main-color: #051e34;
-
+$body-color: #000000de;
 $navbar-color: #fffc;
 $navbar-selected: #47628233;
 $navbar-selected-text-color: #669df6;
-
-$hovered-button: #1a73e8;
-$hovered-text-button: #1b3a57;
-
-$dark-text: #000000de;
 $light-gray-text: #78909c;
-
-$selected-option: #0000000a;
-$button-color: #1967d2;
-$user-color: #476282;
 $plus-color: #2296da;
-$light-border-color: #c3cfdd;
-
-$card-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%),
-0 1px 3px 1px rgb(60 64 67 / 15%);
 
 $views-transition: 250ms;
 $subject-peek-duration: 150ms;
 $subject-peek-delay: 150ms;
 
-$grade-green: #38b452;
-
 $navbar-max-width: 350px;
 
-$themes: (default: (white: white, hovered-text-button: $hovered-text-button),
-  dark: (white: #181A1B, hovered-text-button: #a4c7e3),
+$themes: (
+  default: (
+    white-background: #fff,
+    alice-blue: aliceblue,
+    alice-blue-light: #e3eaf1,
+    strong-blue: #1967d2,
+    dark-blue: #1b3a57,
+    dark-dark-blue: #051e34,
+    gray-blue: #476282,
+    light-border-color: #c3cfdd,
+    light-light-border-color: #eeeeee,
+    blur: #ffffff73,
+    card-shadow: (
+      0 1px 2px 0 rgb(60 64 67 / 30%),
+      0 1px 3px 1px rgb(60 64 67 / 15%),
+    ),
+  ),
+  dark: (
+    white-background: #181a1b,
+    alice-blue: #1b1b1b,
+    alice-blue-light: #2e2e2e,
+    strong-blue: #53a2eb,
+    dark-blue: #a4c7e3,
+    dark-dark-blue: #031322,
+    gray-blue: #90abc2,
+    light-border-color: #2f4053,
+    light-light-border-color: rgb(44 44 44 / 55%),
+    blur: #00000073,
+    card-shadow: (
+      rgb(43 46 48) 0px 1px 2px 0px,
+      rgb(43 46 48) 0px 1px 3px 1px,
+    ),
+  ),
 );
 
 @mixin themed() {
-
-  @each $theme,
-  $map in $themes {
+  @each $theme, $map in $themes {
     .theme--#{$theme} & {
       $theme-map: () !global;
 
-      @each $key,
-      $submap in $map {
+      @each $key, $submap in $map {
         $value: map-get(map-get($themes, $theme), "#{$key}");
-        $theme-map: map-merge($theme-map,
-            ($key: $value,
-            )) !global;
+        $theme-map: map-merge(
+          $theme-map,
+          (
+            $key: $value,
+          )
+        ) !global;
       }
 
       @content;

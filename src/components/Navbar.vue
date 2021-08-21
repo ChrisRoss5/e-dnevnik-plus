@@ -165,9 +165,7 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 
 #navbar {
   position: relative;
-  color: white;
   background-attachment: fixed;
-  background-color: $main-color;
   background-image: url("~@/assets/img/nav-background.png");
   background-size: contain;
   background-repeat: no-repeat;
@@ -181,6 +179,10 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 
   &.shadow {
     box-shadow: 0 0 10px black;
+  }
+
+  @include themed() {
+    background-color: t("dark-dark-blue");
   }
 }
 
@@ -238,8 +240,11 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   width: 100%;
   padding: 20px 0;
   text-align: center;
-  color: $user-color;
   box-shadow: $nav-shadow-bottom;
+
+  @include themed() {
+    color: t("gray-blue");
+  }
 }
 
 :deep(.text) {
@@ -267,10 +272,6 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   line-height: 35px;
   color: white;
   text-shadow: 0 0 20px $plus-color;
-
-  &:hover {
-    color: #fffc;
-  }
 
   &::after {
     content: "Plus";
@@ -304,9 +305,12 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   margin-left: auto;
   font-size: 50px;
   width: 35px;
-  color: $user-color;
   box-shadow: none !important;
   transition: color 150ms, transform $collapse-duration;
+
+  @include themed() {
+    color: t("gray-blue");
+  }
 }
 
 .nav-collapsed {

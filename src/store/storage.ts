@@ -1,5 +1,9 @@
 const state = {
-  settings: {},
+  settings: {
+    darkTheme: true,
+    appDisabled: false,
+    injectContent: false
+  },
   users: [
     {
       email: "kristijan.rosandicq@skole.hr",

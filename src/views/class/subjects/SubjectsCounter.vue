@@ -1,5 +1,5 @@
 <template>
-  <div id="counter" @click.self="$emit('close')">
+  <div id="counter" class="blur" @click.self="$emit('close')">
     <div id="container" class="card">
       <div
         v-for="i in 5"
@@ -93,15 +93,12 @@ export default defineComponent({
   left: 0;
   right: 0;
   bottom: 40px;
-  background: #ffffff73;
-  backdrop-filter: blur(3px);
   font-size: 24px;
   z-index: 5;
 }
 
 #container {
   width: fit-content;
-  background: aliceblue;
   margin: 100px auto;
 
   .card {
@@ -113,6 +110,10 @@ export default defineComponent({
       margin-left: 20px;
       flex: 1;
     }
+  }
+
+  @include themed() {
+    background: t("alice-blue");
   }
 }
 

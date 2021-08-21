@@ -57,6 +57,11 @@ export default defineComponent({
             transition: none !important;
           }
       `,
+
+      /*     background: #0d0d0d !important;
+    color: white;
+    border-color: #2d2d2d !important;
+    box-shadow: none !important; */
       );
       doc.body.innerHTML = `<div class="content">
 					<div class="legend-text">Klik na ocjenu/zvjezdicu za vise informacija</div>
