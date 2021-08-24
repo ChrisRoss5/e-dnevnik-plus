@@ -2,7 +2,8 @@ export const state: State = {
   settings: {
     darkTheme: true,
     appDisabled: false,
-    injectContent: false
+    injectContent: false,
+    navbarCollapsed: false,
   },
   users: [],
 };
@@ -30,6 +31,7 @@ export interface GlobalSettings {
   darkTheme: boolean;
   appDisabled: boolean;
   injectContent: boolean;
+  navbarCollapsed: boolean;
 }
 
 export interface ClassInfo {

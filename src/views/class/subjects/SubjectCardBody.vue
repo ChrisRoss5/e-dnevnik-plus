@@ -1,9 +1,9 @@
 <template>
   <transition name="subject-body">
     <div
-      v-show="(subject.expanded || subject.expandedKeep) && !openedSubject"
+      v-show="(subject.expanded || subject.expandedKeep) && !isOpenedSubject"
       class="subject-body card"
-      :ref="subject.url + 'body'"
+      ref="subjectBody"
     >
       <template
         v-if="subject.gradesByCategory && subject.gradesByCategory.length"
@@ -42,7 +42,7 @@
           </thead>
           <tbody>
             <tr v-for="(row, i) in subject.gradesByCategory" :key="i">
-              <td v-tooltip="row.name" :key="tooltipKey">
+              <td v-tooltip="row.name">
                 {{ row.name }}
               </td>
               <td
@@ -110,21 +110,20 @@ export default defineComponent({
       type: Object as PropType<ExtendedSubjectCache>,
       required: true,
     },
-    savedOptions: Object,
-    openedSubject: Boolean,
+    savedOptions: Object as PropType<Record<string, any>>,
+    isOpenedSubject: Boolean,
     expandTables: Number,
-    tooltipKey: Number,
+    updateTablesMargin: Number,
   },
   methods: {
     expandSubject(
       subject: ExtendedSubjectCache,
       expand: boolean,
-      expandWhileSubjectIsOpen?: boolean,
+      doNotSave?: boolean,
     ) {
-      if (expandWhileSubjectIsOpen === undefined) subject.expandedKeep = expand;
+      if (!doNotSave) subject.expandedKeep = expand;
       this.$nextTick(() => {
-        const refId = subject.url + "body";
-        const subjectBody = this.$refs[refId] as HTMLElement;
+        const subjectBody = this.$refs["subjectBody"] as HTMLElement;
         const margin = expand ? subjectBody.offsetHeight + "px" : "0px";
         subject.marginBottom = margin;
       });
@@ -159,14 +158,15 @@ export default defineComponent({
       return [
         ...originalGrades.map(
           (grade) =>
-            "<span style='color: gray; text-decoration: line-through' " +
+            "<span class='line-through' " +
             ("contenteditable='false'>" + grade + "</span>"),
         ),
         ...sharedGrades,
-        ...grades.map(
-          (grade) => "<span style='color: red'>" + grade + "</span>",
-        ),
+        ...grades.map((grade) => "<span class='red'>" + grade + "</span>"),
       ].join(", ");
+    },
+    updateTableMargin() {
+      this.expandSubject(this.subject, this.subject.expandedKeep, true);
     },
     formatGradeText: (num: number): string => formatGradeText(num),
   },
@@ -174,12 +174,47 @@ export default defineComponent({
     expandTables(enabled) {
       this.expandSubject(this.subject, !!enabled); // true if positive num
     },
-    openedSubject(isSomeSubjectOpened) {
+    isOpenedSubject(isSomeSubjectOpened) {
       this.expandSubject(this.subject, !isSomeSubjectOpened, true);
+    },
+    updateTablesMargin() {
+      this.updateTableMargin();
+    },
+    "subject.gradesByCategory": {
+      handler() {
+        this.updateTableMargin();
+      },
+      deep: true,
     },
   },
 });
 </script>
+
+<style lang="scss">
+.red {
+  color: red !important;
+}
+
+.line-through {
+  color: gray !important;
+  text-decoration: line-through;
+}
+
+.theme--dark .column-colors + table {
+  [contenteditable] {
+    color: white;
+    text-shadow: 0 0 3px black;
+  }
+
+  .red {
+    text-shadow: 0 0 3px white !important;
+  }
+
+  .line-through {
+    text-shadow: 0 0 1px white !important;
+  }
+}
+</style>
 
 <style lang="scss" scoped>
 $first-col-width: 150px;
@@ -251,6 +286,7 @@ td {
   padding: 3px 5px;
   overflow: hidden;
   outline: none;
+  transition: color 150ms, text-shadow 150ms;
 
   &:first-child {
     width: $first-col-width;
@@ -261,12 +297,6 @@ td {
 
   @include themed() {
     border: 1px solid t("light-light-border-color");
-  }
-}
-
-.column-colors ~ [contenteditable] {
-  @include themed() {
-    color: t("body-color");
   }
 }
 
@@ -290,7 +320,7 @@ td {
   top: 30px;
   right: 0;
   bottom: 0;
-  opacity: 0.8;
+  opacity: 0.6;
   transform-origin: top;
   z-index: -1;
 }

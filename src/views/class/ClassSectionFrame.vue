@@ -1,48 +1,38 @@
 <template>
-  <div id="subject" class="card">
-    <div id="subject-info">
-      <div class="subject-name">{{ subject.name }}</div>
-      <div class="teachers">{{ subject.teachers }}</div>
-      <router-link :to="$route.path.replace(/\/\d+$/, '')" id="close">
-        <div class="teachers">IZVORNI PRIKAZ</div>
-        <span class="material-icons"> close </span>
-      </router-link>
-    </div>
+  <div id="container" class="card">
     <iframe src="about:blank" ref="iframe" :class="{ loading }"></iframe>
-    <Spinner :visible="loading" :size="'50px'"></Spinner>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
-import Spinner from "@/components/Spinner.vue";
-import { getSectionHTML } from "@/scripts/scrapers";
-import { ExtendedSubjectCache } from "@/views/class/subjects/Subjects.vue";
+import { defineComponent } from "vue";
 import { addStyleTag } from "@/scripts/utils";
+import { getSectionHTML } from "@/scripts/scrapers";
 
 export default defineComponent({
-  name: "Subject",
-  components: { Spinner },
-  props: {
-    subject: {
-      type: Object as PropType<ExtendedSubjectCache>,
-    },
-  },
+  name: "ClassSectionFrame",
   mounted() {
     this.$nextTick(this.updateContent);
   },
   data() {
     return {
       loading: true,
+      urls: {
+        biljeske: "https://ocjene.skole.hr/notes",
+        izostanci: "https://ocjene.skole.hr/absent",
+        vladanja: "https://ocjene.skole.hr/behavior",
+      },
     };
   },
   methods: {
     async updateContent() {
-      this.loading = true;
-      const { classId, subjectId } = this.$route.params;
-      if (!subjectId) return;
       const iframe = this.$refs.iframe as HTMLIFrameElement;
       const doc = iframe.contentWindow!.document;
+      const classId = this.$route.params.classId as string;
+      const pathName = this.$route.path.match(/[^/]+$/)![0];
+      const url: string = (this.urls as any)[pathName];
+      this.loading = false;
+      this.$emit("sectionLoading");
       await addStyleTag(doc, this.$store.state.settings.darkTheme);
 
       doc.body.innerHTML = `<div class="content">
@@ -432,55 +422,28 @@ Nije usvojena gramatička norma na razini učeničke dobi (gramatička obilježj
 
 		</div>`;
 
-      const url = "https://ocjene.skole.hr/grade/" + subjectId;
-      const sectionEl = await getSectionHTML(classId as string, url);
+      const sectionEl = await getSectionHTML(classId, url);
       doc.body.innerHTML = "";
-      doc.body.append(sectionEl || "Greška pri učitavanju predmeta.");
+      doc.body.append(sectionEl || "Greška pri učitavanju.");
       if (!sectionEl) doc.body.className = "loading-error-plus";
       const contentEl = doc.body.firstElementChild;
       if (contentEl) iframe.style.height = contentEl.scrollHeight + "px";
+      this.$emit("sectionLoaded");
       this.loading = false;
-    },
-  },
-  watch: {
-    $route() {
-      this.updateContent();
     },
   },
 });
 </script>
 
 <style lang="scss" scoped>
-#subject {
-  position: relative;
-  flex-shrink: 0;
+#container {
+  margin: 0 auto;
   width: 954px;
   min-width: 50%;
   padding: 10px;
-  margin: 5px 10px;
-}
-
-#subject-info {
-  display: flex;
-  margin: 0 20px 10px;
-}
-
-#close {
-  flex: 1 0;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  text-align: right;
-
-  span {
-    @include themed() {
-      color: t("gray-blue");
-    }
-  }
 }
 
 iframe {
-  min-height: 250px;
   transition: opacity 150ms;
 
   &.loading {

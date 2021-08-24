@@ -2,7 +2,7 @@
   <router-link
     v-for="({ name, icon }, i) in list"
     :key="i"
-    :to="rootLink + name.replaceAll(' ', '-').toLowerCase()"
+    :to="rootLink + convertToPath(name)"
     :class="{
       'router-link-active':
         $route.href && $route.href.includes('razred') && name == 'Razred',
@@ -17,6 +17,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
+import { convertToPath } from "@/scripts/utils";
 
 // TODO: fix v-tooltip empty divs in <body>
 
@@ -40,6 +41,9 @@ export default defineComponent({
       required: true,
     },
   },
+  methods: {
+    convertToPath: (name: string) => convertToPath(name)
+  }
 });
 </script>
 

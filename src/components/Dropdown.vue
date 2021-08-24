@@ -1,5 +1,7 @@
 <template>
-  <transition :name="customClass">
+  <transition
+    :name="customClass == 'user-dropdown' ? 'user-dropdown' : 'dropdown'"
+  >
     <div v-if="visible" class="dropdown" :class="customClass" ref="dropdown">
       <component
         v-for="(row, i) in list"
@@ -55,7 +57,6 @@ export default defineComponent({
     customClass: {
       type: String,
       required: false,
-      default: "dropdown",
     },
   },
   emits: ["close"],
@@ -102,22 +103,23 @@ export default defineComponent({
 
   & > a {
     display: flex;
-    color: $light-gray-text;
+    align-items: center;
     padding: 8px 20px;
     transition: color 150ms;
+    cursor: pointer;
 
     & > span {
       padding-right: 20px;
     }
 
     &.active {
-      color: $navbar-selected-text-color;
+      color: $navbar-selected-text-color !important;
     }
 
-    &:not(.active):hover {
-      cursor: pointer;
+    @include themed() {
+      color: t("light-gray");
 
-      @include themed() {
+      &:not(.active):hover {
         color: t("dark-blue") !important;
       }
     }
@@ -134,7 +136,17 @@ export default defineComponent({
   font-weight: bold;
 }
 
+/* props.customClass */
+
 .right {
+  border-radius: 8px 0 8px 8px;
+  transform-origin: top right;
+  right: 0;
+  left: auto;
+  font-size: $body-font-size;
+}
+
+.user-dropdown {
   top: calc(100% + 8px);
   left: 0;
   right: 0;
@@ -143,8 +155,8 @@ export default defineComponent({
 
 /* transitions */
 
-.right-enter-from,
-.right-leave-to {
+.user-dropdown-enter-from,
+.user-dropdown-leave-to {
   transform: translateX(100%);
   opacity: 0;
 }

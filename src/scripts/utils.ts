@@ -1,18 +1,38 @@
 export async function addStyleTag(
   doc: Document,
-  url: string,
-  customStyle: string,
+  darkTheme: boolean,
 ): Promise<void> {
   return new Promise((resolve) => {
     const docHead = doc.getElementsByTagName("head")[0];
     const link = doc.createElement("link");
     link.rel = "stylesheet";
     link.type = "text/css";
-    link.href = url;
+    link.href = "https://ocjene.skole.hr/build/layout.c996b0.css";
     link.onload = () => {
       const newStyle = document.createElement("style");
       newStyle.setAttribute("type", "text/css");
-      newStyle.textContent = customStyle;
+      newStyle.textContent =
+        /* css */ `
+          body {
+            background: white !important;
+          }
+          * {
+            transition: none !important;
+          }
+          .loading-error-plus {
+            display: grid;
+            place-content: center;
+          }
+      ` +
+        (darkTheme
+          ? /* css */ `
+          body, * {
+            background: #181a1b !important;
+            color: white;
+            border-color: #2d2d2d !important;
+            box-shadow: none !important;
+          }`
+          : "");
       docHead.appendChild(newStyle);
       resolve();
     };
@@ -26,6 +46,16 @@ export function parseDoc(html: string, baseUri: string): Document {
   base.href = baseUri;
   doc.head.appendChild(base);
   return doc;
+}
+
+export function convertToPath(name: string): string {
+  return name
+    .toLowerCase()
+    .replaceAll(" ", "-")
+    .replaceAll("ž", "z")
+    .replaceAll("đ", "d")
+    .replaceAll("š", "s")
+    .replaceAll(/ć|č/g, "c");
 }
 
 export function formEncodedBody(obj: Record<string, string>): string {

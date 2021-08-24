@@ -18,7 +18,20 @@
           class="card"
         />
       </div>
-      <div id="finalGrade">{{ finalGrade }}</div>
+      <div id="finalGrade">
+        <span
+          class="material-icons"
+          v-tooltip.top-start="{
+            content:
+              'Prosjek svih zaključnih ocjena (završni uspjeh).<br>' +
+              'Ako ocjena iz predmeta nije zaključena, zaokružuje se prosjek.' +
+              '<br>Ako predmet nema ocjena, ne uračunava se u ovaj prosjek.',
+            html: true,
+          }"
+        >
+          info </span
+        >{{ finalGrade }}
+      </div>
     </div>
   </div>
 </template>
@@ -92,7 +105,7 @@ export default defineComponent({
   top: 110px;
   left: 0;
   right: 0;
-  bottom: 40px;
+  bottom: 0;
   font-size: 24px;
   z-index: 5;
 }
@@ -125,6 +138,8 @@ input {
 
 #finalGrade {
   padding: 10px 25px;
-  text-align: right;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 </style>

@@ -2,7 +2,8 @@ const state = {
   settings: {
     darkTheme: true,
     appDisabled: false,
-    injectContent: false
+    injectContent: false,
+    navbarCollapsed: false
   },
   users: [
     {

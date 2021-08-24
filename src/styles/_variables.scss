@@ -1,8 +1,10 @@
-$body-color: #000000de;
-$navbar-color: #fffc;
+$body-color-default: #000000de;
+$body-color-dark: #d8d4cf;
+$body-font-size: 18px;
+
+$navbar-text-color: #fffc;
 $navbar-selected: #47628233;
 $navbar-selected-text-color: #669df6;
-$light-gray-text: #78909c;
 $plus-color: #2296da;
 
 $views-transition: 250ms;
@@ -13,10 +15,13 @@ $navbar-max-width: 350px;
 
 $themes: (
   default: (
+    body-color: $body-color-default,
     white-background: #fff,
+    light-gray: #78909c,
     alice-blue: aliceblue,
     alice-blue-light: #e3eaf1,
     strong-blue: #1967d2,
+    light-blue: #dfebf5,
     dark-blue: #1b3a57,
     dark-dark-blue: #051e34,
     gray-blue: #476282,
@@ -27,12 +32,16 @@ $themes: (
       0 1px 2px 0 rgb(60 64 67 / 30%),
       0 1px 3px 1px rgb(60 64 67 / 15%),
     ),
+    gray-shadow: 0 0 5px #cacccc
   ),
   dark: (
+    body-color: $body-color-dark,
     white-background: #181a1b,
+    light-gray: #9e9689,
     alice-blue: #1b1b1b,
     alice-blue-light: #2e2e2e,
     strong-blue: #53a2eb,
+    light-blue: #dfebf51c,
     dark-blue: #a4c7e3,
     dark-dark-blue: #031322,
     gray-blue: #90abc2,
@@ -43,6 +52,7 @@ $themes: (
       rgb(43 46 48) 0px 1px 2px 0px,
       rgb(43 46 48) 0px 1px 3px 1px,
     ),
+    gray-shadow: 0 0 5px #454545
   ),
 );
 

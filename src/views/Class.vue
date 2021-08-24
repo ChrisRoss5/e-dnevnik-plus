@@ -49,7 +49,7 @@
       >
         <SlickItem
           v-for="(tab, i) in tabs"
-          :key="i"
+          :key="tab.name"
           :index="i"
           class="section-item"
         >
@@ -63,7 +63,9 @@
             }"
           >
             <span class="material-icons"> {{ tab.icon }} </span>
-            <div v-if="!tabsIconOnly" class="section-name">{{ tab.name }}</div>
+            <div v-if="!tabsIconOnly" class="section-name">
+              {{ tab.realName || tab.name }}
+            </div>
             <div class="selected-line tab-drag"></div>
           </router-link>
         </SlickItem>
@@ -86,9 +88,10 @@
         :classId="classId"
         @sectionLoading="showSpinner = true"
         @sectionLoaded="showSpinner = false"
+
       >
         <transition :name="sectionTransition" mode="out-in">
-          <component :is="Component" />
+          <component :is="Component" :key="triggerTransition" />
         </transition>
       </router-view>
       <Spinner :visible="showSpinner" :size="'125px'" blur></Spinner>
@@ -102,8 +105,8 @@ import { User, ClassInfo } from "@/store/state";
 import { MutationTypes } from "@/store/mutations";
 import Dropdown, { DropdownItem } from "@/components/Dropdown.vue";
 import { SlickList, SlickItem } from "vue-slicksort";
-import Spinner from "@/components/Spinner.vue";
 import { formatNum } from "@/scripts/utils";
+import Spinner from "@/components/Spinner.vue";
 
 interface DropdownInfo {
   id: string;
@@ -123,11 +126,11 @@ export default defineComponent({
   data() {
     return {
       classId: "",
-      showSpinner: false,
       tabsIconOnly: false,
+      showSpinner: false,
       tabs: [
         { name: "Ocjene", icon: "grade" },
-        { name: "Bilješke", icon: "edit" },
+        { name: "Biljeske", realName: "Bilješke", icon: "edit" },
         { name: "Ispiti", icon: "event_note" },
         { name: "Izostanci", icon: "timer_off" },
         { name: "Vladanja", icon: "error" },
@@ -136,6 +139,7 @@ export default defineComponent({
       ],
       visibleDropdown: "",
       sectionTransition: "",
+      triggerTransition: 0
     };
   },
   beforeMount() {
@@ -201,6 +205,7 @@ export default defineComponent({
         : "none";
       line.style.transform = "translateX(" + (offsetLeft + 30) + "px)";
       line.style.width = offsetWidth + "px";
+      this.triggerTransition = offsetLeft;
       const user = document.getElementById("user");
       const classInfo = this.$refs.classInfo as HTMLElement;
       if (user) classInfo.style.marginRight = user.offsetWidth + "px";
@@ -295,7 +300,6 @@ export default defineComponent({
   },
   watch: {
     $route(to, from) {
-      /* this.showSpinner = true; */
       this.classChanged();
       this.$nextTick(() => this.positionSelectedLine(true));
       const fromIdx = this.tabNames.indexOf(this.getSectionName(from.path));
@@ -337,10 +341,10 @@ body > .section-item {
 .dropdown-info {
   position: relative;
   display: inline-grid;
-  color: $light-gray-text;
   padding: 2px 0 2px 20px;
 
   @include themed() {
+    color: t("light-gray");
     border-left: 1px solid t("light-border-color");
   }
 }
@@ -396,7 +400,6 @@ body > .section-item {
 #sections {
   position: relative;
   display: flex;
-  flex-wrap: wrap;
 }
 
 .section-item {

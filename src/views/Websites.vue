@@ -48,13 +48,13 @@ export default defineComponent({
       showSpinner: false,
       showDropdown: false,
       frames: {
-        "školska-stranica": [
+        "skolska-stranica": [
           {
             name: "Školska stranica",
             url: "http://www.ss-elektrotehnicka-zg.skole.hr/",
           },
         ],
-        "školski-e-rudnik": [
+        "skolski-e-rudnik": [
           {
             name: "ŠeR - Školski e-Rudnik (Vol. 2)",
             url: "https://app.powerbi.com/view?r=eyJrIjoiM2Q1NjVmZDEtMGUyMy00MDBiLTkzYWItYjBhMTA3MDFlOWUxIiwidCI6IjJjMTFjYmNjLWI3NjEtNDVkYi1hOWY1LTRhYzc3ZTk0ZTFkNCIsImMiOjh9",
@@ -71,7 +71,6 @@ export default defineComponent({
               "razne statističke podatke o školama, učenicima i o obrazovnim programima<br> " +
               "te demografske trendove po školskim godinama.",
           },
-
           {
             name: "ŠeR - Školski e-Rudnik (Vol. 3)",
             url: "https://app.powerbi.com/view?r=eyJrIjoiOTUxNTE3YmQtM2E3MC00MDc0LTg3OTQtYTExZWZhYzU3Y2FlIiwidCI6IjJjMTFjYmNjLWI3NjEtNDVkYi1hOWY1LTRhYzc3ZTk0ZTFkNCIsImMiOjh9",

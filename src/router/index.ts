@@ -5,10 +5,8 @@ import Class from "../views/Class.vue";
 
 import Subjects from "../views/class/subjects/Subjects.vue";
 import Subject from "../views/class/subjects/Subject.vue";
-import Notes from "../views/class/Notes.vue";
+import ClassSectionFrame from "../views/class/ClassSectionFrame.vue";
 import Exams from "../views/class/Exams.vue";
-import Absences from "../views/class/Absences.vue";
-import Conduct from "../views/class/Conduct.vue";
 import Schedule from "../views/class/Schedule.vue";
 import Stats from "../views/class/Stats.vue";
 
@@ -51,8 +49,8 @@ const routes: Array<RouteRecordRaw> = [
         ],
       },
       {
-        path: "bilješke",
-        component: Notes,
+        path: "biljeske",
+        component: ClassSectionFrame,
       },
       {
         path: "ispiti",
@@ -60,11 +58,11 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: "izostanci",
-        component: Absences,
+        component: ClassSectionFrame,
       },
       {
         path: "vladanja",
-        component: Conduct,
+        component: ClassSectionFrame,
       },
       {
         path: "raspored",

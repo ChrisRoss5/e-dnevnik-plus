@@ -151,8 +151,11 @@ export default defineComponent({
     margin: 10px auto;
     text-align: center;
     color: red;
-    background: #fff;
     border: 1px solid transparent;
+
+    @include themed() {
+      background: t("white-background");
+    }
   }
 }
 

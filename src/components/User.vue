@@ -11,7 +11,7 @@
     <Dropdown
       :visible="showDropdown"
       :list="dropdown"
-      customClass="right"
+      customClass="user-dropdown"
       sourceElementId="user"
       @close="dropdownClosed"
     ></Dropdown>
@@ -20,7 +20,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import Dropdown from "./Dropdown.vue";
+import Dropdown, { DropdownItem } from "./Dropdown.vue";
 import { MutationTypes } from "@/store/mutations";
 import { User } from "@/store/state";
 import { logout } from "@/scripts/scrapers";
@@ -43,11 +43,11 @@ export default defineComponent({
           name: "Odjava",
           icon: "exit_to_app",
         },
-      ],
+      ] as DropdownItem[],
     };
   },
   methods: {
-    async dropdownClosed(rowName: string) {
+    async dropdownClosed(rowName: string | undefined) {
       this.showDropdown = false;
       if (rowName == "Odjava" && this.user && (await logout())) {
         this.$store.commit(MutationTypes.UPDATE_USER_STATUS, {

@@ -4,8 +4,10 @@
       :finalGradeOriginal="finalGradeOriginal"
       :finalGrade="finalGrade"
       :options="options"
-      :openedSubject="!!openedSubject"
+      :savedOptions="savedOptions"
+      :isOpenedSubject="!!openedSubject"
       @optionClicked="optionClicked"
+      @sortOptionClicked="sortOptionClicked"
     ></SubjectsSummary>
     <transition name="opacity">
       <SubjectsCounter
@@ -29,37 +31,39 @@
       :lockOffset="15"
       :lockToContainerEdges="true"
       :distance="5"
-      @sort-start="subjectsSortingEvent(true)"
-      @sort-end="subjectsSortingEvent(false)"
-      @sort-cancel="subjectsSortingEvent(false)"
+      :cancelKey="'no'"
+      @sort-start="subjectsSorting = true"
       @update:list="subjectsOrderChanged"
     >
-      <SlickItem
-        v-for="(subject, i) in subjects"
-        :key="i"
-        :index="i"
-        class="subject"
-        :class="{
-          'expanded-keep': subject.expandedKeep && !openedSubject,
-          'is-opened': subject.isOpened,
-        }"
-        @mouseenter="subjectMouseEnter($event, subject)"
-        @mouseleave="subjectMouseLeave(subject)"
-      >
-        <SubjectCardHead
-          :subject="subject"
-          :savedOptions="savedOptions"
-          @updateSubjectGradesAvg="getSubjectGradesAvg"
-        ></SubjectCardHead>
-        <SubjectCardBody
-          :subject="subject"
-          :savedOptions="savedOptions"
-          :openedSubject="!!openedSubject"
-          :expandTables="expandTables"
-          :tooltipKey="tooltipKey"
-          @updateSubjectGradesAvg="getSubjectGradesAvg"
-        ></SubjectCardBody>
-      </SlickItem>
+      <transition-group :name="subjectsSorting ? '' : 'subjects-list'">
+        <SlickItem
+          v-for="(subject, i) in subjects"
+          :key="subject.url"
+          :index="i"
+          class="subject"
+          :class="{
+            'expanded-keep': subject.expandedKeep && !openedSubject,
+            'is-opened': subject.isOpened,
+          }"
+          :disabled="!savedOptions.sortByDragging"
+          @mouseenter="subjectMouseEnter($event, subject)"
+          @mouseleave="subjectMouseLeave(subject)"
+        >
+          <SubjectCardHead
+            :subject="subject"
+            :savedOptions="savedOptions"
+            @updateSubjectGradesAvg="getSubjectGradesAvg"
+          ></SubjectCardHead>
+          <SubjectCardBody
+            :subject="subject"
+            :savedOptions="savedOptions"
+            :isOpenedSubject="!!openedSubject"
+            :expandTables="expandTables"
+            :updateTablesMargin="updateTablesMargin"
+            @updateSubjectGradesAvg="getSubjectGradesAvg"
+          ></SubjectCardBody>
+        </SlickItem>
+      </transition-group>
     </SlickList>
 
     <!-- SUBJECT.VUE -->
@@ -113,7 +117,7 @@ export default defineComponent({
     SubjectCardBody,
   },
   props: { classId: String },
-  /* emits: ["sectionLoading", "sectionLoaded"], */ // todo: FIX TS ERROR ???
+  /* emits: ["sectionLoading", "sectionLoaded"], */ // todo: FIX TS ERROR
   created() {
     this.updateSubjects();
   },
@@ -122,12 +126,13 @@ export default defineComponent({
   },
   data() {
     return {
-      tooltipKey: 1,
+      updateTablesMargin: 0,
       expandTables: 0,
       savedOptions: {
         zoom: 2,
         expandTablesOnHover: true,
         subjectColors: true,
+        sortByDragging: true,
       },
       options: {
         expandTablesOnHover: {
@@ -184,28 +189,30 @@ export default defineComponent({
       if (!this.openedClassInfo || this.subjectsLoading) return;
       this.$emit("sectionLoading");
       this.subjectsLoading = true;
-      //if (!(await updateSubjects(this.openedClassInfo, forceUpdate))) return;
+      //if (!(await updateSubjects(this.openedClassInfo, forceUpdate))) return;  // todo: uncomment
       this.subjectsLoading = false;
       this.$emit("sectionLoaded");
       this.resetSubjects();
     },
     resetSubjects() {
-      let cached = this.openedClassInfo && this.openedClassInfo.cachedSubjects;
+      const cached =
+        this.openedClassInfo && this.openedClassInfo.cachedSubjects;
       if (!cached || !cached.length) return;
-      cached = JSON.parse(JSON.stringify(cached)) as ExtendedSubjectCache[];
-      this.subjects = cached.map((subject: any) => ({
-        ...subject,
-        gradesByCategoryOriginal: JSON.parse(
+      const clone: ExtendedSubjectCache[] = JSON.parse(JSON.stringify(cached));
+      this.subjects = clone.map((subject) => {
+        const gradesByCategoryOriginal = JSON.parse(
           JSON.stringify(subject.gradesByCategory || []),
-        ),
-        gradesAvg: this.getSubjectGradesAvg(subject, subject.gradesByCategory),
-        gradesCount: this.getSubjectGradesCount(
+        );
+        const gradesAvg = this.getSubjectGradesAvg(
           subject,
           subject.gradesByCategory,
-        ),
-      }));
-      console.log("RESET");
-
+        );
+        const gradesCount = this.getSubjectGradesCount(
+          subject,
+          subject.gradesByCategory,
+        );
+        return { ...subject, gradesByCategoryOriginal, gradesAvg, gradesCount };
+      });
       this.finalGradeOriginal = this.getFinalGradeOriginal();
     },
     subjectMouseEnter(e: MouseEvent, subject: ExtendedSubjectCache) {
@@ -216,13 +223,11 @@ export default defineComponent({
     subjectMouseLeave(subject: ExtendedSubjectCache) {
       subject.expanded = false;
     },
-    subjectsSortingEvent(started: boolean) {
-      this.subjectsSorting = started;
-    },
     subjectsOrderChanged() {
-      this.tooltipKey += 1; // todo: fix tooltip reactivity bug (temp. fixed)
+      this.$nextTick(() => (this.subjectsSorting = false));
     },
-    optionClicked(optionName: string, option: Option) {
+    optionClicked(optionName: string) {
+      const option = this.options[optionName];
       if (option.enabled !== undefined) option.enabled = !option.enabled;
       const enabled = option.enabled || false;
       switch (optionName) {
@@ -241,11 +246,33 @@ export default defineComponent({
         case "subjectColors":
           this.savedOptions.subjectColors = enabled;
           break;
+        case "updateSubjects":
+          this.updateSubjects(true);
+          return;
       }
+      this.updateTablesMargin += 1;
       this.savedOptions.zoom = Math.min(
         Math.max(this.savedOptions.zoom, 1),
         this.subjects.length,
       );
+    },
+    sortOptionClicked(optionName: string) {
+      if (optionName.includes("Sortiranje")) {
+        this.savedOptions.sortByDragging = !this.savedOptions.sortByDragging;
+        return;
+      }
+      const isReverse = optionName.includes("silazno");
+      const sortByAvg = optionName.includes("Prosjek");
+      const sortProperty = sortByAvg ? "gradesAvgEdited" : "gradesCount";
+      this.subjects.sort((a, b) => {
+        if (!a.gradesCount && b.gradesCount) return 1;
+        if (a.gradesCount && !b.gradesCount) return -1;
+        const propA = a[sortProperty] || a.gradesAvg;
+        const propB = b[sortProperty] || b.gradesAvg;
+        if (propA < propB) return isReverse ? 1 : -1;
+        if (propA > propB) return isReverse ? -1 : 1;
+        return 0;
+      });
     },
     getSubjectGradesCount(
       subject: ExtendedSubjectCache,
@@ -328,8 +355,9 @@ export default defineComponent({
       return this.subjects.every((subject) => subject.expandedKeep);
     },
     finalGrade(): number {
-      const subjectsWithGrades = this.subjects.filter((subject) => {
-        return subject.gradesAvgEdited || subject.gradesAvg;
+      const subjectsWithGrades = this.subjects.filter((subj) => {
+        if (subj.gradesAvgEdited === undefined) return subj.gradesAvg;
+        return !isNaN(subj.gradesAvgEdited)
       });
       return (
         subjectsWithGrades.reduce((a, subj) => {
@@ -429,5 +457,9 @@ export default defineComponent({
 :deep(.subject-colors-leave-to) {
   opacity: 0;
   transform: scaleY(0);
+}
+
+.subjects-list-move {
+  transition: transform 1s;
 }
 </style>

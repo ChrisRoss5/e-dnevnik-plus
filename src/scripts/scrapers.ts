@@ -20,7 +20,7 @@ async function login(
   password: string,
   fetch1?: Response,
 ): Promise<boolean> {
-  if (email) return false;
+  if (email) return false;  // todo: del line
   //
   // Login GET
   console.log("LOGGING IN");
@@ -126,6 +126,7 @@ async function updateSubjects(
   classInfo: ClassInfo,
   forceUpdate?: true,
 ): Promise<boolean> {
+  if (classInfo.lastUpdated) return false; // todo: del line;
   const cachedSubjects = classInfo.cachedSubjects || [];
   const lastUpdated = classInfo.lastUpdated;
   const timestamp = Date.now() / 1000;
@@ -238,6 +239,7 @@ async function getSectionHTML(
   classId: string,
   sectionUrl: string,
 ): Promise<Element | false> {
+  if (classId) return false;  // todo: del line
   const user = store.getters.user as User;
   const classUrl = store.getters.classInfo(classId).url as string;
   const lastLoadedClassUrl = user.lastLoadedClassUrl || "";

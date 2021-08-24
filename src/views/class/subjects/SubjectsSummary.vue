@@ -42,38 +42,85 @@
         class="material-icons flex-center"
         :class="{
           'option-enabled': option.enabled,
-          'option-hidden': option.hideWhenSubjectIsOpen && openedSubject,
+          'option-hidden': option.hideWhenSubjectIsOpen && isOpenedSubject,
         }"
         :style="{ 'font-size': option.fontSize || '' }"
         v-tooltip="option.tooltip"
         v-wave
-        @click="$emit('optionClicked', optionName, option)"
+        @click.self="optionClicked(optionName)"
       >
         {{ option.icon }}
+        <Dropdown
+          v-if="optionName == 'sortSubjects'"
+          :visible="sortDropdownVisible"
+          :list="sortDropdownList"
+          customClass="right"
+          sourceElementId="options"
+          @close="sortDropdownClosed"
+        ></Dropdown>
       </span>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { formatNum } from "@/scripts/utils";
 import { defineComponent, PropType } from "vue";
+import Dropdown, { DropdownItem } from "@/components/Dropdown.vue";
 import { Option } from "./Subjects.vue";
+import { formatNum } from "@/scripts/utils";
 
 export default defineComponent({
   name: "SubjectsSummary",
+  components: {
+    Dropdown,
+  },
   props: {
     options: {
       type: Object as PropType<Record<string, Option>>,
       required: true,
     },
+    savedOptions: {
+      type: Object as PropType<Record<string, any>>,
+      required: true,
+    },
     finalGradeOriginal: Number,
     finalGrade: Number,
-    openedSubject: Boolean,
+    isOpenedSubject: Boolean,
   },
-  emits: ["optionClicked"],
+  emits: ["optionClicked", "sortOptionClicked"],
+  data() {
+    return {
+      sortDropdownVisible: false,
+    };
+  },
   methods: {
+    optionClicked(optionName: string) {
+      if (optionName == "sortSubjects") {
+        this.sortDropdownVisible = true;
+        return;
+      }
+      this.$emit("optionClicked", optionName);
+    },
+    sortDropdownClosed(rowName: string | undefined) {
+      this.sortDropdownVisible = rowName == "Sortiranje povlačenjem";
+      if (rowName) this.$emit("sortOptionClicked", rowName);
+    },
     formatNum: (num: number): string => formatNum(num),
+  },
+  computed: {
+    sortDropdownList(): DropdownItem[] {
+      return [
+        { name: "Prosjek silazno", icon: "arrow_downward" },
+        { name: "Prosjek uzlazno", icon: "arrow_upward" },
+        { name: "Broj ocjena silazno", icon: "arrow_downward" },
+        { name: "Broj ocjena uzlazno", icon: "arrow_upward" },
+        {
+          name: "Sortiranje povlačenjem",
+          icon: "open_with",
+          active: this.savedOptions.sortByDragging,
+        },
+      ];
+    },
   },
 });
 </script>
@@ -120,6 +167,7 @@ export default defineComponent({
   margin-left: auto;
 
   & > span {
+    position: relative;
     width: 24px;
     height: 24px;
     padding: 10px 10px;
@@ -127,7 +175,10 @@ export default defineComponent({
 
     &:hover {
       cursor: pointer;
-      background: #dfebf5;
+
+      @include themed() {
+        background: t("light-blue");
+      }
     }
   }
 

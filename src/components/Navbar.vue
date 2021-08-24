@@ -73,13 +73,13 @@
 <script lang="ts" scoped>
 import { defineComponent } from "vue";
 import NavbarList from "./NavbarList.vue";
+import { MutationTypes } from "@/store/mutations";
 
 export default defineComponent({
   name: "Navbar",
   components: { NavbarList },
   data() {
     return {
-      navCollapsed: false,
       navMidOverflowing: false,
       mounted: false,
       linksTop: [
@@ -147,6 +147,17 @@ export default defineComponent({
   computed: {
     isLoginPage(): boolean {
       return this.$route.path == "/" || !this.mounted;
+    },
+    navCollapsed: {
+      get(): boolean {
+        return this.$store.state.settings.navbarCollapsed;
+      },
+      set(value) {
+        this.$store.commit(MutationTypes.UPDATE_GLOBAL_SETTING, {
+          name: "navbarCollapsed",
+          value,
+        });
+      },
     },
   },
 });
@@ -217,7 +228,7 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 
 #nav-mid :deep(a),
 #nav-bottom :deep(a:not(#collapse)) {
-  color: $navbar-color;
+  color: $navbar-text-color;
   transition: background-color 150ms, color 150ms, opacity 150ms;
 
   .material-icons {
@@ -279,7 +290,7 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
     right: 0;
     top: 100%;
     font-style: italic;
-    font-size: 18px;
+    font-size: $body-font-size;
     line-height: 15px;
     color: $plus-color;
     text-shadow: 0 0 20px white;
@@ -290,6 +301,7 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   font-size: 24px;
   letter-spacing: 2px;
   pointer-events: none;
+  color: white;
 }
 
 #collapse {

@@ -89,7 +89,7 @@ export default defineComponent({
     subject: {
       type: Object as PropType<ExtendedSubjectCache>,
     },
-    savedOptions: Object,
+    savedOptions: Object as PropType<Record<string, any>>,
   },
   methods: {
     onSubjectInfoWheel(e: WheelEvent) {
@@ -234,13 +234,13 @@ export default defineComponent({
   width: 75px;
   border-radius: 8px;
   text-align: center;
-  box-shadow: 0 0 5px #cacccc;
   clip-path: inset(1px 1px 1px -5px);
   outline: none;
   transition: color 150ms;
 
   @include themed() {
     border-left: 1px solid t("light-border-color");
+    box-shadow: t("gray-shadow");
   }
 }
 
