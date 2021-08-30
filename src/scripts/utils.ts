@@ -48,6 +48,10 @@ export function parseDoc(html: string, baseUri: string): Document {
   return doc;
 }
 
+export function jsonClone<T>(object: T): T {
+  return JSON.parse(JSON.stringify(object));
+}
+
 export function convertToPath(name: string): string {
   return name
     .toLowerCase()
@@ -95,10 +99,12 @@ export function capitalize(str: string): string {
   return str[0].toUpperCase() + str.slice(1);
 }
 
-export function numberToColorHsl(i: number) {
+export function numberToColorHsl(i: number, a?: number) {
   const hue = (i * 1.2) / 360;
   const rgb = hslToRgb(hue, 1, 0.5);
-  return "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
+  return (
+    "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "," + (a ? a : 1) + ")"
+  );
 }
 
 const colors = ["#FF3924", "#FF9600", "#FFE500", "#84FF33", "#2ab62a"];

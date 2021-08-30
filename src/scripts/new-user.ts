@@ -11,6 +11,25 @@ export default function newUser(initData: InitData): User {
   return {
     ...initData,
     signedIn: true,
-    settings: {},
+    settings: {
+      classTabsOrder: [
+        "Ocjene",
+        "Biljeske",
+        "Ispiti",
+        "Izostanci",
+        "Vladanja",
+        "Raspored",
+        "Statistika",
+      ],
+      subjectsSettings: {
+        zoom: 2,
+        expandTablesOnHover: true,
+        subjectColors: false,
+        countAvgs: false,
+        sortByDragging: true,
+        subjectsOrder: [],
+        expandedSubjects: []
+      },
+    },
   };
 }

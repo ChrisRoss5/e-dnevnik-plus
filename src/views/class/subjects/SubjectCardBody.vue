@@ -22,7 +22,7 @@
                 <div
                   class="pin-subject"
                   :class="{ pinned: subject.expandedKeep }"
-                  @click="expandSubject(subject, !subject.expandedKeep)"
+                  @click="expandSubject(!subject.expandedKeep)"
                 >
                   <span class="material-icons"> keyboard_capslock </span>
                   Zadrži
@@ -51,7 +51,6 @@
                 contenteditable="true"
                 @input="
                   gradeInputted(
-                    subject,
                     $event,
                     subject.gradesByCategoryOriginal[i].grades[j].slice(),
                     grades,
@@ -115,25 +114,22 @@ export default defineComponent({
     expandTables: Number,
     updateTablesMargin: Number,
   },
+  /* emits: [
+    "expandSubject",
+    "updateSubjectMargin",
+    "updateGradesAvgEdited",
+    "updateSubjectGradesAvg",
+  ], */
   methods: {
-    expandSubject(
-      subject: ExtendedSubjectCache,
-      expand: boolean,
-      doNotSave?: boolean,
-    ) {
-      if (!doNotSave) subject.expandedKeep = expand;
+    expandSubject(expand: boolean, doNotSave?: boolean) {
+      if (!doNotSave) this.$emit("expandSubject", expand);
       this.$nextTick(() => {
         const subjectBody = this.$refs["subjectBody"] as HTMLElement;
         const margin = expand ? subjectBody.offsetHeight + "px" : "0px";
-        subject.marginBottom = margin;
+        this.$emit("updateSubjectMargin", margin);
       });
     },
-    gradeInputted(
-      subject: ExtendedSubjectCache,
-      e: InputEvent,
-      originalGrades: number[],
-      grades: number[],
-    ) {
+    gradeInputted(e: InputEvent, originalGrades: number[], grades: number[]) {
       const target = e.target as HTMLElement;
       const clone = target.cloneNode(true) as HTMLElement;
       clone.querySelectorAll("[contenteditable]").forEach((el) => el.remove());
@@ -141,8 +137,8 @@ export default defineComponent({
       target.innerHTML = this.getCellGrades(originalGrades, grades.slice());
       grades.length = 0;
       grades.push(..._grades.map(Number));
-      subject.gradesAvgEdited = undefined;
-      this.$emit("updateSubjectGradesAvg", subject, subject.gradesByCategory);
+      this.$emit("updateGradesAvgEdited");
+      this.$emit("updateSubjectGradesAvg", this.subject.gradesByCategory);
       this.$nextTick(() => setEndOfContenteditable(target));
     },
     getCellGrades(originalGrades: number[], grades: number[]): string {
@@ -165,24 +161,21 @@ export default defineComponent({
         ...grades.map((grade) => "<span class='red'>" + grade + "</span>"),
       ].join(", ");
     },
-    updateTableMargin() {
-      this.expandSubject(this.subject, this.subject.expandedKeep, true);
-    },
     formatGradeText: (num: number): string => formatGradeText(num),
   },
   watch: {
     expandTables(enabled) {
-      this.expandSubject(this.subject, !!enabled); // true if positive num
+      this.expandSubject(!!enabled); // true if positive num
     },
     isOpenedSubject(isSomeSubjectOpened) {
-      this.expandSubject(this.subject, !isSomeSubjectOpened, true);
+      this.expandSubject(!isSomeSubjectOpened, true);
     },
     updateTablesMargin() {
-      this.updateTableMargin();
+      this.expandSubject(this.subject.expandedKeep, true);
     },
     "subject.gradesByCategory": {
       handler() {
-        this.updateTableMargin();
+        this.expandSubject(this.subject.expandedKeep, true);
       },
       deep: true,
     },

@@ -31,10 +31,10 @@
     </transition>
     <transition name="opacity">
       <span
-        v-if="isSubjectEdited(subject)"
+        v-if="isSubjectEdited()"
         class="material-icons subject-warning"
         v-tooltip="'Klikni za poništavanje promjena'"
-        @click="revertSubject(subject)"
+        @click="$emit('revertSubject')"
       >
         priority_high
       </span>
@@ -53,7 +53,7 @@
     <div
       class="grade-avg flex-center"
       contenteditable="true"
-      @input="avgInputted($event, subject)"
+      @input="avgInputted"
       @focus="avgFocusChanged"
       @blur="avgFocusChanged"
       :style="{ color: getSubjectAvgColor(subject) }"
@@ -81,16 +81,18 @@
 import { defineComponent, PropType } from "vue";
 import { ExtendedSubjectCache } from "@/views/class/subjects/Subjects.vue";
 import { GradesByCategory } from "@/store/state";
-import { formatNum, setEndOfContenteditable } from "@/scripts/utils";
+import { formatNum, jsonClone, setEndOfContenteditable } from "@/scripts/utils";
 
 export default defineComponent({
   name: "SubjectCardHead",
   props: {
     subject: {
       type: Object as PropType<ExtendedSubjectCache>,
+      required: true,
     },
     savedOptions: Object as PropType<Record<string, any>>,
   },
+  // emits: ["revertSubject", "updateGradesAvgEdited"],
   methods: {
     onSubjectInfoWheel(e: WheelEvent) {
       const path = ((e as any).path ||
@@ -107,27 +109,26 @@ export default defineComponent({
         target.scrollBy({ left: e.deltaY, behavior: "smooth" });
       }
     },
-    isSubjectEdited(subject: ExtendedSubjectCache): boolean {
-      const current = this.mapSubjectGrades(subject.gradesByCategory || []);
+    isSubjectEdited(): boolean {
+      const current = this.mapSubjectGrades(
+        this.subject.gradesByCategory || [],
+      );
       const original = this.mapSubjectGrades(
-        subject.gradesByCategoryOriginal || [],
+        this.subject.gradesByCategoryOriginal || [],
       );
       return (
-        subject.gradesAvgEdited !== undefined ||
+        this.subject.gradesAvgEdited !== undefined ||
         JSON.stringify(current) != JSON.stringify(original)
       );
     },
     mapSubjectGrades(grades: GradesByCategory[]): number[][][] {
       return grades.map((row) => row.grades.map((cell) => [...cell].sort())); // nosonar
     },
-    avgInputted(e: InputEvent, subject: ExtendedSubjectCache) {
+    avgInputted(e: InputEvent) {
       const target = e.target as HTMLElement;
-      if (e.data && /[1-5]/.test(e.data)) {
-        subject.gradesAvgEdited = parseInt(e.data);
-      } else {
-        subject.gradesAvgEdited = NaN;
-        target.textContent = "";
-      }
+      const validInput = e.data && /[1-5]/.test(e.data);
+      if (!validInput) target.textContent = "";
+      this.$emit("updateGradesAvgEdited", validInput ? parseInt(e.data!) : NaN);
       target.textContent = target.textContent!.slice(0, 4);
       this.$nextTick(() => target && setEndOfContenteditable(target));
     },
@@ -138,9 +139,9 @@ export default defineComponent({
       else if (e.type == "blur" && !target.textContent)
         target.textContent = "—";
     },
-    getSubjectAvgColor(subject: ExtendedSubjectCache): string {
-      const avg = subject.gradesAvgEdited || subject.gradesAvg;
-      const originalAvg = subject.gradesAvgOriginal;
+    getSubjectAvgColor(): string {
+      const avg = this.subject.gradesAvgEdited || this.subject.gradesAvg;
+      const originalAvg = this.subject.gradesAvgOriginal;
       if (!avg || avg == originalAvg) return "";
       if (!originalAvg || avg < originalAvg) return "red";
       return "green";
@@ -150,13 +151,7 @@ export default defineComponent({
       const fullPath = this.$route.path.replace(/\/(\d+)?$/, "");
       return fullPath + "/" + (match ? match[0] : "");
     },
-    revertSubject(subject: ExtendedSubjectCache) {
-      subject.gradesAvgEdited = undefined;
-      subject.gradesByCategory = JSON.parse(
-        JSON.stringify(subject.gradesByCategoryOriginal),
-      );
-      this.$emit("updateSubjectGradesAvg", subject, subject.gradesByCategory);
-    },
+
     formatNum: (num: number): string => formatNum(num),
   },
 });
@@ -191,7 +186,7 @@ export default defineComponent({
   background: transparent;
   overflow: hidden;
   margin-bottom: 0;
-  transition: background-color $subject-peek-duration $subject-peek-delay,
+  transition: background-color $subject-peek-duration,
     margin-bottom 500ms, z-index 0ms $subject-peek-duration;
   z-index: 2;
   transform: translateZ(0);

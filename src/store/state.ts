@@ -24,7 +24,18 @@ export interface User {
 }
 
 export interface Settings {
-  classTabsOrder?: string[];
+  classTabsOrder: string[];
+  subjectsSettings: SubjectsSettings;
+}
+
+export interface SubjectsSettings {
+  zoom: number;
+  expandTablesOnHover: boolean;
+  subjectColors: boolean;
+  countAvgs: boolean;
+  sortByDragging: boolean;
+  subjectsOrder: string[];
+  expandedSubjects: string[];
 }
 
 export interface GlobalSettings {
@@ -57,7 +68,7 @@ export interface SubjectCache {
 
 export interface GradesByCategory {
   name: string;
-  grades: number[][]
+  grades: number[][];
 }
 
 export interface Note {

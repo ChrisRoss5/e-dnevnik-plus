@@ -123,6 +123,22 @@ export default defineComponent({
     SlickItem,
     Spinner,
   },
+  beforeMount() {
+    if (!this.user) return;
+    const _tabs = this.user.settings.classTabsOrder;
+    this.tabs = _tabs.map((name) => this.tabs.find((tab) => tab.name == name)!);
+  },
+  mounted() {
+    this.$nextTick(this.classChanged);
+    this.$emitter.on("main-scrolled", this.mainScrolled);
+    new (window as any).ResizeObserver(() =>
+      this.positionSelectedLine(false),
+    ).observe(this.getSectionsContainer());
+  },
+  beforeUnmount() {
+    this.$emitter.off("main-scrolled", this.mainScrolled);
+    /* ResizeObserver is automatically unobserved on reference deletion! */
+  },
   data() {
     return {
       classId: "",
@@ -141,23 +157,6 @@ export default defineComponent({
       sectionTransition: "",
       triggerTransition: 0
     };
-  },
-  beforeMount() {
-    if (!this.user) return;
-    const _tabs = this.user.settings.classTabsOrder;
-    if (!_tabs) return;
-    this.tabs = _tabs.map((name) => this.tabs.find((tab) => tab.name == name)!);
-  },
-  mounted() {
-    this.$nextTick(this.classChanged);
-    this.$emitter.on("main-scrolled", this.mainScrolled);
-    new (window as any).ResizeObserver(() =>
-      this.positionSelectedLine(false),
-    ).observe(this.getSectionsContainer());
-  },
-  beforeUnmount() {
-    this.$emitter.off("main-scrolled", this.mainScrolled);
-    /* ResizeObserver is automatically unobserved on reference deletion! */
   },
   methods: {
     tabsSortingEvent(started: boolean) {
@@ -205,7 +204,6 @@ export default defineComponent({
         : "none";
       line.style.transform = "translateX(" + (offsetLeft + 30) + "px)";
       line.style.width = offsetWidth + "px";
-      this.triggerTransition = offsetLeft;
       const user = document.getElementById("user");
       const classInfo = this.$refs.classInfo as HTMLElement;
       if (user) classInfo.style.marginRight = user.offsetWidth + "px";
@@ -304,6 +302,7 @@ export default defineComponent({
       this.$nextTick(() => this.positionSelectedLine(true));
       const fromIdx = this.tabNames.indexOf(this.getSectionName(from.path));
       const toIdx = this.tabNames.indexOf(this.getSectionName(to.path));
+      if (toIdx != fromIdx && fromIdx != -1) this.triggerTransition += 1;
       this.sectionTransition = toIdx < fromIdx ? "slide-right" : "slide-left";
     },
   },
@@ -467,7 +466,7 @@ a {
 #section {
   position: relative;
   flex: 1;
-  padding: 40px 20px;
+  margin: 40px 20px;
   overflow: hidden;
 
   & > div {

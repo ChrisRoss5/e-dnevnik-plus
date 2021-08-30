@@ -7,8 +7,12 @@
     }"
   >
     <div id="nav-top">
-      <a id="carnet-logo" href="https://www.carnet.hr/" target="_blank">
-        <img src="@/assets/img/carnet-logo-2.png" />
+      <a
+        id="app-logo"
+        href="https://www.carnet.hr/usluga/e-dnevnik-za-ucenike-i-roditelje/"
+        target="_blank"
+      >
+        <img src="@/assets/img/logo.png" />
       </a>
       <a
         href="https://ednevnik.plus"
@@ -260,20 +264,22 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 
 :deep(.text) {
   transition: transform 150ms calc(150ms + var(--order) * 20ms),
-    opacity 150ms calc(150ms + var(--order) * 20ms), color 150ms;
+    opacity 150ms calc(150ms + var(--order) * 20ms), color 150ms,
+    text-shadow 150ms;
 }
 
-#carnet-logo {
+#app-logo {
   margin-right: 25px;
 
   img {
     height: 50px;
-    transition: transform $collapse-duration - 100ms;
-    transform-origin: 55% 50%;
+    border-radius: 10px;
+    box-shadow: 0 0 20px -5px #2296da;
+    transition: transform $collapse-duration - 100ms, box-shadow 150ms;
   }
 
   &:hover img {
-    transform: rotate(360deg);
+    box-shadow: 0 0 20px -2px #2296da;
   }
 }
 
@@ -294,6 +300,10 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
     line-height: 15px;
     color: $plus-color;
     text-shadow: 0 0 20px white;
+  }
+
+  &:hover {
+    text-shadow: 0 0 25px white;
   }
 }
 
@@ -328,12 +338,8 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 .nav-collapsed {
   max-width: 84px !important;
 
-  #carnet-logo img {
+  #app-logo img {
     transform: scale(0.8) translate(-17px, 2px);
-
-    &:hover {
-      transform: scale(0.8) translate(-17px, 2px) rotate(360deg);
-    }
   }
 
   #welcome {

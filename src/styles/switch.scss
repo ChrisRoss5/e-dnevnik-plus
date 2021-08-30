@@ -1,5 +1,5 @@
-$bg-disabled-color: rgba(0, 0, 0, .26);
-$bg-enabled-color: rgba(#1967d2, .5);
+$bg-disabled-color: rgba(0, 0, 0, 0.26);
+$bg-enabled-color: rgba(#1967d2, 0.5);
 $lever-disabled-color: #fff;
 $lever-enabled-color: #1967d2;
 
@@ -27,7 +27,7 @@ $lever-enabled-color: #1967d2;
     cursor: pointer;
 
     &:before {
-      content: '';
+      content: "";
       position: absolute;
       top: 5px;
       left: 0;
@@ -36,11 +36,11 @@ $lever-enabled-color: #1967d2;
       background-color: $bg-disabled-color;
       border-radius: 14px;
       z-index: 1;
-      transition: background-color 0.28s cubic-bezier(.4, 0, .2, 1);
+      transition: background-color 0.28s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     &:after {
-      content: '';
+      content: "";
       position: absolute;
       top: 2px;
       left: 0;
@@ -48,14 +48,15 @@ $lever-enabled-color: #1967d2;
       height: 20px;
       background-color: $lever-disabled-color;
       border-radius: 14px;
-      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12);
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+        0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
       z-index: 2;
-      transition: all 0.28s cubic-bezier(.4, 0, .2, 1);
+      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
       transition-property: left, background-color;
     }
   }
 
-  &__input:checked+&__label {
+  &__input:checked + &__label {
     &:before {
       background-color: $bg-enabled-color;
     }

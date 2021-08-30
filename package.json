@@ -9,6 +9,8 @@
     "dev": "vue-cli-service build --no-clean"
   },
   "dependencies": {
+    "chart.js": "^3.5.1",
+    "chartjs-plugin-annotation": "^1.0.2",
     "core-js": "^3.6.5",
     "material-icons": "^1.1.1",
     "mitt": "^3.0.0",
@@ -17,8 +19,8 @@
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
     "vue-slicksort": "^2.0.0-alpha.5",
+    "vue-tippy": "^6.0.0-alpha.32",
     "vue-toastification": "^2.0.0-rc.1",
-    "vuedraggable": "^4.0.3",
     "vuex": "^4.0.2"
   },
   "devDependencies": {

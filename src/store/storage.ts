@@ -3,13 +3,33 @@ const state = {
     darkTheme: true,
     appDisabled: false,
     injectContent: false,
-    navbarCollapsed: false
+    navbarCollapsed: false,
   },
   users: [
     {
       email: "kristijan.rosandicq@skole.hr",
       password: "grandayyy",
       fullName: "Kristijan Rosandić",
+      settings: {
+        classTabsOrder: [
+          "Ocjene",
+          "Biljeske",
+          "Ispiti",
+          "Izostanci",
+          "Vladanja",
+          "Raspored",
+          "Statistika",
+        ],
+        subjectsSettings: {
+          zoom: 2,
+          expandTablesOnHover: true,
+          subjectColors: true,
+          countAvgs: false,
+          sortByDragging: true,
+          subjectsOrder: [],
+          expandedSubjects: []
+        },
+      },
       classesList: [
         {
           url: "https://ocjene.skole.hr/class_action/4081787930/course",
@@ -504,7 +524,6 @@ const state = {
         },
       ],
       signedIn: true,
-      settings: {},
       lastLoadedClassUrl:
         "https://ocjene.skole.hr/class_action/4081787930/course",
     },

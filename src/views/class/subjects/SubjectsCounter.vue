@@ -102,7 +102,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 #counter {
   position: absolute;
-  top: 110px;
+  top: 75px;
   left: 0;
   right: 0;
   bottom: 0;

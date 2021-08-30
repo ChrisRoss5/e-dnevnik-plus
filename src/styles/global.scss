@@ -140,6 +140,14 @@ iframe {
   transform: translate(-50%, -50%);
 }
 
+.abs-cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
 .flex-center {
   display: flex;
   justify-content: center;
@@ -206,10 +214,7 @@ iframe {
 
 .blur {
   backdrop-filter: blur(3px);
-
-  @include themed() {
-    background: t("blur");
-  }
+  background: transparent;
 }
 
 /*

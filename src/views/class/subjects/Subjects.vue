@@ -52,7 +52,8 @@
           <SubjectCardHead
             :subject="subject"
             :savedOptions="savedOptions"
-            @updateSubjectGradesAvg="getSubjectGradesAvg"
+            @updateGradesAvgEdited="(v) => updateGradesAvgEdited(subject, v)"
+            @revertSubject="revertSubject(subject)"
           ></SubjectCardHead>
           <SubjectCardBody
             :subject="subject"
@@ -60,7 +61,10 @@
             :isOpenedSubject="!!openedSubject"
             :expandTables="expandTables"
             :updateTablesMargin="updateTablesMargin"
-            @updateSubjectGradesAvg="getSubjectGradesAvg"
+            @expandSubject="(v) => expandSubject(subject, v)"
+            @updateSubjectMargin="(v) => updateSubjectMargin(subject, v)"
+            @updateGradesAvgEdited="updateGradesAvgEdited(subject, undefined)"
+            @updateSubjectGradesAvg="(v) => getSubjectGradesAvg(subject, v)"
           ></SubjectCardBody>
         </SlickItem>
       </transition-group>
@@ -76,13 +80,20 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { SlickList, SlickItem } from "vue-slicksort";
-import { getSubjectColors } from "@/scripts/utils";
+import { getSubjectColors, jsonClone } from "@/scripts/utils";
 import { updateSubjects } from "@/scripts/scrapers";
 import SubjectsSummary from "./SubjectsSummary.vue";
 import SubjectsCounter from "./SubjectsCounter.vue";
 import SubjectCardHead from "./SubjectCardHead.vue";
 import SubjectCardBody from "./SubjectCardBody.vue";
-import { User, ClassInfo, SubjectCache, GradesByCategory } from "@/store/state";
+import { MutationTypes } from "@/store/mutations";
+import {
+  User,
+  ClassInfo,
+  SubjectCache,
+  GradesByCategory,
+  SubjectsSettings,
+} from "@/store/state";
 
 export interface ExtendedSubjectCache extends SubjectCache {
   expanded: boolean;
@@ -126,57 +137,8 @@ export default defineComponent({
   },
   data() {
     return {
-      updateTablesMargin: 0,
-      expandTables: 0,
-      savedOptions: {
-        zoom: 2,
-        expandTablesOnHover: true,
-        subjectColors: true,
-        sortByDragging: true,
-      },
-      options: {
-        expandTablesOnHover: {
-          icon: "menu_open",
-          tooltip: "Otvori tablice prelaskom miša",
-          hideWhenSubjectIsOpen: true,
-          enabled: true,
-        },
-        expandTables: {
-          icon: "unfold_more",
-          tooltip: "Otvori sve tablice",
-          hideWhenSubjectIsOpen: true,
-          enabled: false,
-        },
-        zoomIn: {
-          icon: "zoom_in",
-          tooltip: "Povećaj prikaz",
-          hideWhenSubjectIsOpen: true,
-        },
-        zoomOut: {
-          icon: "zoom_out",
-          tooltip: "Smanji prikaz",
-          hideWhenSubjectIsOpen: true,
-        },
-        subjectColors: {
-          icon: "border_color",
-          tooltip: "Prikaži boje ocjena",
-          fontSize: "18px",
-          enabled: true,
-        },
-        countAvgs: {
-          icon: "functions",
-          tooltip: "Zbroji zaključne ocjene",
-          enabled: false,
-        },
-        sortSubjects: {
-          icon: "swap_vert",
-          tooltip: "Sortiraj predmete",
-        },
-        updateSubjects: {
-          icon: "sync",
-          tooltip: "Ažuriraj sve ocjene",
-        },
-      } as Record<string, Option>,
+      expandTables: 1,
+      updateTablesMargin: 1,
       subjects: [] as ExtendedSubjectCache[],
       subjectsLoading: false,
       subjectsSorting: false,
@@ -198,22 +160,35 @@ export default defineComponent({
       const cached =
         this.openedClassInfo && this.openedClassInfo.cachedSubjects;
       if (!cached || !cached.length) return;
-      const clone: ExtendedSubjectCache[] = JSON.parse(JSON.stringify(cached));
-      this.subjects = clone.map((subject) => {
-        const gradesByCategoryOriginal = JSON.parse(
-          JSON.stringify(subject.gradesByCategory || []),
-        );
-        const gradesAvg = this.getSubjectGradesAvg(
-          subject,
-          subject.gradesByCategory,
-        );
-        const gradesCount = this.getSubjectGradesCount(
-          subject,
-          subject.gradesByCategory,
-        );
-        return { ...subject, gradesByCategoryOriginal, gradesAvg, gradesCount };
-      });
+      const clone = jsonClone(cached) as ExtendedSubjectCache[];
+      const { subjectsOrder, expandedSubjects } = this.savedOptions;
+      this.subjects = clone
+        .map((subject) => {
+          const gradesByCategoryOriginal = jsonClone(
+            subject.gradesByCategory || [],
+          );
+          const gradesAvg = this.getSubjectGradesAvg(
+            subject,
+            subject.gradesByCategory,
+          );
+          const gradesCount = this.getSubjectGradesCount(
+            subject,
+            subject.gradesByCategory,
+          );
+          const expandedKeep = expandedSubjects.includes(subject.url);
+          return {
+            ...subject,
+            gradesByCategoryOriginal,
+            gradesAvg,
+            gradesCount,
+            expandedKeep,
+          };
+        })
+        .sort((a, b) => {
+          return subjectsOrder.indexOf(a.url) - subjectsOrder.indexOf(b.url);
+        });
       this.finalGradeOriginal = this.getFinalGradeOriginal();
+      this.$nextTick(() => (this.updateTablesMargin += 1));
     },
     subjectMouseEnter(e: MouseEvent, subject: ExtendedSubjectCache) {
       if (!this.savedOptions.expandTablesOnHover || this.openedSubject) return;
@@ -224,55 +199,68 @@ export default defineComponent({
       subject.expanded = false;
     },
     subjectsOrderChanged() {
+      const savedOptions = jsonClone(this.savedOptions);
+      savedOptions.subjectsOrder = this.subjects.map((subject) => subject.url);
+      this.updateSettings(savedOptions);
       this.$nextTick(() => (this.subjectsSorting = false));
     },
     optionClicked(optionName: string) {
       const option = this.options[optionName];
-      if (option.enabled !== undefined) option.enabled = !option.enabled;
-      const enabled = option.enabled || false;
+      const savedOptions = jsonClone(this.savedOptions);
+      const zoomChanged = optionName.includes("zoom");
       switch (optionName) {
         case "expandTablesOnHover":
-          this.savedOptions.expandTablesOnHover = enabled;
+          savedOptions.expandTablesOnHover = !savedOptions.expandTablesOnHover;
           break;
         case "expandTables":
-          this.expandTables = enabled ? this.expandTables + 1 : 0;
+          this.expandTables = !option.enabled ? this.expandTables + 1 : 0;
           return;
         case "zoomIn":
-          this.savedOptions.zoom -= 1;
+          savedOptions.zoom -= 1;
           break;
         case "zoomOut":
-          this.savedOptions.zoom += 1;
+          savedOptions.zoom += 1;
           break;
         case "subjectColors":
-          this.savedOptions.subjectColors = enabled;
+          savedOptions.subjectColors = !savedOptions.subjectColors;
+          this.subjects.forEach(this.updateSubjectColors);
+          break;
+        case "countAvgs":
+          savedOptions.countAvgs = !savedOptions.countAvgs;
           break;
         case "updateSubjects":
           this.updateSubjects(true);
           return;
       }
-      this.updateTablesMargin += 1;
-      this.savedOptions.zoom = Math.min(
-        Math.max(this.savedOptions.zoom, 1),
-        this.subjects.length,
-      );
+      if (zoomChanged) {
+        savedOptions.zoom = Math.min(
+          Math.max(savedOptions.zoom, 1),
+          this.subjects.length,
+        );
+      }
+      this.updateSettings(savedOptions);
+      this.updateTablesMargin += zoomChanged ? 1 : 0;
     },
     sortOptionClicked(optionName: string) {
+      const savedOptions = jsonClone(this.savedOptions);
       if (optionName.includes("Sortiranje")) {
-        this.savedOptions.sortByDragging = !this.savedOptions.sortByDragging;
+        savedOptions.sortByDragging = !savedOptions.sortByDragging;
+        this.updateSettings(savedOptions);
         return;
       }
       const isReverse = optionName.includes("silazno");
       const sortByAvg = optionName.includes("Prosjek");
       const sortProperty = sortByAvg ? "gradesAvgEdited" : "gradesCount";
       this.subjects.sort((a, b) => {
-        if (!a.gradesCount && b.gradesCount) return 1;
-        if (a.gradesCount && !b.gradesCount) return -1;
+        if (!a.gradesCount && b.gradesCount) return 1; // empty subject
+        if (a.gradesCount && !b.gradesCount) return -1; // empty subject
         const propA = a[sortProperty] || a.gradesAvg;
         const propB = b[sortProperty] || b.gradesAvg;
         if (propA < propB) return isReverse ? 1 : -1;
         if (propA > propB) return isReverse ? -1 : 1;
         return 0;
       });
+      this.subjectsOrderChanged();
     },
     getSubjectGradesCount(
       subject: ExtendedSubjectCache,
@@ -282,8 +270,7 @@ export default defineComponent({
       const gradesCount = (gradesByCategory || []).reduce((a, row) => {
         return a + row.grades.flat().length;
       }, 0);
-      if (this.savedOptions.subjectColors)
-        this.updateSubjectColors(subject, gradesCount);
+      if (this.savedOptions.subjectColors) this.updateSubjectColors(subject);
       if (!original) subject.gradesCount = gradesCount;
       return gradesCount;
     },
@@ -319,9 +306,9 @@ export default defineComponent({
         }, 0) / subjectsWithGrades.length
       );
     },
-    updateSubjectColors(subject: ExtendedSubjectCache, totalCount: number) {
+    updateSubjectColors(subject: ExtendedSubjectCache) {
       const counts = [0, 0, 0, 0, 0];
-      const cols = [[], [], [], [], [], [], [], [], [], []] as number[][];
+      const cols: number[][] = [[], [], [], [], [], [], [], [], [], []];
       for (let i = 0; i < (subject.gradesByCategory || []).length; i++) {
         const row = subject.gradesByCategory![i].grades;
         for (let j = 0; j < row.length; j++) {
@@ -331,6 +318,7 @@ export default defineComponent({
           }
         }
       }
+      const totalCount = counts.reduce((a, b) => a + b, 0);
       subject.lineColors = getSubjectColors(counts, totalCount);
       subject.columnColors = getSubjectColors(cols);
     },
@@ -343,10 +331,40 @@ export default defineComponent({
       }
       this.openedSubject = this.subjects.find((s) => s.isOpened) || false;
     },
+    updateGradesAvgEdited(
+      subject: ExtendedSubjectCache,
+      newValue: number | undefined,
+    ) {
+      subject.gradesAvgEdited = newValue;
+    },
+    expandSubject(subject: ExtendedSubjectCache, expand: boolean) {
+      subject.expandedKeep = expand;
+      const savedOptions = jsonClone(this.savedOptions);
+      const arr = savedOptions.expandedSubjects;
+      const idx = arr.indexOf(subject.url);
+      expand ? idx == -1 && arr.push(subject.url) : arr.splice(idx, 1);
+      this.updateSettings(savedOptions);
+    },
+    updateSubjectMargin(subject: ExtendedSubjectCache, margin: string) {
+      subject.marginBottom = margin;
+    },
+    revertSubject(subject: ExtendedSubjectCache) {
+      subject.gradesAvgEdited = undefined;
+      subject.gradesByCategory = jsonClone(subject.gradesByCategoryOriginal);
+      this.getSubjectGradesAvg(subject, subject.gradesByCategory);
+    },
+    updateSettings(newSettings: SubjectsSettings) {
+      this.$store.commit(MutationTypes.UPDATE_USER_SETTINGS, {
+        user: this.user,
+        settings: {
+          subjectsSettings: newSettings,
+        },
+      });
+    },
   },
   computed: {
-    user(): User | undefined {
-      return this.$store.getters.user;
+    user(): User {
+      return this.$store.getters.user as User;
     },
     openedClassInfo(): ClassInfo | undefined {
       return this.$store.getters.classInfo(this.classId || "");
@@ -357,13 +375,61 @@ export default defineComponent({
     finalGrade(): number {
       const subjectsWithGrades = this.subjects.filter((subj) => {
         if (subj.gradesAvgEdited === undefined) return subj.gradesAvg;
-        return !isNaN(subj.gradesAvgEdited)
+        return !isNaN(subj.gradesAvgEdited);
       });
       return (
         subjectsWithGrades.reduce((a, subj) => {
           return a + Math.round((subj.gradesAvgEdited || subj.gradesAvg)!);
         }, 0) / subjectsWithGrades.length
       );
+    },
+    savedOptions(): SubjectsSettings {
+      return this.user.settings.subjectsSettings;
+    },
+    options(): Record<string, Option> {
+      return {
+        expandTablesOnHover: {
+          icon: "menu_open",
+          tooltip: "Otvori tablice prelaskom miša",
+          hideWhenSubjectIsOpen: true,
+          enabled: this.savedOptions.expandTablesOnHover,
+        },
+        expandTables: {
+          icon: "unfold_more",
+          tooltip: "Otvori sve tablice",
+          hideWhenSubjectIsOpen: true,
+          enabled: this.allSubjectsExpanded,
+        },
+        zoomIn: {
+          icon: "zoom_in",
+          tooltip: "Povećaj prikaz",
+          hideWhenSubjectIsOpen: true,
+        },
+        zoomOut: {
+          icon: "zoom_out",
+          tooltip: "Smanji prikaz",
+          hideWhenSubjectIsOpen: true,
+        },
+        subjectColors: {
+          icon: "border_color",
+          tooltip: "Prikaži boje ocjena",
+          fontSize: "18px",
+          enabled: this.savedOptions.subjectColors,
+        },
+        countAvgs: {
+          icon: "functions",
+          tooltip: "Zbroji zaključne ocjene",
+          enabled: this.savedOptions.countAvgs,
+        },
+        sortSubjects: {
+          icon: "swap_vert",
+          tooltip: "Sortiraj predmete",
+        },
+        updateSubjects: {
+          icon: "sync",
+          tooltip: "Ažuriraj sve ocjene",
+        },
+      };
     },
   },
   watch: {
@@ -382,6 +448,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 #subjects {
+  position: relative;
   display: flex;
   align-items: flex-start;
   flex-wrap: wrap;

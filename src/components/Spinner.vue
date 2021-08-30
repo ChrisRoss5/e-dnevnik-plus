@@ -3,7 +3,7 @@
     <div
       v-if="visible"
       id="spinner"
-      class="flex-center"
+      class="flex-center abs-cover"
       :class="{ blur }"
     >
       <img
@@ -33,11 +33,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 #spinner {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
   transform: translate3d(0, 0, 0);
   will-change: opacity, transform;
   transition: background-color 500ms, backdrop-filter 500ms;

@@ -25,6 +25,17 @@ import "v-tooltip/dist/v-tooltip.css";
 VTooltip.options.offset = [0, 10];
 VTooltip.options.instantMove = true;
 
+/* https://vue-tippy.netlify.app/ */
+// import VueTippy from "vue-tippy";
+// import "tippy.js/dist/tippy.css";
+
+/* https://www.chartjs.org/ */
+/* https://www.chartjs.org/chartjs-plugin-annotation/ */
+import { Chart } from 'chart.js';
+import annotationPlugin from 'chartjs-plugin-annotation';
+Chart.register(annotationPlugin);
+Chart.defaults.font.size = 16;
+
 const app = createApp(App);
 app.config.globalProperties.$emitter = mitt();
 app
@@ -33,4 +44,7 @@ app
   .use(Toast, { position: "bottom-right" } as PluginOptions)
   .use(VWave)
   .use(VTooltip)
+  /* .use(VueTippy, {
+    defaultProps: { animateFill: true },
+  }) */
   .mount("#app");

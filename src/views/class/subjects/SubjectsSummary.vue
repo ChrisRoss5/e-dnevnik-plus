@@ -36,7 +36,7 @@
       </transition>
     </div>
     <div id="options" class="flex-center">
-      <span
+      <div
         v-for="(option, optionName) in options"
         :key="optionName"
         class="material-icons flex-center"
@@ -58,7 +58,7 @@
           sourceElementId="options"
           @close="sortDropdownClosed"
         ></Dropdown>
-      </span>
+      </div>
     </div>
   </div>
 </template>
@@ -166,7 +166,7 @@ export default defineComponent({
 #options {
   margin-left: auto;
 
-  & > span {
+  & > div {
     position: relative;
     width: 24px;
     height: 24px;

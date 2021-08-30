@@ -30,6 +30,7 @@ export const actions: ActionTree<State, State> & Actions = { // nosonar: Index s
   },
 };
 
+// todo: delete
 function pause(t: number) {
   return new Promise((res) => setTimeout(res, t));
 }
