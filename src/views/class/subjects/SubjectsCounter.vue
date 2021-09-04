@@ -56,19 +56,7 @@ export default defineComponent({
   },
   emits: ["close"],
   created() {
-    for (const subject of this.subjects) {
-      const name = subject.name;
-      let row;
-      if (subject.finalGrade) {
-        row = this.gradeCounts[Math.round(subject.finalGrade) - 1];
-      } else if (subject.gradesAvgOriginal) {
-        row = this.gradeCounts[Math.round(subject.gradesAvgOriginal) - 1];
-      }
-      if (row) {
-        row.subjects.push(name);
-        row.count += 1;
-      }
-    }
+    this.updateData();
   },
   data() {
     return {
@@ -79,14 +67,32 @@ export default defineComponent({
         "Dovoljnih (2)",
         "Nedovoljnih (1)",
       ],
-      gradeCounts: [
-        { subjects: [], count: 0 },
-        { subjects: [], count: 0 },
-        { subjects: [], count: 0 },
-        { subjects: [], count: 0 },
-        { subjects: [], count: 0 },
-      ] as Row[],
+      gradeCounts: [] as Row[],
     };
+  },
+  methods: {
+    updateData() {
+      this.gradeCounts = [
+        { subjects: [], count: 0 },
+        { subjects: [], count: 0 },
+        { subjects: [], count: 0 },
+        { subjects: [], count: 0 },
+        { subjects: [], count: 0 },
+      ];
+      for (const subject of this.subjects) {
+        const name = subject.name;
+        let row;
+        if (subject.finalGrade) {
+          row = this.gradeCounts[Math.round(subject.finalGrade) - 1];
+        } else if (subject.gradesAvgOriginal) {
+          row = this.gradeCounts[Math.round(subject.gradesAvgOriginal) - 1];
+        }
+        if (row) {
+          row.subjects.push(name);
+          row.count += 1;
+        }
+      }
+    },
   },
   computed: {
     finalGrade(): string {
@@ -94,6 +100,11 @@ export default defineComponent({
         this.gradeCounts.reduce((a, b, i) => a + b.count * (i + 1), 0) /
           this.gradeCounts.reduce((a, b) => a + b.count, 0),
       );
+    },
+  },
+  watch: {
+    subjects() {
+      this.updateData();
     },
   },
 });

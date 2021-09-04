@@ -16,63 +16,68 @@
         @close="optionClicked('countAvgs', options.countAvgs)"
       ></SubjectsCounter>
     </transition>
-    <SlickList
-      id="subjects-list"
-      :class="{ sorting: subjectsSorting }"
-      :style="{
-        'grid-template-columns':
-          'repeat(' +
-          (openedSubject ? 1 : savedOptions.zoom) +
-          ',minmax(0, 1fr))',
-      }"
-      v-model:list="subjects"
-      axis="xy"
-      helperClass="dragged-subject"
-      :lockOffset="15"
-      :lockToContainerEdges="true"
-      :distance="5"
-      :cancelKey="'no'"
-      @sort-start="subjectsSorting = true"
-      @update:list="subjectsOrderChanged"
-    >
-      <transition-group :name="subjectsSorting ? '' : 'subjects-list'">
-        <SlickItem
-          v-for="(subject, i) in subjects"
-          :key="subject.url"
-          :index="i"
-          class="subject"
-          :class="{
-            'expanded-keep': subject.expandedKeep && !openedSubject,
-            'is-opened': subject.isOpened,
-          }"
-          :disabled="!savedOptions.sortByDragging"
-          @mouseenter="subjectMouseEnter($event, subject)"
-          @mouseleave="subjectMouseLeave(subject)"
-        >
-          <SubjectCardHead
-            :subject="subject"
-            :savedOptions="savedOptions"
-            @updateGradesAvgEdited="(v) => updateGradesAvgEdited(subject, v)"
-            @revertSubject="revertSubject(subject)"
-          ></SubjectCardHead>
-          <SubjectCardBody
-            :subject="subject"
-            :savedOptions="savedOptions"
-            :isOpenedSubject="!!openedSubject"
-            :expandTables="expandTables"
-            :updateTablesMargin="updateTablesMargin"
-            @expandSubject="(v) => expandSubject(subject, v)"
-            @updateSubjectMargin="(v) => updateSubjectMargin(subject, v)"
-            @updateGradesAvgEdited="updateGradesAvgEdited(subject, undefined)"
-            @updateSubjectGradesAvg="(v) => getSubjectGradesAvg(subject, v)"
-          ></SubjectCardBody>
-        </SlickItem>
-      </transition-group>
-    </SlickList>
+    <transition name="opacity">
+      <SlickList
+        v-if="subjects.length"
+        id="subjects-list"
+        :class="{ sorting: subjectsSorting }"
+        :style="{
+          'grid-template-columns':
+            'repeat(' +
+            (openedSubject ? 1 : savedOptions.zoom) +
+            ',minmax(0, 1fr))',
+        }"
+        v-model:list="subjects"
+        axis="xy"
+        helperClass="dragged-subject"
+        :lockOffset="15"
+        :lockToContainerEdges="true"
+        :distance="5"
+        :cancelKey="'no'"
+        @sort-start="subjectsSorting = true"
+        @update:list="subjectsOrderChanged"
+      >
+        <transition-group :name="subjectsSorting ? '' : 'subjects-list'">
+          <SlickItem
+            v-for="(subject, i) in subjects"
+            :key="subject.url"
+            :index="i"
+            class="subject"
+            :class="{
+              'expanded-keep': subject.expandedKeep && !openedSubject,
+              'is-opened': subject.isOpened,
+            }"
+            :disabled="!savedOptions.sortByDragging"
+            @mouseenter="subjectMouseEnter($event, subject)"
+            @mouseleave="subjectMouseLeave(subject)"
+          >
+            <SubjectCardHead
+              :subject="subject"
+              :savedOptions="savedOptions"
+              @updateGradesAvgEdited="(v) => updateGradesAvgEdited(subject, v)"
+              @revertSubject="revertSubject(subject)"
+            ></SubjectCardHead>
+            <SubjectCardBody
+              :subject="subject"
+              :savedOptions="savedOptions"
+              :isOpenedSubject="!!openedSubject"
+              :expandTables="expandTables"
+              :updateTablesMargin="updateTablesMargin"
+              @expandSubject="(v) => expandSubject(subject, v)"
+              @updateSubjectMargin="(v) => updateSubjectMargin(subject, v)"
+              @updateGradesAvgEdited="updateGradesAvgEdited(subject, undefined)"
+              @updateSubjectGradesAvg="(v) => getSubjectGradesAvg(subject, v)"
+            ></SubjectCardBody>
+          </SlickItem>
+        </transition-group>
+      </SlickList>
+    </transition>
 
     <!-- SUBJECT.VUE -->
     <router-view v-slot="{ Component }" :subject="openedSubject">
-      <component :is="Component" />
+      <transition :name="'subject'">
+        <component :is="Component" />
+      </transition>
     </router-view>
   </div>
 </template>
@@ -127,13 +132,10 @@ export default defineComponent({
     SubjectCardHead,
     SubjectCardBody,
   },
-  props: { classId: String },
-  /* emits: ["sectionLoading", "sectionLoaded"], */ // todo: FIX TS ERROR
+  props: { classId: { type: String, required: true } },
+  /* emits: ["sectionLoading", "sectionLoaded"], */ // TODO: FIX TS ERROR
   created() {
     this.updateSubjects();
-  },
-  mounted() {
-    this.$nextTick(this.checkActiveSubject);
   },
   data() {
     return {
@@ -147,14 +149,15 @@ export default defineComponent({
     };
   },
   methods: {
-    async updateSubjects(forceUpdate?: true) {
+    async updateSubjects(forceUpdate?: boolean) {
       if (!this.openedClassInfo || this.subjectsLoading) return;
       this.$emit("sectionLoading");
       this.subjectsLoading = true;
-      //if (!(await updateSubjects(this.openedClassInfo, forceUpdate))) return;  // todo: uncomment
+      if (!(await updateSubjects(this.openedClassInfo, forceUpdate))) return;
       this.subjectsLoading = false;
       this.$emit("sectionLoaded");
-      this.resetSubjects();
+      this.subjects = [];  // Trigger soft 'opacity' transition
+      setTimeout(this.resetSubjects, 0);  // Large amount of HTML causes flicker
     },
     resetSubjects() {
       const cached =
@@ -189,6 +192,7 @@ export default defineComponent({
         });
       this.finalGradeOriginal = this.getFinalGradeOriginal();
       this.$nextTick(() => (this.updateTablesMargin += 1));
+      this.checkActiveSubject();
     },
     subjectMouseEnter(e: MouseEvent, subject: ExtendedSubjectCache) {
       if (!this.savedOptions.expandTablesOnHover || this.openedSubject) return;
@@ -308,7 +312,7 @@ export default defineComponent({
     },
     updateSubjectColors(subject: ExtendedSubjectCache) {
       const counts = [0, 0, 0, 0, 0];
-      const cols: number[][] = [[], [], [], [], [], [], [], [], [], []];
+      const cols: number[][] = [...Array(10)].map(() => []);
       for (let i = 0; i < (subject.gradesByCategory || []).length; i++) {
         const row = subject.gradesByCategory![i].grades;
         for (let j = 0; j < row.length; j++) {
@@ -367,7 +371,7 @@ export default defineComponent({
       return this.$store.getters.user as User;
     },
     openedClassInfo(): ClassInfo | undefined {
-      return this.$store.getters.classInfo(this.classId || "");
+      return this.$store.getters.classInfo(this.classId);
     },
     allSubjectsExpanded(): boolean {
       return this.subjects.every((subject) => subject.expandedKeep);
@@ -437,7 +441,7 @@ export default defineComponent({
       this.checkActiveSubject();
     },
     classId(to, from) {
-      from && this.updateSubjects();
+      if (from) this.updateSubjects();
     },
     allSubjectsExpanded(newVal) {
       this.options.expandTables.enabled = newVal;
@@ -528,5 +532,22 @@ export default defineComponent({
 
 .subjects-list-move {
   transition: transform 1s;
+}
+
+.subject-enter-active,
+.subject-leave-active {
+  transition: opacity 150ms, transform 150ms;
+}
+
+.subject-leave-active {
+  position: absolute !important;
+  right: 0;
+  top: 75px;
+}
+
+.subject-enter-from,
+.subject-leave-to {
+  opacity: 0;
+  transform: scaleY(0.97);
 }
 </style>

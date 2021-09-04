@@ -8,15 +8,12 @@ export async function addStyleTag(
     link.rel = "stylesheet";
     link.type = "text/css";
     link.href = "https://ocjene.skole.hr/build/layout.c996b0.css";
-    link.onload = () => {
+    link.onload = link.onerror = () => {
       const newStyle = document.createElement("style");
-      newStyle.setAttribute("type", "text/css");
       newStyle.textContent =
         /* css */ `
-          body {
-            background: white !important;
-          }
           * {
+            background: transparent !important;
             transition: none !important;
           }
           .loading-error-plus {
@@ -27,7 +24,6 @@ export async function addStyleTag(
         (darkTheme
           ? /* css */ `
           body, * {
-            background: #181a1b !important;
             color: white;
             border-color: #2d2d2d !important;
             box-shadow: none !important;
@@ -38,6 +34,10 @@ export async function addStyleTag(
     };
     docHead.appendChild(link);
   });
+}
+
+export function getElText(el: Element | null): string {
+  return el ? (el.textContent as string).trim() : "";
 }
 
 export function parseDoc(html: string, baseUri: string): Document {
@@ -68,8 +68,12 @@ export function formEncodedBody(obj: Record<string, string>): string {
     .join("&");
 }
 
-export function getElText(el: Element | null): string {
-  return el ? (el.textContent as string).trim() : "";
+export function getAverage(arr: number[]): number {
+  return getSum(arr) / arr.length;
+}
+
+export function getSum(arr: number[], multiplyByIndex?: boolean): number {
+  return arr.reduce((a, b, i) => a + b * ((multiplyByIndex ? i : 0) + 1), 0);
 }
 
 export function parseNum(num: string): number {
@@ -95,8 +99,12 @@ export function formatGradeText(num: number): string {
   ][num]!;
 }
 
-export function capitalize(str: string): string {
+export function capitalize(str: string) {
   return str[0].toUpperCase() + str.slice(1);
+}
+
+export function removeAllparentheses(str: string) {
+  return str.replace(/ *\([^)]*\) */g, "");
 }
 
 export function numberToColorHsl(i: number, a?: number) {
@@ -107,11 +115,26 @@ export function numberToColorHsl(i: number, a?: number) {
   );
 }
 
-const colors = ["#FF3924", "#FF9600", "#FFE500", "#84FF33", "#2ab62a"];
+export function getGradesColors(alpha?: number) {
+  let colors = ["#FF3924", "#FF9600", "#FFE500", "#84FF33", "#2ab62a"];
+  if (alpha) {
+    colors = colors.map((color) => {
+      return (
+        color +
+        Math.round(alpha * 255)
+          .toString(16)
+          .toUpperCase()
+      );
+    });
+  }
+  return colors;
+}
+
 export function getSubjectColors(
   grades: number[] | number[][],
   gradesCount?: number,
 ) {
+  const colors = getGradesColors();
   let perc = 0;
   let linearGradient;
   if (grades.length == 5) {

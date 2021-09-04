@@ -132,6 +132,7 @@ export default defineComponent({
   font-size: 24px;
   padding: 0 30px;
   margin: 0 10px 30px;
+  height: 44px;
 
   @include themed() {
     background: linear-gradient(

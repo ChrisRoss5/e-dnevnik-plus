@@ -49,6 +49,7 @@ export interface ClassInfo {
   url: string;
   name: string;
   year: string;
+  isYearCompleted: boolean;
   school: string;
   headTeacher?: string;
   finalGrade?: string;

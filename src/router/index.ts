@@ -1,17 +1,20 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import { store } from "@/store";
-import Login from "../views/Login.vue";
-import Class from "../views/Class.vue";
 
-import Subjects from "../views/class/subjects/Subjects.vue";
-import Subject from "../views/class/subjects/Subject.vue";
-import ClassSectionFrame from "../views/class/ClassSectionFrame.vue";
-import Exams from "../views/class/Exams.vue";
-import Schedule from "../views/class/Schedule.vue";
-import Stats from "../views/class/Stats.vue";
+import Login from "@/views/Login.vue";
+import Class from "@/views/Class.vue";
 
-import Websites from "../views/Websites.vue";
-import Settings from "../views/Settings.vue";
+import Subjects from "@/views/class/subjects/Subjects.vue";
+import Subject from "@/views/class/subjects/Subject.vue";
+import ClassSectionFrame from "@/views/class/ClassSectionFrame.vue";
+import Exams from "@/views/class/Exams.vue";
+import Schedule from "@/views/class/Schedule.vue";
+import ClassStats from "@/views/class/ClassStats.vue";
+
+import GlobalStats from "@/views/GlobalStats.vue";
+
+import Websites from "@/views/Websites.vue";
+import Settings from "@/views/Settings.vue";
 
 /*
 No lazy loading:
@@ -54,7 +57,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: "ispiti",
-        component: Exams,
+        component: ClassSectionFrame,
       },
       {
         path: "izostanci",
@@ -66,13 +69,21 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: "raspored",
-        component: Schedule,
+        component: ClassSectionFrame,
       },
       {
         path: "statistika",
-        component: Stats,
+        component: ClassStats,
+      },
+      {
+        path: "osobni-podaci",
+        component: ClassSectionFrame,
       },
     ],
+  },
+  {
+    path: "/statistika-ocjena",
+    component: GlobalStats,
   },
   {
     path: "/stranica/:website",
@@ -94,6 +105,8 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  console.log(to.path, from.path, store);
+  if (!window.isAppInitiated) return next();  // App not INIT
   const isAuthenticated = !!store.getters.user;
   const isLoginPage = to.path == "/";
   if (!isLoginPage && !isAuthenticated) next({ path: "/" });

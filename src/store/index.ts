@@ -20,7 +20,7 @@ import chromeLocalStorage from "./storage";
 function storeMutated(_store: Store) {
   _store.subscribe((mutation, _state) => {
     console.log("MUTATED", mutation, _state);
-    mutation.type != ActionTypes.INIT && chromeLocalStorage(_state);
+    if (mutation.type != ActionTypes.INIT) chromeLocalStorage(_state);
   });
 }
 

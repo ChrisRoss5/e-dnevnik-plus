@@ -33,17 +33,6 @@ export default defineComponent({
   data() {
     return {
       showDropdown: false,
-      dropdown: [
-        {
-          name: "Osobni podaci",
-          icon: "fingerprint",
-          link: "/osobni-podaci",
-        },
-        {
-          name: "Odjava",
-          icon: "exit_to_app",
-        },
-      ] as DropdownItem[],
     };
   },
   methods: {
@@ -58,13 +47,26 @@ export default defineComponent({
     },
     showCard(show: boolean) {
       const userEl = this.$refs.user as HTMLElement;
-      userEl && userEl.classList[show ? "add" : "remove"]("card");
+      if (userEl) userEl.classList[show ? "add" : "remove"]("card");
     },
   },
   computed: {
     user(): User | undefined {
       return this.$store.getters.user;
     },
+    dropdown(): DropdownItem[] {
+      return [
+        {
+          name: "Osobni podaci",
+          icon: "fingerprint",
+          link: "/razred/" + (this.$route.params.classId || "-") + "/osobni-podaci" ,
+        },
+        {
+          name: "Odjava",
+          icon: "exit_to_app",
+        },
+      ];
+    }
   },
   watch: {
     $route(to) {

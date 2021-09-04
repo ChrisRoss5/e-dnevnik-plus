@@ -26,7 +26,7 @@
       </div>
       <div
         v-if="confirmedFinalGrade"
-        id="confirmedFinalGrade"
+        id="confirmed-final-grade"
         class="card"
         v-tooltip.bottom="'Potvrđeni završni uspjeh (na svjedodžbi)'"
       >
@@ -78,17 +78,22 @@
         </span>
       </SlickList>
       <div id="line"></div>
-      <div class="selected-line" ref="selectedLine"></div>
+      <transition name="opacity">
+        <div
+          v-show="activeRouterLink"
+          class="selected-line"
+          ref="selectedLine"
+        ></div>
+      </transition>
     </div>
 
     <!-- @/views/class components -->
-    <div id="section">
+    <div id="section" v-if="classId">
       <router-view
         v-slot="{ Component }"
         :classId="classId"
         @sectionLoading="showSpinner = true"
         @sectionLoaded="showSpinner = false"
-
       >
         <transition :name="sectionTransition" mode="out-in">
           <component :is="Component" :key="triggerTransition" />
@@ -155,13 +160,15 @@ export default defineComponent({
       ],
       visibleDropdown: "",
       sectionTransition: "",
-      triggerTransition: 0
+      triggerTransition: 0,
+      activeRouterLink: undefined as HTMLElement | undefined,
     };
   },
   methods: {
     tabsSortingEvent(started: boolean) {
       const line = this.$refs.selectedLine as HTMLElement;
       const sections = this.getSectionsContainer();
+      if (!sections) return;
       for (const anchor of sections.querySelectorAll("a")) {
         const _line = anchor.lastElementChild as HTMLElement;
         const s = started && anchor.classList.contains("router-link-active");
@@ -170,12 +177,13 @@ export default defineComponent({
       line.style.display = started ? "none" : "block";
     },
     tabsOrderChanged() {
-      this.user &&
+      if (this.user)
         this.$store.commit(MutationTypes.UPDATE_CLASS_TABS_ORDER, {
           user: this.user,
           tabs: this.tabs.map((tab) => tab.name),
         });
       const sections = this.getSectionsContainer();
+      if (!sections) return;
       sections.classList.add("no-transition");
       this.$nextTick(() => {
         this.positionSelectedLine();
@@ -193,17 +201,20 @@ export default defineComponent({
       this.classId = classId;
     },
     positionSelectedLine(transition?: boolean) {
-      const line = this.$refs.selectedLine as HTMLElement;
       const sections = this.getSectionsContainer();
       if (!sections) return;
-      const { offsetLeft, offsetWidth } = sections.querySelector(
+      this.activeRouterLink = sections.querySelector(
         ".router-link-active",
       ) as HTMLElement;
-      line.style.transition = transition
-        ? "width 500ms, transform 500ms"
-        : "none";
-      line.style.transform = "translateX(" + (offsetLeft + 30) + "px)";
-      line.style.width = offsetWidth + "px";
+      if (this.activeRouterLink) {
+        const line = this.$refs.selectedLine as HTMLElement;
+        const { offsetLeft, offsetWidth } = this.activeRouterLink;
+        line.style.transition = transition
+          ? "width 500ms, transform 500ms"
+          : "none";
+        line.style.transform = "translateX(" + (offsetLeft + 30) + "px)";
+        line.style.width = offsetWidth + "px";
+      }
       const user = document.getElementById("user");
       const classInfo = this.$refs.classInfo as HTMLElement;
       if (user) classInfo.style.marginRight = user.offsetWidth + "px";
@@ -232,18 +243,22 @@ export default defineComponent({
       ).map((classInfo) => ({
         name: filterBy ? this[filterBy] : classInfo.year,
         alignRight: classInfo.name,
-        link: "/razred/" + classInfo.url.match(/\d+/)![0] + "/ocjene",
+        link:
+          "/razred/" +
+          classInfo.url.match(/\d+/)![0] +
+          "/" +
+          this.getSectionName(this.$route.path),
         active: classInfo.url.includes(this.classId),
       }));
     },
-    getSectionPath(name: string): string {
+    getSectionPath(name: string) {
       return "/razred/" + this.$route.params.classId + "/" + name.toLowerCase();
     },
-    getSectionName(path: string): string {
+    getSectionName(path: string) {
       return path.replace(/\/razred\/\d+\//, "").replace(/\/\d+$/, "");
     },
-    getSectionsContainer(): HTMLElement {
-      return this.$refs.sectionsContainer as HTMLElement;
+    getSectionsContainer() {
+      return this.$refs.sectionsContainer as HTMLElement | undefined;
     },
   },
   computed: {
@@ -300,8 +315,15 @@ export default defineComponent({
     $route(to, from) {
       this.classChanged();
       this.$nextTick(() => this.positionSelectedLine(true));
-      const fromIdx = this.tabNames.indexOf(this.getSectionName(from.path));
-      const toIdx = this.tabNames.indexOf(this.getSectionName(to.path));
+      const toName = this.getSectionName(to.path);
+      const fromName = this.getSectionName(from.path);
+      if (toName == "osobni-podaci" || fromName == "osobni-podaci") {
+        this.sectionTransition = "opacity";
+        this.triggerTransition += 1;
+        return;
+      }
+      const toIdx = this.tabNames.indexOf(toName);
+      const fromIdx = this.tabNames.indexOf(fromName);
       if (toIdx != fromIdx && fromIdx != -1) this.triggerTransition += 1;
       this.sectionTransition = toIdx < fromIdx ? "slide-right" : "slide-left";
     },
@@ -376,7 +398,7 @@ body > .section-item {
   grid-area: 2 / 1 / 3 / 2;
 }
 
-#confirmedFinalGrade {
+#confirmed-final-grade {
   background: #4caf50;
   color: white;
   padding: 5px 10px;
@@ -467,7 +489,6 @@ a {
   position: relative;
   flex: 1;
   margin: 40px 20px;
-  overflow: hidden;
 
   & > div {
     transition: opacity $views-transition, transform $views-transition;

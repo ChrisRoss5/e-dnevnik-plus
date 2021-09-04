@@ -2,9 +2,7 @@
   <div
     id="main"
     ref="main"
-    :class="{
-      'no-overflow': $route.path.includes('/stranica/'),
-    }"
+    :class="{ 'no-overflow': $route.path.includes('/stranica/') }"
   >
     <router-view v-slot="{ Component }">
       <transition :name="transitionName" mode="out-in">
@@ -41,7 +39,7 @@ export default defineComponent({
 <style lang="scss">
 #main {
   position: relative;
-  overflow-y: scroll;
+  overflow: hidden scroll;
   flex: 1;
 
   &.no-overflow {

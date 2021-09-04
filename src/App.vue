@@ -35,7 +35,7 @@ export default defineComponent({
       const path = ((e as any).path || (e.composedPath && e.composedPath())) as
         | HTMLElement[]
         | false;
-      path && this.$emitter.emit("window-clicked", path);
+      if (path) this.$emitter.emit("window-clicked", path);
     };
   },
   methods: {

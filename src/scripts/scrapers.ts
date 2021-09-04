@@ -1,5 +1,3 @@
-/* //@ts-nocheck */
-
 import { useToast } from "vue-toastification";
 import { MutationTypes } from "@/store/mutations";
 import { User, ClassInfo, SubjectCache } from "@/store/state";
@@ -20,10 +18,9 @@ async function login(
   password: string,
   fetch1?: Response,
 ): Promise<boolean> {
-  if (email) return false;  // todo: del line
+  if (window.devTestMode) return true;
   //
   // Login GET
-  console.log("LOGGING IN");
   fetch1 = fetch1 || (await fetch(URLS.login));
   if (!fetch1.url.includes("login")) {
     //
@@ -104,45 +101,47 @@ async function getClassesList(
 ): Promise<ClassInfo[] | undefined> {
   classesDoc = classesDoc || (await authFetch(URLS.classes));
   if (!classesDoc) return;
+  const date = new Date();
+  const [currentYear, currentMonth] = [date.getFullYear(), date.getMonth()];
   const classMenus = classesDoc.getElementsByClassName("class-menu-vertical");
   const classesList = [] as ClassInfo[];
   for (const menu of classMenus) {
-    const classInfo: ClassInfo = {
+    const year = UTILS.getElText(menu.querySelector(".class-schoolyear"));
+    const [start, end] = year.split("/").map((y) => parseInt("20" + y));
+    const finalGrade = menu.querySelector(".overall-grade .bold");
+    classesList.push({
       url: (menu.querySelector(".school") as HTMLAnchorElement).href,
       name: UTILS.getElText(menu.querySelector(".class > .bold")),
-      year: UTILS.getElText(menu.querySelector(".class-schoolyear")),
+      year: start + "./" + end + ".",
+      isYearCompleted:
+        currentYear > end || (currentYear == end && currentMonth > 6),
       school: UTILS.getElText(menu.querySelector(".school-name")),
-    };
-    const [start, end] = classInfo.year.split("/");
-    if (start && end) classInfo.year = "20" + start + "./20" + end + ".";
-    const finalGrade = menu.querySelector(".overall-grade .bold");
-    if (finalGrade) classInfo.finalGrade = UTILS.getElText(finalGrade);
-    classesList.push(classInfo);
+      finalGrade: UTILS.getElText(finalGrade) || undefined,
+    });
   }
   return classesList;
 }
 
-async function updateSubjects(
+async function updateSubjects( // NOSONAR: Cognitive Complexity from 18 to the 15 allowed
   classInfo: ClassInfo,
-  forceUpdate?: true,
+  forceUpdate?: boolean,
 ): Promise<boolean> {
-  if (classInfo.lastUpdated) return false; // todo: del line;
+  if (window.devTestMode) return true;
+
   const cachedSubjects = classInfo.cachedSubjects || [];
-  const lastUpdated = classInfo.lastUpdated;
+  const { lastUpdated, isYearCompleted } = classInfo;
   const timestamp = Date.now() / 1000;
-  const updateAllSubjects = !lastUpdated || timestamp - lastUpdated > 1800;
+  const updateAllSubjects = timestamp - (lastUpdated || 0) > 1800;
   const promises: Promise<boolean>[] = [];
   const saveSubject = (updatedSubject: SubjectCache | false) => {
-    if (updatedSubject) {
-      updatedSubject.lastUpdated = timestamp;
-      store.commit(MutationTypes.UPDATE_SUBJECT, {
-        classInfo,
-        updatedSubject,
-      });
-    }
-    return !!updatedSubject;
+    if (!updatedSubject) return false;
+    updatedSubject.lastUpdated = timestamp;
+    const toSave = { classInfo, updatedSubject };
+    store.commit(MutationTypes.UPDATE_SUBJECT, toSave);
+    return true;
   };
 
+  if (isYearCompleted && classInfo.cachedSubjects && !forceUpdate) return true;
   if (updateAllSubjects || forceUpdate) {
     classInfo.lastUpdated = timestamp;
 
@@ -175,8 +174,7 @@ async function updateSubjects(
       if (timestamp - (subject.lastUpdated || 0) > 1800)
         promises.push(updateSubject(subject).then(saveSubject));
 
-  const success = await Promise.allSettled(promises);
-  console.log(success);
+  await Promise.allSettled(promises);
   return true;
 }
 
@@ -214,7 +212,7 @@ async function updateClassesHeadteacher(
   classesList: ClassInfo[],
   firstLogin: boolean,
 ) {
-  firstLogin && toast("Prva prijava može potrajati malo duže.");
+  if (firstLogin) toast("Prva prijava može potrajati malo duže.");
 
   // Because the class response is 302, requests must go 1 by 1
   // prettier-ignore
@@ -226,7 +224,7 @@ async function updateClassesHeadteacher(
       return;
     }
     const headTeacher = classDoc.querySelector(".schoolyear .black");
-    headTeacher &&
+    if (headTeacher)
       store.commit(MutationTypes.UPDATE_CLASS_PROPERTY, {
         classInfo: classesList[i],
         property: "headTeacher",
@@ -239,11 +237,11 @@ async function getSectionHTML(
   classId: string,
   sectionUrl: string,
 ): Promise<Element | false> {
-  if (classId) return false;  // todo: del line
+  if (window.devTestMode) return false;
+
   const user = store.getters.user as User;
   const classUrl = store.getters.classInfo(classId).url as string;
   const lastLoadedClassUrl = user.lastLoadedClassUrl || "";
-  console.log(classUrl);
   if (lastLoadedClassUrl != classUrl) {
     if (!(await authFetch(classUrl))) {
       toast.error("Greška pri dobavljanju razreda!");

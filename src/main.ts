@@ -1,3 +1,14 @@
+declare global {
+  interface Window {
+    isAppInitiated: boolean;
+    devTestMode: boolean;
+    devPause: (t: number) => Promise<void>;
+  }
+}
+// TODO: modify
+window.devTestMode = true;
+window.devPause = (t) => new Promise((res) => setTimeout(res, t));
+
 import { createApp } from "vue";
 import App from "./App.vue";
 
@@ -31,13 +42,19 @@ VTooltip.options.instantMove = true;
 
 /* https://www.chartjs.org/ */
 /* https://www.chartjs.org/chartjs-plugin-annotation/ */
-import { Chart } from 'chart.js';
-import annotationPlugin from 'chartjs-plugin-annotation';
+import { Chart } from "chart.js";
+import annotationPlugin from "chartjs-plugin-annotation";
 Chart.register(annotationPlugin);
 Chart.defaults.font.size = 16;
+Chart.defaults.maintainAspectRatio = false;
+Chart.defaults.interaction.mode = "index";
+(Chart.defaults.plugins.tooltip.footerFont as any) = { weight: "normal" };
+Chart.defaults.plugins.tooltip.footerMarginTop = 10;
+Chart.defaults.plugins.tooltip.footerAlign = "right";
 
 const app = createApp(App);
 app.config.globalProperties.$emitter = mitt();
+
 app
   .use(store)
   .use(router)

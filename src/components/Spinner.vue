@@ -25,7 +25,7 @@ export default defineComponent({
     blur: Boolean,
     size: {
       type: String,
-      default: "200px",
+      default: "150px",
     },
   },
 });
@@ -33,6 +33,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 #spinner {
+  top: -3px;
   transform: translate3d(0, 0, 0);
   will-change: opacity, transform;
   transition: background-color 500ms, backdrop-filter 500ms;

@@ -171,12 +171,6 @@ iframe {
   outline: none;
   transition: background-color 150ms, opacity 150ms;
 
-  &.disabled-button {
-    pointer-events: none;
-    user-select: none;
-    opacity: 0.5;
-  }
-
   &:not(.disabled-button):hover,
   &:focus:not(:focus-visible) {
     cursor: pointer;
@@ -190,6 +184,12 @@ iframe {
   @include themed() {
     background: t("strong-blue");
   }
+}
+
+.disabled-button {
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.5;
 }
 
 .text-link {
@@ -219,7 +219,7 @@ iframe {
 
 /*
   following is moved from Subjects.vue because themed() isn't possible with :deep()
-  todo: find better solution?
+  TODO: find better solution?
 */
 
 .subject-name {
@@ -254,10 +254,10 @@ iframe {
 
 .opacity-enter-active,
 .opacity-leave-active {
-  transition: opacity $views-transition;
+  transition: opacity $views-transition !important;
 }
 
 .opacity-enter-from,
 .opacity-leave-to {
-  opacity: 0;
+  opacity: 0 !important;
 }

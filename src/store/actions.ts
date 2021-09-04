@@ -20,17 +20,14 @@ export interface Actions {
 // prettier-ignore
 export const actions: ActionTree<State, State> & Actions = { // nosonar: Index signature
   async [ActionTypes.INIT]({ commit }) {
-    const state = (await chromeLocalStorage()) as State;
+    const state = await chromeLocalStorage();
     console.log("LOCAL STORAGE: ", state);
 
-    //await pause(3000);
+    //await pause(3000);  // todo: delete
+
     if (!state) return false;
     commit(MutationTypes.INIT, state);
+    window.isAppInitiated = true;
     return !!state.users.find((user) => user.signedIn);
   },
 };
-
-// todo: delete
-function pause(t: number) {
-  return new Promise((res) => setTimeout(res, t));
-}
