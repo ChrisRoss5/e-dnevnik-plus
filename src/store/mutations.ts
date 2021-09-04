@@ -1,4 +1,11 @@
-import { State, User, ClassInfo, SubjectCache, GlobalSettings, Settings } from "./state";
+import {
+  State,
+  User,
+  ClassInfo,
+  SubjectCache,
+  GlobalSettings,
+  Settings,
+} from "./state";
 import { MutationTree } from "vuex";
 
 export enum MutationTypes {
@@ -58,8 +65,7 @@ export type Mutations<S = State> = {
   ): void;
 };
 
-// prettier-ignore
-export const mutations: MutationTree<State> & Mutations = { // nosonar: index signature
+export const mutations: MutationTree<State> & Mutations = {
   [MutationTypes.INIT](state, newState) {
     Object.assign(state, newState);
   },
@@ -73,7 +79,10 @@ export const mutations: MutationTree<State> & Mutations = { // nosonar: index si
     user.lastLoadedClassUrl = url;
   },
   [MutationTypes.UPDATE_CLASSES_LIST](state, { user, classesList }) {
-    user.classesList = { ...user.classesList, ...classesList };
+    user.classesList = classesList.map((classInfo) => {
+      const sameClass = user.classesList.find((c) => c.url == classInfo.url);
+      return sameClass ? { ...sameClass, ...classInfo } : classInfo;
+    });
     user.signedIn = true;
   },
   [MutationTypes.UPDATE_CLASS_PROPERTY](state, { classInfo, property, value }) {
@@ -100,6 +109,6 @@ export const mutations: MutationTree<State> & Mutations = { // nosonar: index si
     state.settings[name] = value;
   },
   [MutationTypes.UPDATE_USER_SETTINGS](state, { user, settings }) {
-    user.settings = {...user.settings, ...settings};
+    user.settings = { ...user.settings, ...settings };
   },
 };

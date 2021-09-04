@@ -1,6 +1,10 @@
 <template>
   <div id="class-container">
-    <div id="class-info" ref="classInfo">
+    <div
+      id="class-info"
+      :style="{ 'margin-right': $reactive.userOffsetWidth }"
+      ref="classInfo"
+    >
       <div id="class-title" class="title">
         {{ openedClassInfo ? openedClassInfo.name : "" }}
       </div>
@@ -136,9 +140,11 @@ export default defineComponent({
   mounted() {
     this.$nextTick(this.classChanged);
     this.$emitter.on("main-scrolled", this.mainScrolled);
-    new (window as any).ResizeObserver(() =>
+    const resizeObserver = new ResizeObserver(() =>
       this.positionSelectedLine(false),
-    ).observe(this.getSectionsContainer());
+    );
+    const sections = this.getSectionsContainer();
+    if (sections) resizeObserver.observe(sections);
   },
   beforeUnmount() {
     this.$emitter.off("main-scrolled", this.mainScrolled);
@@ -215,22 +221,17 @@ export default defineComponent({
         line.style.transform = "translateX(" + (offsetLeft + 30) + "px)";
         line.style.width = offsetWidth + "px";
       }
-      const user = document.getElementById("user");
-      const classInfo = this.$refs.classInfo as HTMLElement;
-      if (user) classInfo.style.marginRight = user.offsetWidth + "px";
-      const sectionsPadding = (parseInt(sections.style.paddingRight) || 0) - 30;
-      this.tabsIconOnly = sections.offsetWidth - sectionsPadding < 880;
+      const sectionsPadding = parseInt(sections.style.paddingRight) || 0;
+      this.tabsIconOnly = sections.offsetWidth - sectionsPadding < 900;
     },
     mainScrolled() {
       const sections = this.getSectionsContainer();
       if (!sections) return;
-      const main = document.getElementById("main")!;
-      const user = document.getElementById("user")!;
-      const short = main.scrollTop > 30;
-      const paddingRight = user.offsetWidth + 40;
+      const short = document.getElementById("main")!.scrollTop > 30;
+      const paddingRight = parseInt(this.$reactive.userOffsetWidth) + 40;
       sections.style.paddingRight = short ? paddingRight + "px" : "";
       sections.className = short ? "blur" : "";
-      user.classList[short ? "add" : "remove"]("card");
+      this.$emitter.emit("show-user-card", short);
     },
     closeDropdown(id: string) {
       if (id == this.visibleDropdown) this.visibleDropdown = "";

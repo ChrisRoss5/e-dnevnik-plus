@@ -156,8 +156,8 @@ export default defineComponent({
       if (!(await updateSubjects(this.openedClassInfo, forceUpdate))) return;
       this.subjectsLoading = false;
       this.$emit("sectionLoaded");
-      this.subjects = [];  // Trigger soft 'opacity' transition
-      setTimeout(this.resetSubjects, 0);  // Large amount of HTML causes flicker
+      this.subjects = []; // Trigger soft 'opacity' transition
+      setTimeout(this.resetSubjects, 0); // Large amount of HTML causes flicker
     },
     resetSubjects() {
       const cached =
@@ -358,6 +358,7 @@ export default defineComponent({
       this.getSubjectGradesAvg(subject, subject.gradesByCategory);
     },
     updateSettings(newSettings: SubjectsSettings) {
+      if (!this.user) return;
       this.$store.commit(MutationTypes.UPDATE_USER_SETTINGS, {
         user: this.user,
         settings: {
@@ -367,8 +368,8 @@ export default defineComponent({
     },
   },
   computed: {
-    user(): User {
-      return this.$store.getters.user as User;
+    user(): User | undefined {
+      return this.$store.getters.user;
     },
     openedClassInfo(): ClassInfo | undefined {
       return this.$store.getters.classInfo(this.classId);
@@ -388,7 +389,17 @@ export default defineComponent({
       );
     },
     savedOptions(): SubjectsSettings {
-      return this.user.settings.subjectsSettings;
+      return this.user
+        ? this.user.settings.subjectsSettings
+        : {
+            zoom: 2,
+            expandTablesOnHover: true,
+            subjectColors: false,
+            countAvgs: false,
+            sortByDragging: true,
+            subjectsOrder: [],
+            expandedSubjects: [],
+          };
     },
     options(): Record<string, Option> {
       return {

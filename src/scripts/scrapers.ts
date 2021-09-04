@@ -69,9 +69,10 @@ async function login(
         "Automatska prijava je omogućena!\nOpciju promijenite u postavkama ⚙️",
         { timeout: false },
       );
-    }, 1000);
+    }, 7000);
+    toast("Prva prijava može potrajati malo duže.");
   }
-  await updateClassesHeadteacher(classesList, !user);
+  await updateClassesHeadteacher();
   return true;
 }
 
@@ -208,15 +209,11 @@ async function updateSubject(
   return subject;
 }
 
-async function updateClassesHeadteacher(
-  classesList: ClassInfo[],
-  firstLogin: boolean,
-) {
-  if (firstLogin) toast("Prva prijava može potrajati malo duže.");
-
+async function updateClassesHeadteacher() {
+  const classesList = store.getters.user.classesList as ClassInfo[];
   // Because the class response is 302, requests must go 1 by 1
   // prettier-ignore
-  for (let i = 0; i < classesList.length; i++) { // nosonar: for of
+  for (let i = 0; i < classesList.length; i++) {  // nosonar: for of
     if (classesList[i].headTeacher) continue;
     const classDoc = await authFetch(classesList[i].url);
     if (!classDoc) {

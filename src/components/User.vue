@@ -1,12 +1,12 @@
 <template>
   <div
-    v-if="user"
+    v-show="user"
     id="user"
     class="hovered-text-button"
     @click.self="showDropdown = !showDropdown"
     ref="user"
   >
-    {{ user.fullName }}
+    {{ user ? user.fullName : "" }}
     <span class="material-icons"> account_circle </span>
     <Dropdown
       :visible="showDropdown"
@@ -35,6 +35,13 @@ export default defineComponent({
       showDropdown: false,
     };
   },
+  mounted() {
+    this.$emitter.on("show-user-card", this.showCard);
+    const userEl = this.$refs.user as HTMLElement;
+    new ResizeObserver(() => {
+      this.$reactive.userOffsetWidth = userEl.offsetWidth + "px";
+    }).observe(userEl);
+  },
   methods: {
     async dropdownClosed(rowName: string | undefined) {
       this.showDropdown = false;
@@ -59,14 +66,15 @@ export default defineComponent({
         {
           name: "Osobni podaci",
           icon: "fingerprint",
-          link: "/razred/" + (this.$route.params.classId || "-") + "/osobni-podaci" ,
+          link:
+            "/razred/" + (this.$route.params.classId || "-") + "/osobni-podaci",
         },
         {
           name: "Odjava",
           icon: "exit_to_app",
         },
       ];
-    }
+    },
   },
   watch: {
     $route(to) {

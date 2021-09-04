@@ -22,12 +22,8 @@ export const actions: ActionTree<State, State> & Actions = { // nosonar: Index s
   async [ActionTypes.INIT]({ commit }) {
     const state = await chromeLocalStorage();
     console.log("LOCAL STORAGE: ", state);
-
-    //await pause(3000);  // todo: delete
-
     if (!state) return false;
     commit(MutationTypes.INIT, state);
-    window.isAppInitiated = true;
     return !!state.users.find((user) => user.signedIn);
   },
 };

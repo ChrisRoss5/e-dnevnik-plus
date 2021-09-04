@@ -105,7 +105,6 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  console.log(to.path, from.path, store);
   if (!window.isAppInitiated) return next();  // App not INIT
   const isAuthenticated = !!store.getters.user;
   const isLoginPage = to.path == "/";

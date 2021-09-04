@@ -5,11 +5,12 @@ declare global {
     devPause: (t: number) => Promise<void>;
   }
 }
+
 // TODO: modify
-window.devTestMode = true;
+window.devTestMode = false;
 window.devPause = (t) => new Promise((res) => setTimeout(res, t));
 
-import { createApp } from "vue";
+import { createApp, reactive } from "vue";
 import App from "./App.vue";
 
 /* https://next.vuex.vuejs.org/ */
@@ -54,6 +55,7 @@ Chart.defaults.plugins.tooltip.footerAlign = "right";
 
 const app = createApp(App);
 app.config.globalProperties.$emitter = mitt();
+app.config.globalProperties.$reactive = reactive({ userOffsetWidth: "0px" });
 
 app
   .use(store)

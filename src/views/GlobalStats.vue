@@ -1,6 +1,6 @@
 <template>
   <div id="global-stats">
-    <div id="classes" ref="classes">
+    <div id="classes" :style="{ 'padding-right': $reactive.userOffsetWidth }">
       <div
         id="select-all"
         class="card flex-center material-icons"
@@ -61,13 +61,6 @@ export default defineComponent({
     this.shouldUserWait = this.classesList.some(
       (classInfo) => !classInfo.cachedSubjects,
     );
-  },
-  mounted() {
-    this.$nextTick(() => {
-      const classes = this.$refs.classes as HTMLElement;
-      const user = document.getElementById("user")!;
-      classes.style.paddingRight = user.offsetWidth + "px"; // TODO: fix incorrect offset on page load
-    });
   },
   data() {
     return {

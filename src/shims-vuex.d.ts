@@ -5,5 +5,6 @@ declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
     $store: Store;
     $emitter: Emitter;
+    $reactive: { userOffsetWidth: string };
   }
 }

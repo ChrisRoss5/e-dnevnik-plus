@@ -1,7 +1,11 @@
 <template>
-  <Navbar></Navbar>
-  <Main></Main>
-  <User></User>
+  <template v-if="isAppInitiated">
+    <Navbar></Navbar>
+    <Main></Main>
+  </template>
+  <transition name="opacity">
+    <User></User>
+  </transition>
 </template>
 
 <script lang="ts">
@@ -18,6 +22,11 @@ export default defineComponent({
     Main,
     User,
   },
+  data() {
+    return {
+      isAppInitiated: false,
+    };
+  },
   created() {
     this.$store.dispatch(ActionTypes.INIT, undefined).then((userSignedIn) => {
       const isLoginPage = window.location.hash == "#/";
@@ -27,6 +36,7 @@ export default defineComponent({
         this.$router.replace("/");
       }
       this.enabledarkTheme(this.$store.state.settings.darkTheme);
+      this.isAppInitiated = window.isAppInitiated = true;
     });
   },
   mounted() {

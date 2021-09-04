@@ -136,8 +136,8 @@ export default defineComponent({
   },
   methods: {
     initResizeObserver() {
-      !this.isLoginPage &&
-        new (window as any).ResizeObserver(this.customListChanged).observe(
+      if (!this.isLoginPage)
+        new ResizeObserver(this.customListChanged).observe(
           this.$refs.navMid as HTMLElement,
         );
     },

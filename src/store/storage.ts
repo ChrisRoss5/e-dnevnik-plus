@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 /* https://developer.chrome.com/docs/extensions/reference/storage/ */
 import { State } from "./state";
 import { jsonClone } from "@/scripts/utils";

@@ -37,7 +37,7 @@ export default defineComponent({
     async updateContent() {
       this.loading = true;
       const { classId, subjectId } = this.$route.params;
-      if (this.isSubject && !subjectId || classId == "-") return;
+      if ((this.isSubject && !subjectId) || classId == "-" || !classId) return;
 
       const iframe = this.$refs.iframe as HTMLIFrameElement;
       const doc = iframe.contentWindow!.document;
@@ -59,7 +59,7 @@ export default defineComponent({
     },
   },
   watch: {
-    '$route.params.classId'() {
+    "$route.params.classId"() {
       this.updateContent();
     },
   },
