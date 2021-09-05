@@ -165,6 +165,7 @@ export default defineComponent({
       if (!cached || !cached.length) return;
       const clone = jsonClone(cached) as ExtendedSubjectCache[];
       const { subjectsOrder, expandedSubjects } = this.savedOptions;
+      const sorted = subjectsOrder[this.classId] || [];
       this.subjects = clone
         .map((subject) => {
           const gradesByCategoryOriginal = jsonClone(
@@ -187,11 +188,9 @@ export default defineComponent({
             expandedKeep,
           };
         })
-        .sort((a, b) => {
-          return subjectsOrder.indexOf(a.url) - subjectsOrder.indexOf(b.url);
-        });
+        .sort((a, b) => sorted.indexOf(a.url) - sorted.indexOf(b.url));
       this.finalGradeOriginal = this.getFinalGradeOriginal();
-      this.$nextTick(() => (this.updateTablesMargin += 1));
+      this.$nextTick(() => setTimeout(() => (this.updateTablesMargin += 1), 0));
       this.checkActiveSubject();
     },
     subjectMouseEnter(e: MouseEvent, subject: ExtendedSubjectCache) {
@@ -204,7 +203,8 @@ export default defineComponent({
     },
     subjectsOrderChanged() {
       const savedOptions = jsonClone(this.savedOptions);
-      savedOptions.subjectsOrder = this.subjects.map((subject) => subject.url);
+      const order = this.subjects.map((subject) => subject.url);
+      savedOptions.subjectsOrder[this.classId] = order;
       this.updateSettings(savedOptions);
       this.$nextTick(() => (this.subjectsSorting = false));
     },
@@ -397,7 +397,7 @@ export default defineComponent({
             subjectColors: false,
             countAvgs: false,
             sortByDragging: true,
-            subjectsOrder: [],
+            subjectsOrder: {},
             expandedSubjects: [],
           };
     },

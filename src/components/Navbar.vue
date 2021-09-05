@@ -131,8 +131,8 @@ export default defineComponent({
     };
   },
   mounted() {
-    // Always show a "welcome" message for a second
-    setTimeout(() => (this.mounted = true), 1000);
+    // If navbar is expanded, always show a "welcome" message for a second
+    setTimeout(() => (this.mounted = true), this.navCollapsed ? 100 : 1000);
   },
   methods: {
     initResizeObserver() {

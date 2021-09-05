@@ -34,7 +34,7 @@ export interface SubjectsSettings {
   subjectColors: boolean;
   countAvgs: boolean;
   sortByDragging: boolean;
-  subjectsOrder: string[];
+  subjectsOrder: Record<string, string[] | undefined>;
   expandedSubjects: string[];
 }
 

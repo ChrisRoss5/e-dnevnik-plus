@@ -51,6 +51,7 @@ export default defineComponent({
 
       doc.body.innerHTML = "";
       doc.body.append(sectionEl || this.errorMessage);
+      iframe.style.height = "150px";
       if (!sectionEl) doc.body.className = "loading-error-plus";
       const contentEl = doc.body.firstElementChild;
       if (contentEl) iframe.style.height = contentEl.scrollHeight + "px";
@@ -60,6 +61,9 @@ export default defineComponent({
   },
   watch: {
     "$route.params.classId"() {
+      this.updateContent();
+    },
+    "$route.params.subjectId"() {
       this.updateContent();
     },
   },

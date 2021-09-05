@@ -108,7 +108,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 #global-stats {
   height: 100%;
-  padding: 20px 0 20px;
+  padding: 25px 0 20px;
   display: flex;
   flex-direction: column;
 }

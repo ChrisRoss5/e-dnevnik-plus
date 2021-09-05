@@ -27,7 +27,7 @@ export default function newUser(initData: InitData): User {
         subjectColors: false,
         countAvgs: false,
         sortByDragging: true,
-        subjectsOrder: [],
+        subjectsOrder: {},
         expandedSubjects: []
       },
     },

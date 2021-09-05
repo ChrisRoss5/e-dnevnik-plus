@@ -7,7 +7,7 @@ declare global {
 }
 
 // TODO: modify
-window.devTestMode = false;
+window.devTestMode = true;
 window.devPause = (t) => new Promise((res) => setTimeout(res, t));
 
 import { createApp, reactive } from "vue";
