@@ -22,6 +22,7 @@ export default function newUser(initData: InitData): User {
         "Statistika",
       ],
       subjectsSettings: {
+        margin: 0,
         zoom: 2,
         expandTablesOnHover: true,
         subjectColors: false,

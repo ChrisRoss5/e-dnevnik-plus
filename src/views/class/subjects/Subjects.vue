@@ -1,5 +1,5 @@
 <template>
-  <div id="subjects">
+  <div id="subjects" ref="subjects">
     <SubjectsSummary
       :finalGradeOriginal="finalGradeOriginal"
       :finalGrade="finalGrade"
@@ -26,6 +26,7 @@
             'repeat(' +
             (openedSubject ? 1 : savedOptions.zoom) +
             ',minmax(0, 1fr))',
+          margin: '0 ' + (openedSubject ? 0 : subjectsMargin) + 'px',
         }"
         v-model:list="subjects"
         axis="xy"
@@ -47,7 +48,7 @@
               'expanded-keep': subject.expandedKeep && !openedSubject,
               'is-opened': subject.isOpened,
             }"
-            :disabled="!savedOptions.sortByDragging"
+            :disabled="!savedOptions.sortByDragging || subjectsResizing"
             @mouseenter="subjectMouseEnter($event, subject)"
             @mouseleave="subjectMouseLeave(subject)"
           >
@@ -70,6 +71,15 @@
             ></SubjectCardBody>
           </SlickItem>
         </transition-group>
+        <div
+          id="subjects-resizer"
+          class="abs-cover card flex-center material-icons"
+          :class="{ 'disabled-button': !!openedSubject  }"
+          @mousedown="startResizing"
+          v-wave
+        >
+          drag_indicator
+        </div>
       </SlickList>
     </transition>
 
@@ -146,11 +156,15 @@ export default defineComponent({
       subjectsSorting: false,
       openedSubject: false as ExtendedSubjectCache | false,
       finalGradeOriginal: 0,
+      originalMouseX: 0,
+      subjectsMargin: 0,
+      subjectsResizing: false,
     };
   },
   methods: {
     async updateSubjects(forceUpdate?: boolean) {
       if (!this.openedClassInfo || this.subjectsLoading) return;
+      this.subjectsMargin = this.savedOptions.margin;
       this.$emit("sectionLoading");
       this.subjectsLoading = true;
       if (!(await updateSubjects(this.openedClassInfo, forceUpdate))) return;
@@ -315,12 +329,11 @@ export default defineComponent({
       const cols: number[][] = [...Array(10)].map(() => []);
       for (let i = 0; i < (subject.gradesByCategory || []).length; i++) {
         const row = subject.gradesByCategory![i].grades;
-        for (let j = 0; j < row.length; j++) {
+        for (let j = 0; j < row.length; j++)
           for (const grade of row[j]) {
             cols[j].push(grade);
             counts[grade - 1] += 1;
           }
-        }
       }
       const totalCount = counts.reduce((a, b) => a + b, 0);
       subject.lineColors = getSubjectColors(counts, totalCount);
@@ -361,10 +374,30 @@ export default defineComponent({
       if (!this.user) return;
       this.$store.commit(MutationTypes.UPDATE_USER_SETTINGS, {
         user: this.user,
-        settings: {
-          subjectsSettings: newSettings,
-        },
+        settings: { subjectsSettings: newSettings },
       });
+    },
+    startResizing(e: MouseEvent) {
+      this.subjectsResizing = true;
+      this.originalMouseX = e.pageX;
+      window.addEventListener("mousemove", this.resizeSubjects);
+      window.addEventListener("mouseup", this.stopResizing);
+    },
+    stopResizing() {
+      this.subjectsResizing = false;
+      window.removeEventListener("mousemove", this.resizeSubjects);
+      window.removeEventListener("mouseup", this.stopResizing);
+      const savedOptions = jsonClone(this.savedOptions);
+      savedOptions.margin = this.subjectsMargin;
+      this.updateSettings(savedOptions);
+      this.updateTablesMargin += 1;
+    },
+    resizeSubjects(e: MouseEvent) {
+      const movement = this.originalMouseX - e.pageX;
+      this.subjectsMargin = Math.min(
+        Math.max(0, this.savedOptions.margin + movement),
+        (this.$refs.subjects as HTMLElement).offsetWidth / 2 - 30,
+      );
     },
   },
   computed: {
@@ -392,6 +425,7 @@ export default defineComponent({
       return this.user
         ? this.user.settings.subjectsSettings
         : {
+            margin: 0,
             zoom: 2,
             expandTablesOnHover: true,
             subjectColors: false,
@@ -470,9 +504,11 @@ export default defineComponent({
 }
 
 #subjects-list {
+  position: relative;
   flex: 1;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding-right: 30px;
 
   &.sorting > .subject {
     pointer-events: none;
@@ -525,6 +561,23 @@ export default defineComponent({
 
   @include themed() {
     background: t("white-background");
+  }
+}
+
+#subjects-resizer {
+  left: auto;
+  margin: 5px 10px;
+  width: 10px;
+  cursor: col-resize;
+  transition: color 150ms;
+
+  @include themed() {
+    background: t("alice-blue");
+    color: t("gray-blue");
+  }
+
+  &:active {
+    color: $navbar-selected-text-color;
   }
 }
 

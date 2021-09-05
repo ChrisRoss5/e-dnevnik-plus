@@ -29,6 +29,7 @@ export interface Settings {
 }
 
 export interface SubjectsSettings {
+  margin: number,
   zoom: number;
   expandTablesOnHover: boolean;
   subjectColors: boolean;

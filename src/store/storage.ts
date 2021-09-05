@@ -1814,6 +1814,7 @@ const testState: State = {
           "Statistika",
         ],
         subjectsSettings: {
+          margin: 0,
           zoom: 2,
           expandTablesOnHover: true,
           subjectColors: true,
