@@ -80,7 +80,6 @@ export default defineComponent({
               "te upise na visoka učilišta.",
           },
         ],
-        loomen: [{ name: "Loomen", url: "https://loomen.carnet.hr/" }],
         "srednja.hr": [{ name: "Srednja.hr", url: "https://www.srednja.hr/" }],
       } as Record<string, Website[]>,
       activeFrames: [] as Website[],
@@ -88,7 +87,6 @@ export default defineComponent({
     };
   },
   beforeMount() {
-    this.$emitter.emit("show-user-card", true);
     this.changeFrame();
   },
   methods: {

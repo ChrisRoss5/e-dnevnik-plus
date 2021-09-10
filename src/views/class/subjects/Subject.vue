@@ -36,6 +36,7 @@ export default defineComponent({
 
 #subject-info {
   display: flex;
+  flex-wrap: wrap;
   margin: 0 20px 10px;
 }
 

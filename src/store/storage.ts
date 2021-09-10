@@ -1823,6 +1823,10 @@ const testState: State = {
           subjectsOrder: {},
           expandedSubjects: [],
         },
+        calendarSettings: {
+          showEntireCalendar: false,
+          zoom: 3,
+        }
       },
       lastLoadedClassUrl:
         "https://ocjene.skole.hr/class_action/2115037150/course",

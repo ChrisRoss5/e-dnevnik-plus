@@ -1,6 +1,6 @@
 <template>
   <div id="global-stats">
-    <div id="classes" :style="{ 'padding-right': $reactive.userOffsetWidth }">
+    <div id="classes" :style="{ 'margin-right': $reactive.userOffsetWidth }">
       <div
         id="select-all"
         class="card flex-center material-icons"
@@ -34,8 +34,8 @@
           Pokreni
         </div>
       </div>
-      <div v-else class="abs-cover">
-        <Stats
+      <div v-else class="abs-cover"
+>        <Stats
           :selectedClassesId="selectedClassesId"
           @sectionLoading="showSpinner = true"
           @sectionLoaded="showSpinner = false"
@@ -108,7 +108,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 #global-stats {
   height: 100%;
-  padding: 25px 0 20px;
+  padding: 20px 0;
   display: flex;
   flex-direction: column;
 }
@@ -121,11 +121,13 @@ export default defineComponent({
 #classes {
   display: flex;
   flex-wrap: wrap;
+  padding-right: 20px;
 
   & > div {
     flex: 1;
     user-select: none;
     cursor: pointer;
+    height: 44px;
     padding: 5px 20px;
     margin: 0 30px 20px;
     transition: color 150ms, background-color 150ms;
@@ -145,7 +147,7 @@ export default defineComponent({
 
 #select-all {
   flex: 0 !important;
-  white-space: nowrap;
+  padding: 0 20px !important;
 }
 
 #final-grade {

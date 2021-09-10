@@ -1,5 +1,9 @@
 <template>
-  <div id="section-container" class="card">
+  <div
+    id="section-container"
+    class="card"
+    :style="{ width: isSubject ? '60%' : '' }"
+  >
     <slot></slot>
     <iframe src="about:blank" ref="iframe" :class="{ loading }"></iframe>
     <Spinner :visible="loading" :size="'50px'"></Spinner>
@@ -8,7 +12,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { addStyleTag } from "@/scripts/utils";
 import { getSectionHTML } from "@/scripts/scrapers";
 import Spinner from "@/components/Spinner.vue";
 
@@ -46,7 +49,7 @@ export default defineComponent({
         ? "https://ocjene.skole.hr/grade/" + subjectId
         : (this.urls as any)[pathName];
 
-      await addStyleTag(doc, this.$store.state.settings.darkTheme);
+      await this.addStyleTag(doc);
       const sectionEl = await getSectionHTML(classId as string, url);
 
       doc.body.innerHTML = "";
@@ -57,6 +60,40 @@ export default defineComponent({
       if (contentEl) iframe.style.height = contentEl.scrollHeight + "px";
 
       this.loading = false;
+    },
+    addStyleTag(doc: Document): Promise<void> {
+      return new Promise((resolve) => {
+        const docHead = doc.getElementsByTagName("head")[0];
+        const link = doc.createElement("link");
+        link.rel = "stylesheet";
+        link.type = "text/css";
+        link.href = "https://ocjene.skole.hr/build/layout.c996b0.css";
+        link.onload = link.onerror = () => {
+          const newStyle = document.createElement("style");
+          newStyle.textContent =
+            /* css */ `
+          * {
+            background: transparent !important;
+            transition: none !important;
+          }
+          .loading-error-plus {
+            display: grid;
+            place-content: center;
+          }
+      ` +
+            (this.$store.state.settings.darkTheme
+              ? /* css */ `
+          body, * {
+            color: white;
+            border-color: #2d2d2d !important;
+            box-shadow: none !important;
+          }`
+              : "");
+          docHead.appendChild(newStyle);
+          resolve();
+        };
+        docHead.appendChild(link);
+      });
     },
   },
   watch: {

@@ -7,10 +7,9 @@ import Class from "@/views/Class.vue";
 import Subjects from "@/views/class/subjects/Subjects.vue";
 import Subject from "@/views/class/subjects/Subject.vue";
 import ClassSectionFrame from "@/views/class/ClassSectionFrame.vue";
-import Exams from "@/views/class/Exams.vue";
-import Schedule from "@/views/class/Schedule.vue";
 import ClassStats from "@/views/class/ClassStats.vue";
 
+import Calendar from "@/views/Calendar.vue";
 import GlobalStats from "@/views/GlobalStats.vue";
 
 import Websites from "@/views/Websites.vue";
@@ -82,6 +81,10 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/kalendar",
+    component: Calendar,
+  },
+  {
     path: "/statistika-ocjena",
     component: GlobalStats,
   },
@@ -105,7 +108,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (!window.isAppInitiated) return next();  // App not INIT
+  if (!window.isAppInitiated) return next(); // App not INIT
   const isAuthenticated = !!store.getters.user;
   const isLoginPage = to.path == "/";
   if (!isLoginPage && !isAuthenticated) next({ path: "/" });

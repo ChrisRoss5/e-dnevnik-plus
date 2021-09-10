@@ -162,7 +162,7 @@ export default defineComponent({
         { name: "Izostanci", icon: "timer_off" },
         { name: "Vladanja", icon: "error" },
         { name: "Raspored", icon: "date_range" },
-        { name: "Statistika", icon: "show_chart" },
+        { name: "Statistika", icon: "equalizer" },
       ],
       visibleDropdown: "",
       sectionTransition: "",
@@ -231,7 +231,6 @@ export default defineComponent({
       const paddingRight = parseInt(this.$reactive.userOffsetWidth) + 40;
       sections.style.paddingRight = short ? paddingRight + "px" : "";
       sections.className = short ? "blur" : "";
-      this.$emitter.emit("show-user-card", short);
     },
     closeDropdown(id: string) {
       if (id == this.visibleDropdown) this.visibleDropdown = "";
@@ -353,7 +352,7 @@ body > .section-item {
 #class-info {
   display: flex;
   align-items: center;
-  margin: 20px 30px 0;
+  margin: 15px 30px 0;
 }
 
 #class-title {
@@ -413,6 +412,12 @@ body > .section-item {
   transition: padding 150ms;
   z-index: 6;
   will-change: padding;
+
+  &.blur {
+    @include themed() {
+      background: rgba(t("white-background"), 0.75);
+    }
+  }
 
   &.no-transition a {
     transition: none !important;

@@ -2,8 +2,10 @@
   <transition
     :name="customClass == 'user-dropdown' ? 'user-dropdown' : 'dropdown'"
   >
-    <div v-if="visible" class="dropdown" :class="customClass" ref="dropdown">
+    <div v-if="visible" class="card dropdown" :class="customClass" ref="dropdown">
+      <slot v-if="!list"></slot>
       <component
+        v-else
         v-for="(row, i) in list"
         :key="i"
         :is="row.link ? 'router-link' : 'a'"
@@ -44,7 +46,7 @@ export default defineComponent({
   props: {
     list: {
       type: Array as PropType<Array<DropdownItem>>,
-      required: true,
+      required: false,
     },
     visible: {
       type: Boolean,
@@ -74,9 +76,9 @@ export default defineComponent({
         !path ||
         (!path.includes(this.$refs.dropdown as HTMLElement) &&
           !path.includes(document.getElementById(this.sourceElementId)!))
-      ) {
+      )
         this.close();
-      }
+
     },
     close(rowName?: string) {
       this.$emit("close", rowName);
@@ -94,7 +96,7 @@ export default defineComponent({
   padding: 8px 0;
   overflow: hidden;
   white-space: nowrap;
-  border-radius: 0 8px 8px 8px;
+  border-radius: 0 8px 8px 8px !important;
   box-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 2px 6px 2px rgb(60 64 67 / 15%);
   cursor: default;
   transform-origin: top left;
@@ -139,7 +141,7 @@ export default defineComponent({
 /* props.customClass */
 
 .right {
-  border-radius: 8px 0 8px 8px;
+  border-radius: 8px 0 8px 8px !important;
   transform-origin: top right;
   right: 0;
   left: auto;
@@ -150,7 +152,7 @@ export default defineComponent({
   top: calc(100% + 8px);
   left: 0;
   right: 0;
-  border-radius: 8px 0 0 8px;
+  border-radius: 8px 0 0 8px !important;
 }
 
 /* transitions */

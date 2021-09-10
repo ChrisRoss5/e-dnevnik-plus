@@ -1,5 +1,5 @@
 <template>
-  <div id="summary" class="card">
+  <div class="card toolbar">
     <div class="flex-center">
       Završna ocjena:
       <div
@@ -35,7 +35,7 @@
         </div>
       </transition>
     </div>
-    <div id="options" class="flex-center">
+    <div id="options" class="flex-center toolbar-options">
       <div
         v-for="(option, optionName) in options"
         :key="optionName"
@@ -126,28 +126,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-#summary {
+.toolbar {
   flex: 1 1 100%;
-  display: flex;
-  font-size: 24px;
-  padding: 0 30px;
   margin: 0 10px 30px;
-  height: 44px;
-
-  @include themed() {
-    background: linear-gradient(
-        45deg,
-        transparent 55%,
-        t("alice-blue-light") 65%,
-        t("alice-blue") calc(65% + 10px)
-      ),
-      linear-gradient(
-        -45deg,
-        t("white-background") 65%,
-        t("alice-blue-light") calc(75% - 10px),
-        t("alice-blue") 75%
-      );
-  }
 }
 
 #final-grade-original {
@@ -164,36 +145,4 @@ export default defineComponent({
   }
 }
 
-#options {
-  margin-left: auto;
-
-  & > div {
-    position: relative;
-    width: 24px;
-    height: 24px;
-    padding: 10px 10px;
-    transition: background-color 150ms, opacity 150ms, color 150ms;
-
-    &:hover {
-      cursor: pointer;
-
-      @include themed() {
-        background: t("light-blue");
-      }
-    }
-  }
-
-  @include themed() {
-    color: t("gray-blue");
-  }
-}
-
-.option-enabled {
-  color: $navbar-selected-text-color;
-}
-
-.option-hidden {
-  opacity: 0;
-  pointer-events: none;
-}
 </style>

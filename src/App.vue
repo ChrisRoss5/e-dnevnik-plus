@@ -37,6 +37,7 @@ export default defineComponent({
       }
       this.enabledarkTheme(this.$store.state.settings.darkTheme);
       this.isAppInitiated = window.isAppInitiated = true;
+      document.body.style.opacity = "1";
     });
   },
   mounted() {

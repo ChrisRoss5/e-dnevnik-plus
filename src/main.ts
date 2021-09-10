@@ -7,7 +7,7 @@ declare global {
 }
 
 // TODO: modify
-window.devTestMode = false;
+window.devTestMode = true;
 window.devPause = (t) => new Promise((res) => setTimeout(res, t));
 
 import { createApp, reactive } from "vue";
@@ -41,6 +41,9 @@ VTooltip.options.instantMove = true;
 // import VueTippy from "vue-tippy";
 // import "tippy.js/dist/tippy.css";
 
+/* https://vcalendar.io/ */
+import VCalendar from "v-calendar";
+
 /* https://www.chartjs.org/ */
 /* https://www.chartjs.org/chartjs-plugin-annotation/ */
 import { Chart } from "chart.js";
@@ -63,6 +66,9 @@ app
   .use(Toast, { position: "bottom-right" } as PluginOptions)
   .use(VWave)
   .use(VTooltip)
+  .use(VCalendar, {
+    isExpanded: true
+  })
   /* .use(VueTippy, {
     defaultProps: { animateFill: true },
   }) */

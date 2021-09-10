@@ -31,6 +31,10 @@ export default function newUser(initData: InitData): User {
         subjectsOrder: {},
         expandedSubjects: []
       },
+      calendarSettings: {
+        showEntireCalendar: true,
+        zoom: 3,
+      }
     },
   };
 }

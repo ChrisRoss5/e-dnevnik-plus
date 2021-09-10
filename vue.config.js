@@ -19,7 +19,7 @@ module.exports = {
     config
       .plugin('html')
       .tap(args => {
-        args[0].title = "e-Dnevnik Vue";
+        args[0].title = "e-Dnevnik Plus";
         return args;
       }),
 }

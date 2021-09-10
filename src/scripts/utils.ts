@@ -1,41 +1,3 @@
-export async function addStyleTag(
-  doc: Document,
-  darkTheme: boolean,
-): Promise<void> {
-  return new Promise((resolve) => {
-    const docHead = doc.getElementsByTagName("head")[0];
-    const link = doc.createElement("link");
-    link.rel = "stylesheet";
-    link.type = "text/css";
-    link.href = "https://ocjene.skole.hr/build/layout.c996b0.css";
-    link.onload = link.onerror = () => {
-      const newStyle = document.createElement("style");
-      newStyle.textContent =
-        /* css */ `
-          * {
-            background: transparent !important;
-            transition: none !important;
-          }
-          .loading-error-plus {
-            display: grid;
-            place-content: center;
-          }
-      ` +
-        (darkTheme
-          ? /* css */ `
-          body, * {
-            color: white;
-            border-color: #2d2d2d !important;
-            box-shadow: none !important;
-          }`
-          : "");
-      docHead.appendChild(newStyle);
-      resolve();
-    };
-    docHead.appendChild(link);
-  });
-}
-
 export function getElText(el: Element | null): string {
   return el ? (el.textContent as string).trim() : "";
 }
@@ -136,16 +98,17 @@ export function getSubjectColors(
 ) {
   const colors = getGradesColors();
   let perc = 0;
-  let linearGradient;
+  let linearGradient = [];
   if (grades.length == 5) {
     grades = grades as number[];
     if (grades.every((val) => !val)) return "transparent";
-    linearGradient = grades.map((val, i) => {
+    linearGradient = grades.flatMap((val, i) => {
       const toAdd = (val / (gradesCount as number)) * 100;
-      if (!toAdd) return "transparent";
+      if (!toAdd) return [];
       const start = colors[i] + " " + (perc + (perc ? 1 : 0)) + "%,";
       perc += toAdd;
-      return start + colors[i] + " " + (perc - 1) + "%";
+      const color = start + colors[i] + " " + (perc - 1) + "%";
+      return [color + (i == 4 ? "" : ",transparent")];
     });
   } else {
     linearGradient = (grades as number[][]).map((col) => {

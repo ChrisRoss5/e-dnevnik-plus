@@ -2,7 +2,7 @@
   <div
     v-show="user"
     id="user"
-    class="hovered-text-button"
+    class="hovered-text-button card"
     @click.self="showDropdown = !showDropdown"
     ref="user"
   >
@@ -36,7 +36,6 @@ export default defineComponent({
     };
   },
   mounted() {
-    this.$emitter.on("show-user-card", this.showCard);
     const userEl = this.$refs.user as HTMLElement;
     new ResizeObserver(() => {
       this.$reactive.userOffsetWidth = userEl.offsetWidth + "px";
@@ -51,10 +50,6 @@ export default defineComponent({
           status: false,
         });
       }
-    },
-    showCard(show: boolean) {
-      const userEl = this.$refs.user as HTMLElement;
-      if (userEl) userEl.classList[show ? "add" : "remove"]("card");
     },
   },
   computed: {
@@ -74,11 +69,6 @@ export default defineComponent({
           icon: "exit_to_app",
         },
       ];
-    },
-  },
-  watch: {
-    $route(to) {
-      this.showCard(to.path.includes("/stranica/"));
     },
   },
 });

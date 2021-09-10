@@ -11,6 +11,7 @@ const URLS = {
   login: "https://ocjene.skole.hr/login",
   logout: "https://ocjene.skole.hr/logout",
   classes: "https://ocjene.skole.hr/class",
+  exams: "https://ocjene.skole.hr/exam",
 };
 
 async function login(
@@ -123,12 +124,8 @@ async function getClassesList(
   return classesList;
 }
 
-async function updateSubjects( // NOSONAR: Cognitive Complexity from 18 to the 15 allowed
-  classInfo: ClassInfo,
-  forceUpdate?: boolean,
-): Promise<boolean> {
+async function updateSubjects(classInfo: ClassInfo, forceUpdate?: boolean) {
   if (window.devTestMode) return true;
-
   const cachedSubjects = classInfo.cachedSubjects || [];
   const { lastUpdated, isYearCompleted } = classInfo;
   const timestamp = Date.now() / 1000;
@@ -179,9 +176,7 @@ async function updateSubjects( // NOSONAR: Cognitive Complexity from 18 to the 1
   return true;
 }
 
-async function updateSubject(
-  subject: SubjectCache,
-): Promise<SubjectCache | false> {
+async function updateSubject(subject: SubjectCache) {
   const subjectDoc = await authFetch(subject.url);
   if (!subjectDoc) {
     toast.error("Greška: Predmet ne postoji!");
@@ -230,25 +225,8 @@ async function updateClassesHeadteacher() {
   }
 }
 
-async function getSectionHTML(
-  classId: string,
-  sectionUrl: string,
-): Promise<Element | false> {
-  if (window.devTestMode) return false;
-
-  const user = store.getters.user as User;
-  const classUrl = store.getters.classInfo(classId).url as string;
-  const lastLoadedClassUrl = user.lastLoadedClassUrl || "";
-  if (lastLoadedClassUrl != classUrl) {
-    if (!(await authFetch(classUrl))) {
-      toast.error("Greška pri dobavljanju razreda!");
-      return false;
-    }
-    store.commit(MutationTypes.UPDATE_LAST_LOADED_CLASS_URL, {
-      user,
-      url: classUrl,
-    });
-  }
+async function getSectionHTML(classId: string, sectionUrl: string) {
+  if (window.devTestMode || (await switchClassIfNeeded(classId))) return false;
   const doc = await authFetch(sectionUrl);
   if (!doc) {
     toast.error("Greška pri dobavljanju stranice razreda!");
@@ -257,4 +235,186 @@ async function getSectionHTML(
   return doc.querySelector(".content") || false;
 }
 
-export { login, logout, updateSubjects, getSectionHTML };
+async function getExams(classId: string) {
+  if (classId) {
+    return [
+      {
+        subject: "Matematika",
+        note: '1. pisana provjera znanja "Brojevi"',
+        date: "19.10.2021",
+      },
+      {
+        subject: "Strojarske konstrukcije",
+        note: "Prva pisana provjera znanja",
+        date: "22.10.2021",
+      },
+      {
+        subject: "Engleski jezik I",
+        note: "Pismena provjera znanja",
+        date: "30.10.2021",
+      },
+      {
+        subject: "Matematika",
+        note: "Nizovi",
+        date: "30.11.2021",
+      },
+      {
+        subject: "Roboti i manipulatori (izborni)",
+        note: "1. pisana provjera znanja",
+        date: "5.11.2021",
+      },
+      {
+        subject: "Alati i naprave",
+        note: "1. Pisana provjera znanja - Alati za savijanje",
+        date: "6.11.2021",
+      },
+      {
+        subject: "Termodinamika",
+        note: "1. pisana provjera: Motori s unutarnjim izgaranjem",
+        date: "16.11.2021",
+      },
+      {
+        subject: "Hrvatski jezik",
+        note: "Prva pisana provjera znanja",
+        date: "23.11.2021",
+      },
+      {
+        subject: "Hrvatski jezik",
+        note: "Prva školska zadaća",
+        date: "26.11.2021",
+      },
+      {
+        subject: "Pneumatika i hidraulika",
+        note: "1. Pisana provjera znanja",
+        date: "24.11.2021",
+      },
+      {
+        subject: "Matematika",
+        note: "Funkcije: 3. pisana provjera znanja",
+        date: "1.2.2022",
+      },
+      {
+        subject: "Alati i naprave",
+        note: "2. Pisana provjera znanja: Alati za dubokov vučenje",
+        date: "5.2.2022",
+      },
+      {
+        subject: "Hrvatski jezik",
+        note: "Druga školska zadaća",
+        date: "25.2.2022",
+      },
+      {
+        subject: "Matematika",
+        note: "Derivacije: pisana provjera znanja",
+        date: "1.3.2022",
+      },
+      {
+        subject: "Strojarske konstrukcije",
+        note: "3. pisana provjera znanja",
+        date: "11.3.2022",
+      },
+      {
+        subject: "Termodinamika",
+        note: "2.pisana provjera znanja",
+        date: "29.3.2022",
+      },
+      {
+        subject: "Hrvatski jezik",
+        note: "Druga pisana provjera znanja",
+        date: "9.3.2022",
+      },
+      {
+        subject: "Pneumatika i hidraulika",
+        note: "2. Pisana provjera znanja",
+        date: "3.3.2022",
+      },
+      {
+        subject: "Kontrola i osiguranje kvalitete",
+        note: "2. pisana provjera znanja",
+        date: "22.3.2022",
+      },
+      {
+        subject: "CNC tehnologije",
+        note: "Pismena provjera znanja",
+        date: "31.3.2022",
+      },
+      {
+        subject: "Matematika",
+        note: "5. pisana provjera znanja",
+        date: "21.4.2022",
+      },
+      {
+        subject: "Engleski jezik I",
+        note: "Pismena provjera znanja",
+        date: "16.4.2022",
+      },
+      {
+        subject: "Roboti i manipulatori (izborni)",
+        note: "Pisana provjera znanja",
+        date: "23.4.2022",
+      },
+      {
+        subject: "Alati i naprave",
+        note: "3.Pisana provjera znanja - Alati za kovanje",
+        date: "30.4.2022",
+      },
+      {
+        subject: "Strojarske konstrukcije",
+        note: "2. pisana provjera znanja",
+        date: "17.12.2021",
+      },
+      {
+        subject: "Engleski jezik I",
+        note: "Pismena provjera znanja",
+        date: "10.12.2021",
+      },
+      {
+        subject: "Kontrola i osiguranje kvalitete",
+        note: "1. pisana provjera znanja: Osnove kontrole kvalitete",
+        date: "7.12.2021",
+      },
+      {
+        subject: "Strojarske konstrukcije",
+        note: "Četvrta pisana provjera znanja",
+        date: "6.5.2022",
+      },
+      {
+        subject: "Pneumatika i hidraulika",
+        note: "3. Pismena provjera znanja",
+        date: "5.5.2022",
+      },
+    ];
+  }
+  if (window.devTestMode || (await switchClassIfNeeded(classId))) return false;
+  const doc = await authFetch(URLS.exams);
+  if (!doc) {
+    toast.error("Greška pri dobavljanju ispita za kalendar!");
+    return false;
+  }
+  const classInfo: ClassInfo = store.getters.classInfo(classId);
+  const [startYear, endYear] = classInfo.year.split("./").map(Number);
+  return [...doc.querySelectorAll(".flex-table.row")].map((row) => {
+    const [subject, note, _date] = [...row.children].map(UTILS.getElText);
+    const date =
+      _date + "20" + (parseInt(_date.split(".")[1]) > 8 ? startYear : endYear);
+    return { subject, note, date };
+  });
+}
+
+async function switchClassIfNeeded(classId: string) {
+  const user = store.getters.user as User;
+  const classUrl = store.getters.classInfo(classId).url as string;
+  const lastLoadedClassUrl = user.lastLoadedClassUrl || "";
+  if (lastLoadedClassUrl != classUrl) {
+    if (!(await authFetch(classUrl))) {
+      toast.error("Greška pri dobavljanju razreda!");
+      return true;
+    }
+    store.commit(MutationTypes.UPDATE_LAST_LOADED_CLASS_URL, {
+      user,
+      url: classUrl,
+    });
+  }
+}
+
+export { login, logout, updateSubjects, getSectionHTML, getExams };

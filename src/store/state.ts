@@ -26,6 +26,7 @@ export interface User {
 export interface Settings {
   classTabsOrder: string[];
   subjectsSettings: SubjectsSettings;
+  calendarSettings: CalendarSettings;
 }
 
 export interface SubjectsSettings {
@@ -37,6 +38,11 @@ export interface SubjectsSettings {
   sortByDragging: boolean;
   subjectsOrder: Record<string, string[] | undefined>;
   expandedSubjects: string[];
+}
+
+export interface CalendarSettings {
+  showEntireCalendar: boolean,
+  zoom: number,
 }
 
 export interface GlobalSettings {

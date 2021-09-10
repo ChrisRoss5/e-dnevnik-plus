@@ -14,6 +14,7 @@
     "core-js": "^3.6.5",
     "material-icons": "^1.1.1",
     "mitt": "^3.0.0",
+    "v-calendar": "^3.0.0-alpha.5",
     "v-tooltip": "^4.0.0-alpha.1",
     "v-wave": "^1.3.0",
     "vue": "^3.0.0",

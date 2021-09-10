@@ -92,6 +92,10 @@ export default defineComponent({
           icon: "school",
         },
         {
+          name: "Kalendar",
+          icon: "edit_calendar",
+        },
+        {
           name: "Statistika ocjena",
           icon: "equalizer",
         },
@@ -106,16 +110,12 @@ export default defineComponent({
           icon: "home",
         },
         {
-          name: "Loomen",
-          icon: "apps",
+          name: "Školski e-Rudnik",
+          icon: "bubble_chart",
         },
         {
           name: "Srednja.hr",
           icon: "whatshot",
-        },
-        {
-          name: "Školski e-Rudnik",
-          icon: "bubble_chart",
         },
       ],
       linksBottom: [
@@ -275,7 +275,8 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
     height: 50px;
     border-radius: 10px;
     box-shadow: 0 0 20px -5px #2296da;
-    transition: transform $collapse-duration - 100ms, box-shadow 150ms;
+    transition: transform $collapse-duration - 100ms,
+      height $collapse-duration - 100ms, box-shadow 150ms;
   }
 
   &:hover img {
@@ -339,7 +340,8 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   max-width: 84px !important;
 
   #app-logo img {
-    transform: scale(0.8) translate(-17px, 2px);
+    height: 44px;
+    transform: translateX(-11px);
   }
 
   #welcome {

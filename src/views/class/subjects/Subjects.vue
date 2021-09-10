@@ -27,6 +27,7 @@
             (openedSubject ? 1 : savedOptions.zoom) +
             ',minmax(0, 1fr))',
           margin: '0 ' + (openedSubject ? 0 : subjectsMargin) + 'px',
+          transition: 'margin ' + (subjectsResizing ? 0 : 350) + 'ms'
         }"
         v-model:list="subjects"
         axis="xy"
@@ -74,7 +75,7 @@
         <div
           id="subjects-resizer"
           class="abs-cover card flex-center material-icons"
-          :class="{ 'disabled-button': !!openedSubject  }"
+          :class="{ 'disabled-button': !!openedSubject }"
           @mousedown="startResizing"
           v-wave
         >
@@ -204,8 +205,8 @@ export default defineComponent({
         })
         .sort((a, b) => sorted.indexOf(a.url) - sorted.indexOf(b.url));
       this.finalGradeOriginal = this.getFinalGradeOriginal();
-      this.$nextTick(() => setTimeout(() => (this.updateTablesMargin += 1), 0));
       this.checkActiveSubject();
+      setTimeout(() => (this.updateTablesMargin += 1), 100);
     },
     subjectMouseEnter(e: MouseEvent, subject: ExtendedSubjectCache) {
       if (!this.savedOptions.expandTablesOnHover || this.openedSubject) return;
