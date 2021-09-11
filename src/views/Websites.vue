@@ -38,7 +38,7 @@ interface Website {
 }
 
 export default defineComponent({
-  name: "Website",
+  name: "Websites",
   components: {
     Dropdown,
     Spinner,

@@ -54,7 +54,7 @@ import { User, ClassInfo } from "@/store/state";
 import { formatNum } from "@/scripts/utils";
 
 export default defineComponent({
-  name: "ClassStats",
+  name: "GlobalStats",
   components: { Stats, Spinner },
   created() {
     this.toggleAllClasses();

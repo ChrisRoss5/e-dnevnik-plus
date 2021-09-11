@@ -42,6 +42,7 @@
     <v-calendar
       v-if="calendarReady"
       id="calendar"
+      :class="{ 'custom-calendar': !calendarSettings.showEntireCalendar }"
       :rows="calendarSettings.showEntireCalendar ? calendarRows : 1"
       :columns="calendarSettings.showEntireCalendar ? calendarColumns : 1"
       :from-date="calendarSettings.showEntireCalendar ? fromDate : today"
@@ -52,27 +53,62 @@
         firstDayOfWeek: 2,
         masks: {
           title: 'MMMM YYYY.',
-          weekdays: 'WWW',
+          weekdays: calendarSettings.showEntireCalendar ? 'WWW' : 'WWWW',
           dayPopover: 'WWWW, D.M.YYYY.',
         },
       }"
-      :is-dark="$store.state.settings.darkTheme"
+      :is-dark="isDarkTheme"
       :attributes="attributes"
       is-expanded
       show-iso-weeknumbers
-      @update:from-page="calendarPageChanged"
-    />
+      @update:from-page="updateSchoolYearTitle"
+      @dayclick="dayClicked"
+    >
+      <template
+        v-if="!calendarSettings.showEntireCalendar"
+        v-slot:day-content="{ day, attributes }"
+      >
+        <div class="day-container" @click="dayClicked(day)">
+          <div>{{ day.day }}</div>
+          <template v-if="attributes">
+            <div
+              v-for="(attr, i) in attributes.filter((attr) => attr.popover)"
+              :key="i"
+              class="day-card card"
+              :style="{
+                'background-color': attr.highlight
+                  ? attr.highlight.base.style.backgroundColor
+                  : isDarkTheme
+                  ? '#47628233'
+                  : '#fff',
+              }"
+            >
+              {{ attr.popover.label }}
+            </div>
+          </template>
+        </div>
+      </template>
+    </v-calendar>
+    <transition name="opacity">
+      <CalendarNotes
+        v-if="selectedDay"
+        :day="selectedDay"
+        @close="selectedDay = false"
+      >
+      </CalendarNotes>
+    </transition>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { getExams } from "@/scripts/scrapers";
+import { getExams, getSchoolYears } from "@/scripts/scrapers";
 import { jsonClone } from "@/scripts/utils";
 import { CalendarSettings, ClassInfo, User } from "@/store/state";
 import { MutationTypes } from "@/store/mutations";
+import CalendarNotes from "./CalendarNotes.vue";
 
-interface CalendarYearData {
+export interface CalendarYearData {
   startingDate: string;
   endingDate: string;
   edgeDays: Record<string, string>;
@@ -87,10 +123,11 @@ interface CalendarRangeData {
 }
 
 export default defineComponent({
+  components: { CalendarNotes },
   name: "Calendar",
   created() {
     const [year, month] = [this.today.getFullYear(), this.today.getMonth() + 1];
-    this.calendarPageChanged({ year, month });
+    this.updateSchoolYearTitle({ year, month });
     this.loadCalendar();
   },
   data() {
@@ -102,78 +139,17 @@ export default defineComponent({
       calendarColumns: 0,
       fromDate: null as unknown as Date,
       attributes: [] as any, // TS support not available yet :/
+      loadedClassIdExams: [] as string[],
+      showDayNote: false,
+      selectedDay: null as any,
     };
   },
   methods: {
     async loadCalendar() {
-      const schoolYears: CalendarYearData[] = [
-        {
-          startingDate: "6.9.2021",
-          endingDate: "21.6.2022",
-          edgeDays: {
-            "6.9.2021": "Počinje prvo polugodište",
-            "23.12.2021": "Završava prvo polugodište",
-            "10.1.2022": "Počinje drugo polugodište",
-            "21.6.2022": "Završava drugo polugodište",
-          },
-          holidays: {
-            "1.11.2021": "Blagdan Svih Svetih",
-            "18.11.2021": "Dan sjećanja na žrtve Domovinskog rata",
-            "25.12.2021": "Božić",
-            "26.12.2021": "Sveti Stjepan",
-            "17.4.2022": "Uskrs",
-            "18.4.2022": "Uskrsni ponedjeljak",
-            "1.5.2022": "Međunarodni praznik rada",
-            "30.5.2022": "Dan državnosti",
-            "16.6.2022": "Tijelovo",
-            "22.6.2022": "Dan antifašističke borbe",
-          },
-          vacationRanges: [
-            {
-              start: "1.9.2021",
-              end: "5.9.2021",
-              label: "Ljetni praznici",
-            },
-            {
-              start: "2.11.2021",
-              end: "3.11.2021",
-              label: "Jesenski praznici",
-            },
-            {
-              start: "24.12.2021",
-              end: "9.1.2022",
-              label: "Prvi dio zimskih praznika",
-            },
-            {
-              start: "21.2.2022",
-              end: "27.2.2022",
-              label: "Drugi dio zimskih praznika",
-            },
-            {
-              start: "14.4.2022",
-              end: "24.4.2022",
-              label: "Proljetni praznici",
-            },
-            {
-              start: "23.6.2022",
-              end: "31.8.2022",
-              label: "Ljetni praznici",
-            },
-          ],
-        },
-      ];
+      const schoolYears: CalendarYearData[] = await getSchoolYears();
       this.fromDate = this.convertToDate(schoolYears[0].startingDate);
       this.calendarColumns = this.calendarSettings.zoom;
       this.calendarRows = Math.round(12 / this.calendarColumns);
-
-      const exams = [];
-      const thisYearClasses = this.classesList.filter(
-        (classInfo) => classInfo.year == "2020./2021." /* this.schoolYearTitle */,  // TODO: UNCOMMENT
-      );
-      for (const { url } of thisYearClasses) {
-        exams.push(...((await getExams(url.match(/\d+/)![0])) || []));
-      }
-
       this.attributes = [
         {
           highlight: {
@@ -219,13 +195,31 @@ export default defineComponent({
             },
           })),
         ),
-        ...exams.map(({ subject, note, date }) => ({
-          dot: "red",
-          popover: { label: subject + ": " + note },
-          dates: this.convertToDate(date),
-        })),
       ];
+      await this.addExamsToCalendar("2020./2021." /* this.schoolYearTitle */); // TODO: UNCOMMENT
       this.calendarReady = true;
+    },
+    async addExamsToCalendar(schoolYear: string) {
+      const thisYearClasses = this.classesList.filter(
+        (classInfo) => classInfo.year == schoolYear,
+      );
+      for (const { url } of thisYearClasses) {
+        const classId = url.match(/\d+/)![0];
+        if (this.loadedClassIdExams.includes(classId)) continue;
+        this.loadedClassIdExams.push(classId);
+        this.attributes.push(
+          ...((await getExams(classId)) || []).map(
+            ({ subject, note, date }) => ({
+              dot: {
+                color: "red",
+                style: { boxShadow: "0 0 12px 4px var(--red-500)" },
+              },
+              popover: { label: subject + ": " + note },
+              dates: this.convertToDate(date),
+            }),
+          ),
+        );
+      }
     },
     convertToDate(str: string) {
       const [d, m, y] = str.split(".").map(Number);
@@ -251,13 +245,19 @@ export default defineComponent({
         settings: { calendarSettings: newSettings },
       });
     },
-    calendarPageChanged(e: any) {
-      const { year, month } = e;
+    updateSchoolYearTitle(newPage: any) {
+      const { year, month } = newPage;
       if (!year || !month) return;
       const firstSemester = month > 8 ? 0 : 1;
       const startYear = year - firstSemester;
       const endYear = year + 1 - firstSemester;
       this.schoolYearTitle = startYear + "./" + endYear + ".";
+      this.addExamsToCalendar(this.schoolYearTitle);
+    },
+    dayClicked(day: any) {
+      console.log(day);
+      this.selectedDay = day;
+      this.showDayNote = true;
     },
   },
   computed: {
@@ -275,6 +275,9 @@ export default defineComponent({
             zoom: 3,
           };
     },
+    isDarkTheme(): boolean {
+      return this.$store.state.settings.darkTheme;
+    },
   },
 });
 </script>
@@ -284,10 +287,60 @@ export default defineComponent({
   @extend .card;
   margin: 5px 10px;
 }
+
+.weekday-position-6,
+.weekday-position-7 {
+  color: gray;
+}
+
+.custom-calendar.vc-container {
+  width: 0;
+  margin: 0 !important;
+
+  .is-today .vc-day-box-center-center .vc-highlight {
+    box-shadow: 0 0 15px 5px #669df6;
+  }
+
+  .vc-day:not(.is-not-in-month) {
+    padding: 5px;
+    height: 120px;
+    transition: box-shadow 150ms;
+
+    @include themed() {
+      box-shadow: 0 0 1px 1px t("light-light-border-color");
+
+      &:hover {
+        box-shadow: 0 0 3px 2px t("light-border-color");
+      }
+    }
+  }
+
+  .vc-highlights {
+    top: 0;
+    height: 30px;
+    overflow: visible;
+  }
+
+  .day-card {
+    font-size: 14px;
+    margin: 5px 3px;
+    padding: 5px 8px;
+  }
+
+  .day-container {
+    height: 100%;
+    overflow: hidden auto;
+
+    @include themed() {
+      color: t("body-color");
+    }
+  }
+}
 </style>
 
 <style lang="scss" scoped>
 #calendar-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100%;
@@ -306,20 +359,4 @@ export default defineComponent({
   background: transparent;
   margin: auto 0;
 }
-
-.dropdown-row {
-}
-
-.dropdown-column {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  margin: 3px;
-
-  @include themed() {
-    border: 1px solid t("light-blue");
-  }
-}
-
-/* Calendar */
 </style>

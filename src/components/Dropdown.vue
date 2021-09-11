@@ -2,7 +2,12 @@
   <transition
     :name="customClass == 'user-dropdown' ? 'user-dropdown' : 'dropdown'"
   >
-    <div v-if="visible" class="card dropdown" :class="customClass" ref="dropdown">
+    <div
+      v-if="visible"
+      class="card dropdown"
+      :class="customClass"
+      ref="dropdown"
+    >
       <slot v-if="!list"></slot>
       <component
         v-else
@@ -78,9 +83,9 @@ export default defineComponent({
           !path.includes(document.getElementById(this.sourceElementId)!))
       )
         this.close();
-
     },
-    close(rowName?: string) {
+    close(rowName?: string | number) {
+      if (rowName && typeof rowName != "string") return;
       this.$emit("close", rowName);
     },
   },

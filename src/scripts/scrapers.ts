@@ -401,6 +401,71 @@ async function getExams(classId: string) {
   });
 }
 
+async function getSchoolYears() {
+  return [
+    {
+      startingDate: "6.9.2021",
+      endingDate: "21.6.2022",
+      edgeDays: {
+        "6.9.2021": "Počinje prvo polugodište",
+        "23.12.2021": "Završava prvo polugodište",
+        "10.1.2022": "Počinje drugo polugodište",
+        "25.5.2022": "Završava drugo polugodište za maturante",
+        "21.6.2022": "Završava drugo polugodište",
+      },
+      holidays: {
+        "1.11.2021": "Svi sveti",
+        "18.11.2021": "Dan sjećanja na žrtve Domovinskog rata",
+        "25.12.2021": "Božić",
+        "26.12.2021": "Sveti Stjepan",
+        "1.1.2022": "Nova godina",
+        "6.1.2022": "Sveta tri kralja",
+        "17.4.2022": "Uskrs",
+        "18.4.2022": "Uskrsni ponedjeljak",
+        "1.5.2022": "Međunarodni praznik rada",
+        "30.5.2022": "Dan državnosti",
+        "16.6.2022": "Tijelovo",
+        "22.6.2022": "Dan antifašističke borbe",
+        "5.8.2022":
+          "Dan pobjede i domovinske zahvalnosti i Dan hrvatskih branitelja",
+        "15.8.2022": "Velika Gospa",
+      },
+      vacationRanges: [
+        {
+          start: "1.9.2021",
+          end: "5.9.2021",
+          label: "Ljetni praznici",
+        },
+        {
+          start: "2.11.2021",
+          end: "3.11.2021",
+          label: "Jesenski praznici",
+        },
+        {
+          start: "24.12.2021",
+          end: "9.1.2022",
+          label: "Prvi dio zimskih praznika",
+        },
+        {
+          start: "21.2.2022",
+          end: "27.2.2022",
+          label: "Drugi dio zimskih praznika",
+        },
+        {
+          start: "14.4.2022",
+          end: "24.4.2022",
+          label: "Proljetni praznici",
+        },
+        {
+          start: "23.6.2022",
+          end: "31.8.2022",
+          label: "Ljetni praznici",
+        },
+      ],
+    },
+  ];
+}
+
 async function switchClassIfNeeded(classId: string) {
   const user = store.getters.user as User;
   const classUrl = store.getters.classInfo(classId).url as string;
@@ -417,4 +482,4 @@ async function switchClassIfNeeded(classId: string) {
   }
 }
 
-export { login, logout, updateSubjects, getSectionHTML, getExams };
+export { login, logout, updateSubjects, getSectionHTML, getExams, getSchoolYears };

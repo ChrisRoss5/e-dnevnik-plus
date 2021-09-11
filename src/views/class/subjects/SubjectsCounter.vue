@@ -1,5 +1,5 @@
 <template>
-  <div id="counter" class="blur" @click.self="$emit('close')">
+  <div id="counter" class="abs-cover blur" @click.self="$emit('close')">
     <div id="container" class="card">
       <div
         v-for="i in 5"
@@ -112,11 +112,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 #counter {
-  position: absolute;
   top: 75px;
-  left: 0;
-  right: 0;
-  bottom: 0;
   font-size: 24px;
   z-index: 5;
 }

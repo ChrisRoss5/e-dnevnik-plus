@@ -23,8 +23,8 @@ export default defineComponent({
     };
   },
   mounted() {
-    (this.$refs.main as HTMLElement).onscroll = () =>
-      this.$emitter.emit("main-scrolled");
+    const main = this.$refs.main as HTMLElement;
+    main.onscroll = () => this.$emitter.emit("main-scrolled", main.scrollTop);
   },
   watch: {
     $route(to, from) {

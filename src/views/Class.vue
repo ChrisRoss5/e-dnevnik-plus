@@ -224,10 +224,10 @@ export default defineComponent({
       const sectionsPadding = parseInt(sections.style.paddingRight) || 0;
       this.tabsIconOnly = sections.offsetWidth - sectionsPadding < 900;
     },
-    mainScrolled() {
+    mainScrolled(scrollTop: number) {
       const sections = this.getSectionsContainer();
       if (!sections) return;
-      const short = document.getElementById("main")!.scrollTop > 30;
+      const short = scrollTop > 30;
       const paddingRight = parseInt(this.$reactive.userOffsetWidth) + 40;
       sections.style.paddingRight = short ? paddingRight + "px" : "";
       sections.className = short ? "blur" : "";
