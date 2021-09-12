@@ -66,9 +66,7 @@ app
   .use(Toast, { position: "bottom-right" } as PluginOptions)
   .use(VWave)
   .use(VTooltip)
-  .use(VCalendar, {
-    isExpanded: true
-  })
+  .use(VCalendar)
   /* .use(VueTippy, {
     defaultProps: { animateFill: true },
   }) */

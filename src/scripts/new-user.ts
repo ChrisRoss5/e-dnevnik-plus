@@ -34,6 +34,7 @@ export default function newUser(initData: InitData): User {
       calendarSettings: {
         showEntireCalendar: true,
         zoom: 3,
+        customNotes: []
       }
     },
   };

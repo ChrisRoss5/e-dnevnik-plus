@@ -27,9 +27,7 @@ import { logout } from "@/scripts/scrapers";
 
 export default defineComponent({
   name: "User",
-  components: {
-    Dropdown,
-  },
+  components: { Dropdown },
   data() {
     return {
       showDropdown: false,

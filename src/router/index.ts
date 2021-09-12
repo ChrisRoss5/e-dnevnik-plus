@@ -2,15 +2,17 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import { store } from "@/store";
 
 import Login from "@/views/Login.vue";
-import Class from "@/views/Class.vue";
+import Class from "@/views/class/Class.vue";
 
 import Subjects from "@/views/class/subjects/Subjects.vue";
 import Subject from "@/views/class/subjects/Subject.vue";
 import ClassSectionFrame from "@/views/class/ClassSectionFrame.vue";
 import ClassStats from "@/views/class/ClassStats.vue";
 
-import Calendar from "@/views/Calendar.vue";
+import Calendar from "@/views/calendar/Calendar.vue";
 import GlobalStats from "@/views/GlobalStats.vue";
+import Calculator from "@/views/Calculator.vue";
+
 
 import Websites from "@/views/Websites.vue";
 import Settings from "@/views/Settings.vue";
@@ -87,6 +89,10 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/statistika-ocjena",
     component: GlobalStats,
+  },
+  {
+    path: "/kalkulator-bodova",
+    component: Calculator,
   },
   {
     path: "/stranica/:website",

@@ -69,6 +69,17 @@ export function removeAllparentheses(str: string) {
   return str.replace(/ *\([^)]*\) */g, "");
 }
 
+export function setEndOfContenteditable(contentEditableElement: HTMLElement) {
+  const range = document.createRange();
+  range.selectNodeContents(contentEditableElement);
+  range.collapse(false);
+  const selection = window.getSelection();
+  if (selection) {
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+}
+
 export function numberToColorHsl(i: number, a?: number) {
   const hue = (i * 1.2) / 360;
   const rgb = hslToRgb(hue, 1, 0.5);
@@ -123,17 +134,6 @@ export function getSubjectColors(
     });
   }
   return "linear-gradient(90deg," + linearGradient.join(",") + ")";
-}
-
-export function setEndOfContenteditable(contentEditableElement: HTMLElement) {
-  const range = document.createRange();
-  range.selectNodeContents(contentEditableElement);
-  range.collapse(false);
-  const selection = window.getSelection();
-  if (selection) {
-    selection.removeAllRanges();
-    selection.addRange(range);
-  }
 }
 
 function hslToRgb(h: number, s: number, l: number) {

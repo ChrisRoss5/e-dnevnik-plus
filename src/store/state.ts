@@ -30,7 +30,7 @@ export interface Settings {
 }
 
 export interface SubjectsSettings {
-  margin: number,
+  margin: number;
   zoom: number;
   expandTablesOnHover: boolean;
   subjectColors: boolean;
@@ -41,8 +41,14 @@ export interface SubjectsSettings {
 }
 
 export interface CalendarSettings {
-  showEntireCalendar: boolean,
-  zoom: number,
+  showEntireCalendar: boolean;
+  zoom: number;
+  customNotes: CustomCalendarNote[];
+}
+
+export interface CustomCalendarNote {
+  date: string;
+  note: string;
 }
 
 export interface GlobalSettings {

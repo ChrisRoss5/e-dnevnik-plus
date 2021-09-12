@@ -78,9 +78,10 @@
               :style="{
                 'background-color': attr.highlight
                   ? attr.highlight.base.style.backgroundColor
-                  : isDarkTheme
-                  ? '#47628233'
-                  : '#fff',
+                  : '',
+                'border-color': attr.dot
+                  ? attr.dot.base.style.backgroundColor
+                  : '',
               }"
             >
               {{ attr.popover.label }}
@@ -93,7 +94,8 @@
       <CalendarNotes
         v-if="selectedDay"
         :day="selectedDay"
-        @close="selectedDay = false"
+        @close="selectedDay = null"
+        @manageNote="manageNote"
       >
       </CalendarNotes>
     </transition>
@@ -106,7 +108,7 @@ import { getExams, getSchoolYears } from "@/scripts/scrapers";
 import { jsonClone } from "@/scripts/utils";
 import { CalendarSettings, ClassInfo, User } from "@/store/state";
 import { MutationTypes } from "@/store/mutations";
-import CalendarNotes from "./CalendarNotes.vue";
+import CalendarNotes from "../calendar/CalendarNotes.vue";
 
 export interface CalendarYearData {
   startingDate: string;
@@ -140,7 +142,6 @@ export default defineComponent({
       fromDate: null as unknown as Date,
       attributes: [] as any, // TS support not available yet :/
       loadedClassIdExams: [] as string[],
-      showDayNote: false,
       selectedDay: null as any,
     };
   },
@@ -195,6 +196,9 @@ export default defineComponent({
             },
           })),
         ),
+        ...this.calendarSettings.customNotes.map((n) =>
+          this.createNote(n.note, this.convertToDate(n.date)),
+        ),
       ];
       await this.addExamsToCalendar("2020./2021." /* this.schoolYearTitle */); // TODO: UNCOMMENT
       this.calendarReady = true;
@@ -224,6 +228,11 @@ export default defineComponent({
     convertToDate(str: string) {
       const [d, m, y] = str.split(".").map(Number);
       return new Date(y, m - 1, d);
+    },
+    convertFromDate(date: Date) {
+      return [date.getDate(), date.getMonth() + 1, date.getFullYear()].join(
+        ".",
+      );
     },
     toggleCalendarView() {
       const settings = jsonClone(this.calendarSettings);
@@ -255,9 +264,43 @@ export default defineComponent({
       this.addExamsToCalendar(this.schoolYearTitle);
     },
     dayClicked(day: any) {
-      console.log(day);
       this.selectedDay = day;
-      this.showDayNote = true;
+    },
+    manageNote({ note, method }: { note: string; method: "add" | "remove" }) {
+      const settings = jsonClone(this.calendarSettings);
+      const date = this.convertFromDate(this.selectedDay.date);
+      if (method == "remove") {
+        const i = settings.customNotes.findIndex(
+          (n) => n.date == date && n.note == note,
+        );
+        const j = this.attributes.findIndex((attr: any) => {
+          if (!attr.dot || attr.dot.color != "blue") return false;
+          return (
+            this.convertFromDate(attr.dates) == date &&
+            attr.popover.label == note
+          );
+        });
+        console.log(this.attributes, j);
+
+        settings.customNotes.splice(i, 1);
+        this.attributes.splice(j, 1);
+      } else {
+        settings.customNotes.push({ date, note });
+        const newNote = this.createNote(note, this.selectedDay.date);
+        this.attributes = this.attributes.concat([newNote]);
+      }
+      this.updateSettings(settings);
+      this.selectedDay = null;
+    },
+    createNote(note: string, date: Date) {
+      return {
+        dot: {
+          color: "blue",
+          style: { boxShadow: "0 0 12px 4px var(--blue-500)" },
+        },
+        popover: { label: note },
+        dates: date,
+      };
     },
   },
   computed: {
@@ -273,6 +316,7 @@ export default defineComponent({
         : {
             showEntireCalendar: true,
             zoom: 3,
+            customNotes: [],
           };
     },
     isDarkTheme(): boolean {
@@ -293,6 +337,10 @@ export default defineComponent({
   color: gray;
 }
 
+.vc-dot:not(:last-child) {
+  margin-right: 10px !important;
+}
+
 .custom-calendar.vc-container {
   width: 0;
   margin: 0 !important;
@@ -303,7 +351,7 @@ export default defineComponent({
 
   .vc-day:not(.is-not-in-month) {
     padding: 5px;
-    height: 120px;
+    min-height: 120px;
     transition: box-shadow 150ms;
 
     @include themed() {
@@ -325,15 +373,11 @@ export default defineComponent({
     font-size: 14px;
     margin: 5px 3px;
     padding: 5px 8px;
+    border: 1px solid transparent;
   }
 
   .day-container {
     height: 100%;
-    overflow: hidden auto;
-
-    @include themed() {
-      color: t("body-color");
-    }
   }
 }
 </style>
@@ -345,7 +389,7 @@ export default defineComponent({
   flex-direction: column;
   min-height: 100%;
   padding: 10px;
-  overflow-x: auto;
+  overflow: auto hidden;
 }
 
 .toolbar {

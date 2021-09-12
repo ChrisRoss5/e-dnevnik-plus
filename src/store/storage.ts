@@ -1826,7 +1826,8 @@ const testState: State = {
         calendarSettings: {
           showEntireCalendar: false,
           zoom: 3,
-        }
+          customNotes: [],
+        },
       },
       lastLoadedClassUrl:
         "https://ocjene.skole.hr/class_action/2115037150/course",
