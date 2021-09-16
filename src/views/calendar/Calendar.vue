@@ -110,20 +110,6 @@ import { CalendarSettings, ClassInfo, User } from "@/store/state";
 import { MutationTypes } from "@/store/mutations";
 import CalendarNotes from "../calendar/CalendarNotes.vue";
 
-export interface CalendarYearData {
-  startingDate: string;
-  endingDate: string;
-  edgeDays: Record<string, string>;
-  holidays: Record<string, string>;
-  vacationRanges: CalendarRangeData[];
-}
-
-interface CalendarRangeData {
-  start: string;
-  end: string;
-  label: string;
-}
-
 export default defineComponent({
   components: { CalendarNotes },
   name: "Calendar",
@@ -147,7 +133,7 @@ export default defineComponent({
   },
   methods: {
     async loadCalendar() {
-      const schoolYears: CalendarYearData[] = await getSchoolYears();
+      const schoolYears = await getSchoolYears();
       this.fromDate = this.convertToDate(schoolYears[0].startingDate);
       this.calendarColumns = this.calendarSettings.zoom;
       this.calendarRows = Math.round(12 / this.calendarColumns);

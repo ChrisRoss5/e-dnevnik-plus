@@ -61,15 +61,17 @@ export function formatGradeText(num: number): string {
   ][num]!;
 }
 
-export function capitalize(str: string) {
+export function capitalize(str: string): string {
   return str[0].toUpperCase() + str.slice(1);
 }
 
-export function removeAllparentheses(str: string) {
+export function removeAllparentheses(str: string): string {
   return str.replace(/ *\([^)]*\) */g, "");
 }
 
-export function setEndOfContenteditable(contentEditableElement: HTMLElement) {
+export function setEndOfContenteditable(
+  contentEditableElement: HTMLElement,
+): void {
   const range = document.createRange();
   range.selectNodeContents(contentEditableElement);
   range.collapse(false);
@@ -80,7 +82,7 @@ export function setEndOfContenteditable(contentEditableElement: HTMLElement) {
   }
 }
 
-export function numberToColorHsl(i: number, a?: number) {
+export function numberToColorHsl(i: number, a?: number): string {
   const hue = (i * 1.2) / 360;
   const rgb = hslToRgb(hue, 1, 0.5);
   return (
@@ -88,7 +90,7 @@ export function numberToColorHsl(i: number, a?: number) {
   );
 }
 
-export function getGradesColors(alpha?: number) {
+export function getGradesColors(alpha?: number): string[] {
   let colors = ["#FF3924", "#FF9600", "#FFE500", "#84FF33", "#2ab62a"];
   if (alpha) {
     colors = colors.map((color) => {
@@ -106,7 +108,7 @@ export function getGradesColors(alpha?: number) {
 export function getSubjectColors(
   grades: number[] | number[][],
   gradesCount?: number,
-) {
+): string {
   const colors = getGradesColors();
   let perc = 0;
   let linearGradient = [];
@@ -136,7 +138,7 @@ export function getSubjectColors(
   return "linear-gradient(90deg," + linearGradient.join(",") + ")";
 }
 
-function hslToRgb(h: number, s: number, l: number) {
+function hslToRgb(h: number, s: number, l: number): number[] {
   let r, g, b;
   if (s == 0) {
     r = g = b = l;
@@ -150,7 +152,7 @@ function hslToRgb(h: number, s: number, l: number) {
   return [Math.floor(r * 255), Math.floor(g * 255), Math.floor(b * 255)];
 }
 
-function hue2rgb(p: number, q: number, t: number) {
+function hue2rgb(p: number, q: number, t: number): number {
   if (t < 0) t += 1;
   if (t > 1) t -= 1;
   if (t < 1 / 6) return p + (q - p) * 6 * t;

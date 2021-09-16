@@ -1,0 +1,59 @@
+<style>
+  body {
+    overflow: hidden;
+    margin: 0;
+  }
+
+  iframe {
+    width: 100vw;
+    height: 100vh;
+  }
+</style>
+
+<body>
+  <!-- PDF from https://www.upisi.hr converted with https://pdfstuff.com/pdf-to-html/ -->
+
+  <iframe src="2020-2021.html" onload="load()"></iframe>
+</body>
+
+<script>
+  function load() {
+    const output = {};
+    const doc = document.querySelector("iframe").contentWindow.document;
+
+    doc.querySelectorAll("tr").forEach((row) => {
+      let values = [];
+      row.querySelectorAll("td").forEach((cell) => {
+        const value = [...cell.querySelectorAll(".s3")]
+          .map((n) => n.textContent.trim())
+          .join(" ");
+        if (value) values.push(value);
+      });
+
+      if (values.length < 5) return;
+      if (values.length > 5)
+        values = values.filter((_, i) => ![3, 5, 7].includes(i));
+
+      const school = values[0];
+      const program = values[1];
+
+      if (!/\d g\./.test(program)) console.log(row);
+
+      const points = [values[2], values[3], values[4]].map((n) =>
+        parseFloat(n.replace(",", ".")),
+      );
+
+      if (!output[school]) output[school] = {};
+      output[school][program] = points;
+    });
+
+    // Add manually (errors in conversion)
+    doc.querySelectorAll("table + p").forEach((p) => {
+      const value = p.textContent;
+      if (!(value && value.trim())) return;
+      console.log(value);
+    });
+
+    console.log(output); // 2020-2021.ts
+  }
+</script>

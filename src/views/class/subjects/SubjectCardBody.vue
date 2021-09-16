@@ -185,7 +185,7 @@ export default defineComponent({
 
 <style lang="scss">
 .red {
-  color: red !important;
+  color: $soft-red !important;
 }
 
 .line-through {

@@ -1828,6 +1828,12 @@ const testState: State = {
           zoom: 3,
           customNotes: [],
         },
+        calculatorSettings: {
+          selectedSchool: "",
+          selectedProgram: "",
+          selectedExtraPoints: "",
+          userValues: [[], [], [], [], [], [], []],
+        }
       },
       lastLoadedClassUrl:
         "https://ocjene.skole.hr/class_action/2115037150/course",

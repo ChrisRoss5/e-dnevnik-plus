@@ -18,8 +18,8 @@
         :style="{
           color:
             subject.finalGrade > Math.round(subject.gradesAvgOriginal)
-              ? 'green'
-              : 'red',
+              ? '#2ab62a'
+              : '#ff3924',
         }"
       >
         {{
@@ -130,7 +130,7 @@ export default defineComponent({
       if (!validInput) target.textContent = "";
       this.$emit("updateGradesAvgEdited", validInput ? parseInt(e.data!) : NaN);
       target.textContent = target.textContent!.slice(0, 4);
-      this.$nextTick(() => target && setEndOfContenteditable(target));
+      this.$nextTick(() => setEndOfContenteditable(target));
     },
     avgFocusChanged(e: FocusEvent) {
       const target = e.target as HTMLElement;
@@ -143,7 +143,7 @@ export default defineComponent({
       const avg = this.subject.gradesAvgEdited || this.subject.gradesAvg;
       const originalAvg = this.subject.gradesAvgOriginal;
       if (!avg || avg == originalAvg) return "";
-      if (!originalAvg || avg < originalAvg) return "red";
+      if (!originalAvg || avg < originalAvg) return "#ff3924";
       return "green";
     },
     getSubjectUrl(path: string): string {

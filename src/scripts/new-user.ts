@@ -35,6 +35,12 @@ export default function newUser(initData: InitData): User {
         showEntireCalendar: true,
         zoom: 3,
         customNotes: []
+      },
+      calculatorSettings: {
+        selectedSchool: "",
+        selectedProgram: "",
+        selectedExtraPoints: "",
+        userValues: [[], [], [], [], [], [], []],
       }
     },
   };

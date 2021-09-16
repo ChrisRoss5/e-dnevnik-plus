@@ -11,6 +11,9 @@ $views-transition: 250ms;
 $subject-peek-duration: 150ms;
 $subject-peek-delay: 150ms;
 
+$soft-green: #2ab62a;
+$soft-red: #ff3924;
+
 $navbar-max-width: 350px;
 
 $themes: (
@@ -31,7 +34,7 @@ $themes: (
       0 1px 2px 0 rgb(60 64 67 / 30%),
       0 1px 3px 1px rgb(60 64 67 / 15%),
     ),
-    gray-shadow: 0 0 5px #cacccc
+    gray-shadow: 0 0 5px #cacccc,
   ),
   dark: (
     body-color: $body-color-dark,
@@ -50,7 +53,7 @@ $themes: (
       rgb(43 46 48) 0px 1px 2px 0px,
       rgb(43 46 48) 0px 1px 3px 1px,
     ),
-    gray-shadow: 0 0 5px #454545
+    gray-shadow: 0 0 5px #454545,
   ),
 );
 

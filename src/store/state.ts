@@ -27,6 +27,7 @@ export interface Settings {
   classTabsOrder: string[];
   subjectsSettings: SubjectsSettings;
   calendarSettings: CalendarSettings;
+  calculatorSettings: CalculatorSettings;
 }
 
 export interface SubjectsSettings {
@@ -49,6 +50,13 @@ export interface CalendarSettings {
 export interface CustomCalendarNote {
   date: string;
   note: string;
+}
+
+export interface CalculatorSettings {
+  selectedSchool: string;
+  selectedProgram: string;
+  selectedExtraPoints: string;
+  userValues: number[][];
 }
 
 export interface GlobalSettings {

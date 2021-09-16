@@ -2,6 +2,7 @@ import { useToast } from "vue-toastification";
 import { MutationTypes } from "@/store/mutations";
 import { User, ClassInfo, SubjectCache } from "@/store/state";
 import { store } from "@/store";
+import { CalendarYear, CalendarExam } from "@/views/calendar/interface";
 import newUser from "./new-user";
 import * as UTILS from "./utils";
 
@@ -124,7 +125,10 @@ async function getClassesList(
   return classesList;
 }
 
-async function updateSubjects(classInfo: ClassInfo, forceUpdate?: boolean) {
+async function updateSubjects(
+  classInfo: ClassInfo,
+  forceUpdate?: boolean,
+): Promise<boolean> {
   if (window.devTestMode) return true;
   const cachedSubjects = classInfo.cachedSubjects || [];
   const { lastUpdated, isYearCompleted } = classInfo;
@@ -176,7 +180,9 @@ async function updateSubjects(classInfo: ClassInfo, forceUpdate?: boolean) {
   return true;
 }
 
-async function updateSubject(subject: SubjectCache) {
+async function updateSubject(
+  subject: SubjectCache,
+): Promise<false | SubjectCache> {
   const subjectDoc = await authFetch(subject.url);
   if (!subjectDoc) {
     toast.error("Greška: Predmet ne postoji!");
@@ -204,7 +210,7 @@ async function updateSubject(subject: SubjectCache) {
   return subject;
 }
 
-async function updateClassesHeadteacher() {
+async function updateClassesHeadteacher(): Promise<void> {
   const classesList = store.getters.user.classesList as ClassInfo[];
   // Because the class response is 302, requests must go 1 by 1
   // prettier-ignore
@@ -225,7 +231,10 @@ async function updateClassesHeadteacher() {
   }
 }
 
-async function getSectionHTML(classId: string, sectionUrl: string) {
+async function getSectionHTML(
+  classId: string,
+  sectionUrl: string,
+): Promise<false | Element> {
   if (window.devTestMode || (await switchClassIfNeeded(classId))) return false;
   const doc = await authFetch(sectionUrl);
   if (!doc) {
@@ -235,7 +244,7 @@ async function getSectionHTML(classId: string, sectionUrl: string) {
   return doc.querySelector(".content") || false;
 }
 
-async function getExams(classId: string) {
+async function getExams(classId: string): Promise<false | CalendarExam[]> {
   if (classId) {
     return [
       {
@@ -401,7 +410,7 @@ async function getExams(classId: string) {
   });
 }
 
-async function getSchoolYears() {
+async function getSchoolYears(): Promise<CalendarYear[]> {
   return [
     {
       startingDate: "6.9.2021",
@@ -466,7 +475,7 @@ async function getSchoolYears() {
   ];
 }
 
-async function switchClassIfNeeded(classId: string) {
+async function switchClassIfNeeded(classId: string): Promise<true | undefined> {
   const user = store.getters.user as User;
   const classUrl = store.getters.classInfo(classId).url as string;
   const lastLoadedClassUrl = user.lastLoadedClassUrl || "";
@@ -482,4 +491,11 @@ async function switchClassIfNeeded(classId: string) {
   }
 }
 
-export { login, logout, updateSubjects, getSectionHTML, getExams, getSchoolYears };
+export {
+  login,
+  logout,
+  updateSubjects,
+  getSectionHTML,
+  getExams,
+  getSchoolYears,
+};

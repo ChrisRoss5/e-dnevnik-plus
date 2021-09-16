@@ -27,7 +27,7 @@
           <div
             id="final-grade"
             :style="{
-              color: finalGradeOriginal < finalGrade ? 'green' : 'red',
+              color: finalGradeOriginal < finalGrade ? '#2ab62a' : '#ff3924',
             }"
           >
             {{ formatNum(finalGrade) }}

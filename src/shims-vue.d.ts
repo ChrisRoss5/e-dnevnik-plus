@@ -1,11 +1,14 @@
-/* eslint-disable */
 declare module '*.vue' {
-  import type { DefineComponent } from 'vue'
-  const component: DefineComponent<{}, {}, any>
-  export default component
+  import type { DefineComponent } from 'vue';
+  const component: DefineComponent<{}, {}, any>;
+  export default component;
 }
 
-/* https://github.com/Akryum/v-tooltip/discussions/603 */
+declare module '@/assets/high-school-points/2020-2021.js' {
+  const points: Record<string, Record<string, number[]>>;
+  export default points;
+}
+
 declare module 'v-tooltip';
 
 /*

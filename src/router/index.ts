@@ -11,7 +11,7 @@ import ClassStats from "@/views/class/ClassStats.vue";
 
 import Calendar from "@/views/calendar/Calendar.vue";
 import GlobalStats from "@/views/GlobalStats.vue";
-import Calculator from "@/views/Calculator.vue";
+import Calculator from "@/views/calculator/Calculator.vue";
 
 
 import Websites from "@/views/Websites.vue";
