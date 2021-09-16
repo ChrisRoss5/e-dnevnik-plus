@@ -81,7 +81,7 @@
 import { defineComponent, PropType } from "vue";
 import { ExtendedSubjectCache } from "@/views/class/subjects/Subjects.vue";
 import { GradesByCategory } from "@/store/state";
-import { formatNum, jsonClone, setEndOfContenteditable } from "@/scripts/utils";
+import { formatNum, setEndOfContenteditable } from "@/scripts/utils";
 
 export default defineComponent({
   name: "SubjectCardHead",
@@ -109,7 +109,7 @@ export default defineComponent({
         target.scrollBy({ left: e.deltaY, behavior: "smooth" });
       }
     },
-    isSubjectEdited(): boolean {
+    isSubjectEdited() {
       const current = this.mapSubjectGrades(
         this.subject.gradesByCategory || [],
       );
@@ -121,7 +121,7 @@ export default defineComponent({
         JSON.stringify(current) != JSON.stringify(original)
       );
     },
-    mapSubjectGrades(grades: GradesByCategory[]): number[][][] {
+    mapSubjectGrades(grades: GradesByCategory[]) {
       return grades.map((row) => row.grades.map((cell) => [...cell].sort())); // nosonar
     },
     avgInputted(e: InputEvent) {
@@ -139,20 +139,20 @@ export default defineComponent({
       else if (e.type == "blur" && !target.textContent)
         target.textContent = "—";
     },
-    getSubjectAvgColor(): string {
+    getSubjectAvgColor() {
       const avg = this.subject.gradesAvgEdited || this.subject.gradesAvg;
       const originalAvg = this.subject.gradesAvgOriginal;
       if (!avg || avg == originalAvg) return "";
       if (!originalAvg || avg < originalAvg) return "#ff3924";
       return "green";
     },
-    getSubjectUrl(path: string): string {
+    getSubjectUrl(path: string) {
       const match = path.match(/\d+/);
       const fullPath = this.$route.path.replace(/\/(\d+)?$/, "");
       return fullPath + "/" + (match ? match[0] : "");
     },
 
-    formatNum: (num: number): string => formatNum(num),
+    formatNum: (num: number) => formatNum(num),
   },
 });
 </script>
@@ -186,8 +186,8 @@ export default defineComponent({
   background: transparent;
   overflow: hidden;
   margin-bottom: 0;
-  transition: background-color $subject-peek-duration,
-    margin-bottom 500ms, z-index 0ms $subject-peek-duration;
+  transition: background-color $subject-peek-duration, margin-bottom 500ms,
+    z-index 0ms $subject-peek-duration;
   z-index: 2;
   transform: translateZ(0);
   will-change: margin, margin-bottom;

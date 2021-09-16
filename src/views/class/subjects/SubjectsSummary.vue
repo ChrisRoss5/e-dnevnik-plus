@@ -105,7 +105,7 @@ export default defineComponent({
       this.sortDropdownVisible = rowName == "Sortiranje povlačenjem";
       if (rowName) this.$emit("sortOptionClicked", rowName);
     },
-    formatNum: (num: number): string => formatNum(num),
+    formatNum: (num: number) => formatNum(num),
   },
   computed: {
     sortDropdownList(): DropdownItem[] {

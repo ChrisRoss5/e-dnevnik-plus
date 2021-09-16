@@ -1,7 +1,5 @@
 <template>
-  <transition
-    :name="customClass == 'user-dropdown' ? 'user-dropdown' : 'dropdown'"
-  >
+  <transition :name="customClass == 'user-dropdown' ? customClass : 'dropdown'">
     <div
       v-if="visible"
       class="card dropdown"
@@ -13,8 +11,9 @@
         v-else
         v-for="(row, i) in list"
         :key="i"
-        :is="row.link ? 'router-link' : 'a'"
-        :to="row.link"
+        :is="isHttp ? 'a' : row.link ? 'router-link' : 'div'"
+        :[rowAttributeName]="row.link"
+        :target="isHttp ? '_blank' : ''"
         :class="{ active: row.active }"
         @click="close(row.name)"
         v-tooltip.right="{
@@ -41,7 +40,7 @@ export interface DropdownItem {
   name: string;
   alignRight?: string;
   icon?: string;
-  link?: string | { params: Record<string, string> };
+  link?: string;
   tooltip?: string;
   active?: boolean;
 }
@@ -49,20 +48,24 @@ export interface DropdownItem {
 export default defineComponent({
   name: "Dropdown",
   props: {
-    list: {
-      type: Array as PropType<Array<DropdownItem>>,
-      required: false,
-    },
     visible: {
       type: Boolean,
       required: true,
+    },
+    list: {
+      type: Array as PropType<Array<DropdownItem>>,
+      required: false,
     },
     sourceElementId: {
       type: String,
       required: true,
     },
     customClass: {
-      type: String,
+      type: String as PropType<"user-dropdown" | "right">,
+      required: false,
+    },
+    isHttp: {
+      type: Boolean,
       required: false,
     },
   },
@@ -89,6 +92,11 @@ export default defineComponent({
       this.$emit("close", rowName);
     },
   },
+  computed: {
+    rowAttributeName(): "to" | "href" {
+      return this.isHttp ? "href" : "to";
+    },
+  },
 });
 </script>
 
@@ -108,7 +116,8 @@ export default defineComponent({
   transition: transform 250ms, opacity 250ms;
   z-index: 99;
 
-  & > a {
+  & > a,
+  & > div {
     display: flex;
     align-items: center;
     padding: 8px 20px;

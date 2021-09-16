@@ -156,7 +156,6 @@ iframe {
   left: 20px;
   width: 44px;
   height: 44px;
-  border-radius: 8px;
   cursor: pointer;
 
   & > span {

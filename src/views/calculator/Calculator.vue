@@ -1,6 +1,24 @@
 <template>
   <div id="calculator" class="card">
-    <div class="title">Kalkulator bodova za upis u srednju školu</div>
+    <div class="title">
+      Kalkulator bodova za upis u srednju školu
+      <span
+        id="urls"
+        class="material-icons card"
+        @click.self="showUrls = true"
+        v-wave
+      >
+        link
+        <Dropdown
+          :visible="showUrls"
+          :list="urls"
+          :customClass="'right'"
+          sourceElementId="urls"
+          :isHttp="true"
+          @close="showUrls = false"
+        ></Dropdown>
+      </span>
+    </div>
     <div class="row">
       <div class="text">Odabrana škola:</div>
       <div id="high-school" class="button-container">
@@ -63,78 +81,87 @@
         {{ duration }}
       </div>
     </div>
-    <table>
-      <thead>
-        <tr>
-          <td>Elementi vrednovanja:</td>
-          <td v-for="i in 4" :key="i">{{ i + 4 }}. razred</td>
-        </tr>
-      </thead>
-      <tbody>
-        <transition-group name="table">
-          <tr v-for="(title, i) in selectedTableTitles" :key="i">
-            <td>{{ title }}:</td>
-            <td v-for="j in 4" :key="j">
-              <div
-                v-if="!i || j > 2"
-                contenteditable="true"
-                @input="numberInputted($event, i, j - (i ? 3 : 1))"
-                @blur="editingInput = -1"
-              >
-                {{ getInputNumber(i, j - (i ? 3 : 1)) }}
-              </div>
-              <div v-else class="disabled-button"></div>
-            </td>
+    <transition-group name="table">
+      <table :key="0">
+        <thead>
+          <tr>
+            <td>Elementi vrednovanja:</td>
+            <td v-for="i in 4" :key="i">{{ i + 4 }}. razred</td>
           </tr>
-          <tr :key="0">
-            <td>Dodatni bodovi:</td>
-            <td id="extra-points" colspan="4">
-              <div
-                class="button"
-                style="display: flex"
-                @click.self="showExtraPoints = true"
-                v-wave
-              >
-                <span style="margin: 0 auto; pointer-events: none">
-                  {{ settings.selectedExtraPoints || "Odaberi" }}
-                </span>
-                <span
-                  v-if="settings.selectedExtraPoints"
-                  class="material-icons clear"
-                  @click="extraPointsSelected('clear')"
+        </thead>
+        <tbody>
+          <transition-group name="table">
+            <tr v-for="(title, i) in selectedTableTitles" :key="i">
+              <td>{{ title }}:</td>
+              <td v-for="j in 4" :key="j">
+                <div
+                  v-if="!i || j > 2"
+                  contenteditable="true"
+                  @input="numberInputted($event, i, j - (i ? 3 : 1))"
+                  @blur="editingInput = -1"
                 >
-                  close
-                </span>
-              </div>
-              <CustomDropdown
-                :visible="showExtraPoints"
-                :sourceElementId="'extra-points'"
-                :list="extraPoints"
-                @close="extraPointsSelected"
-              ></CustomDropdown>
-            </td>
-          </tr>
-        </transition-group>
-      </tbody>
-    </table>
-    <div id="total-points">
-      Tvoj broj bodova: {{ totalPoints == -1 ? "Izravan upis!" : totalPoints }}
-    </div>
-    <div id="points-line" :style="{ background: linearBackground }"></div>
+                  {{ getInputNumber(i, j - (i ? 3 : 1)) }}
+                </div>
+                <div v-else class="disabled-button"></div>
+              </td>
+            </tr>
+            <tr :key="0">
+              <td>Dodatni bodovi:</td>
+              <td id="extra-points" colspan="4">
+                <div
+                  class="button"
+                  style="display: flex"
+                  @click.self="showExtraPoints = true"
+                  v-wave
+                >
+                  <span style="margin: 0 auto; pointer-events: none">
+                    {{ settings.selectedExtraPoints || "Odaberi" }}
+                  </span>
+                  <span
+                    v-if="settings.selectedExtraPoints"
+                    class="material-icons clear"
+                    @click="extraPointsSelected('clear')"
+                  >
+                    close
+                  </span>
+                </div>
+                <CustomDropdown
+                  :visible="showExtraPoints"
+                  :sourceElementId="'extra-points'"
+                  :list="extraPoints"
+                  @close="extraPointsSelected"
+                ></CustomDropdown>
+              </td>
+            </tr>
+          </transition-group>
+        </tbody>
+      </table>
+      <Result
+        :key="1"
+        :settings="settings"
+        :rows="selectedTableTitles.length"
+      ></Result>
+    </transition-group>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import Dropdown, { DropdownItem } from "@/components/Dropdown.vue";
 import CustomDropdown from "./CustomDropdown.vue";
+import Result from "./Result.vue";
 import highSchoolPoints from "@/assets/high-school-points/2020-2021.js";
-import { getSum, jsonClone, setEndOfContenteditable } from "@/scripts/utils";
+import { jsonClone, parseNum, setEndOfContenteditable } from "@/scripts/utils";
 import { MutationTypes } from "@/store/mutations";
 import { CalculatorSettings, User } from "@/store/state";
+import { updateSubjects } from "@/scripts/scrapers";
 
 export default defineComponent({
   name: "Calculator",
-  components: { CustomDropdown },
+  components: { Dropdown, CustomDropdown, Result },
+  created() {
+    this.loadUserPoints();
+  },
   data() {
     return {
       highSchools: Object.keys(highSchoolPoints),
@@ -170,9 +197,56 @@ export default defineComponent({
       ],
       showExtraPoints: false,
       editingInput: -1,
+      urls: [
+        {
+          name: "Upisi.hr",
+          icon: "home",
+          link: "https://www.upisi.hr/",
+        },
+        {
+          name: "Upute",
+          icon: "picture_as_pdf",
+          link: "https://www.upisi.hr/docs/Publikacija_redoviti.pdf",
+        },
+        {
+          name: "Tablica bodova",
+          icon: "table_rows",
+          link: "https://www.upisi.hr/docs/Broj_bodova_potrebnih_za_upis.pdf",
+        },
+      ] as DropdownItem[],
+      showUrls: false,
     };
   },
   methods: {
+    async loadUserPoints() {
+      const settings = jsonClone(this.settings);
+      let { userValues } = settings;
+      console.log(userValues);
+      const subjects: Record<string, number[]> = {
+        "hrvatski jezik": [0, 0],
+        matematika: [0, 0],
+        "engleski jezik i": [0, 0],
+      };
+      for (const classInfo of this.user ? this.user.classesList : []) {
+        const match = classInfo.name.match(/\d/);
+        if (!match) continue;
+        const studentYear = parseInt(match[0]);
+        if (!(4 < studentYear && studentYear < 9)) continue;
+        await updateSubjects(classInfo);
+        if (classInfo.finalGrade && !userValues[studentYear - 5])
+          userValues[0][studentYear - 5] = parseNum(classInfo.finalGrade);
+        if (!(6 < studentYear && studentYear < 9)) continue;
+        for (const { name, finalGrade } of classInfo.cachedSubjects!)
+          if (finalGrade && name.toLowerCase() in subjects)
+            subjects[name.toLowerCase()][studentYear - 7] = finalGrade;
+      }
+      const values = Object.values(subjects);
+      for (let i = 0; i < values.length; i++) {
+        if (!userValues[i + 1][0]) userValues[i + 1][0] = values[i][0];
+        if (!userValues[i + 1][1]) userValues[i + 1][1] = values[i][1];
+      }
+      this.updateSettings({ ...settings, userValues });
+    },
     schoolSelected(schoolName?: string) {
       this.showHighSchools = false;
       if (!schoolName) return;
@@ -273,49 +347,6 @@ export default defineComponent({
             userValues: [[], [], [], [], [], [], []],
           };
     },
-    totalPoints(): number {
-      const { selectedExtraPoints, userValues } = this.settings;
-      let points = getSum(userValues.flat());
-      if (selectedExtraPoints) {
-        const extraPoints = selectedExtraPoints.match(/\d/);
-        if (!extraPoints) return -1;
-        points += parseInt(extraPoints[0]);
-      }
-      return points;
-    },
-    points(): { min: number; max: number; average: number } {
-      const { selectedSchool, selectedProgram } = this.settings;
-      if (!(selectedSchool && selectedProgram))
-        return { min: 0, max: 0, average: 0 };
-      const [min, max, average] =
-        highSchoolPoints[selectedSchool][selectedProgram];
-      return { min, max, average };
-    },
-    percentages(): {
-      min: number;
-      max: number;
-      average: number;
-      user?: number;
-    } {
-      if (!this.points.average || this.totalPoints <= 0)
-        return { min: 0, max: 0, average: 0 };
-      const min = Math.min(this.totalPoints, this.points.min);
-      const max = Math.max(this.totalPoints, this.points.max);
-      return {
-        min: ((this.points.min - min) * 100) / (max - min),
-        max: ((this.points.max - min) * 100) / (max - min),
-        average: ((this.points.average - min) * 100) / (max - min),
-        user: ((this.totalPoints - min) * 100) / (max - min),
-      };
-    },
-    linearBackground(): string {
-      let background = "";
-      console.log(this.percentages);
-      console.log(this.points);
-
-      return "linear-gradient(90deg," ;
-
-    }
   },
 });
 </script>
@@ -325,6 +356,14 @@ export default defineComponent({
   margin: 80px auto;
   padding: 30px;
   width: 954px;
+}
+
+#urls {
+  position: relative;
+  float: right;
+  margin: 10px 0;
+  padding: 5px 10px;
+  cursor: pointer;
 }
 
 .title {
@@ -401,6 +440,10 @@ thead td:not(:first-of-type) {
 
 tr {
   height: 44px;
+}
+
+tr,
+.durations ~ * {
   transition: opacity 350ms, transform 350ms;
   transition-timing-function: cubic-bezier(0.47, 0.93, 0.66, 1.23);
 }
@@ -433,16 +476,6 @@ tr {
 
 .clear {
   cursor: pointer;
-}
-
-#total-points {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-#points-line {
-  height: 44px;
 }
 
 /* transitions */
