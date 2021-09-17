@@ -142,6 +142,7 @@
         :rows="selectedTableTitles.length"
       ></Result>
     </transition-group>
+    <Spinner :visible="loading" :size="'125px'" blur></Spinner>
   </div>
 </template>
 
@@ -150,6 +151,7 @@ import { defineComponent } from "vue";
 import Dropdown, { DropdownItem } from "@/components/Dropdown.vue";
 import CustomDropdown from "./CustomDropdown.vue";
 import Result from "./Result.vue";
+import Spinner from "@/components/Spinner.vue";
 import highSchoolPoints from "@/assets/high-school-points/2020-2021.js";
 import { jsonClone, parseNum, setEndOfContenteditable } from "@/scripts/utils";
 import { MutationTypes } from "@/store/mutations";
@@ -158,12 +160,13 @@ import { updateSubjects } from "@/scripts/scrapers";
 
 export default defineComponent({
   name: "Calculator",
-  components: { Dropdown, CustomDropdown, Result },
+  components: { Dropdown, CustomDropdown, Result, Spinner },
   created() {
     this.loadUserPoints();
   },
   data() {
     return {
+      loading: false,
       highSchools: Object.keys(highSchoolPoints),
       showHighSchools: false,
       showSchoolProgram: false,
@@ -219,33 +222,27 @@ export default defineComponent({
   },
   methods: {
     async loadUserPoints() {
+      this.loading = true;
       const settings = jsonClone(this.settings);
-      let { userValues } = settings;
-      console.log(userValues);
-      const subjects: Record<string, number[]> = {
-        "hrvatski jezik": [0, 0],
-        matematika: [0, 0],
-        "engleski jezik i": [0, 0],
-      };
+      const { userValues } = settings;
+      const subjects = ["hrvatski jezik", "matematika", "engleski jezik"];
       for (const classInfo of this.user ? this.user.classesList : []) {
         const match = classInfo.name.match(/\d/);
         if (!match) continue;
         const studentYear = parseInt(match[0]);
         if (!(4 < studentYear && studentYear < 9)) continue;
         await updateSubjects(classInfo);
-        if (classInfo.finalGrade && !userValues[studentYear - 5])
+        if (classInfo.finalGrade && !userValues[0][studentYear - 5])
           userValues[0][studentYear - 5] = parseNum(classInfo.finalGrade);
         if (!(6 < studentYear && studentYear < 9)) continue;
-        for (const { name, finalGrade } of classInfo.cachedSubjects!)
-          if (finalGrade && name.toLowerCase() in subjects)
-            subjects[name.toLowerCase()][studentYear - 7] = finalGrade;
-      }
-      const values = Object.values(subjects);
-      for (let i = 0; i < values.length; i++) {
-        if (!userValues[i + 1][0]) userValues[i + 1][0] = values[i][0];
-        if (!userValues[i + 1][1]) userValues[i + 1][1] = values[i][1];
+        for (const { name, finalGrade } of classInfo.cachedSubjects!) {
+          const i = subjects.indexOf(name.toLowerCase().replace(/ *i$/, ""));
+          if (finalGrade && i > -1 && !userValues[i + 1][studentYear - 7])
+            userValues[i + 1][studentYear - 7] = finalGrade;
+        }
       }
       this.updateSettings({ ...settings, userValues });
+      this.loading = false;
     },
     schoolSelected(schoolName?: string) {
       this.showHighSchools = false;

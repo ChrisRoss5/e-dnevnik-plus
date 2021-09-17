@@ -124,12 +124,11 @@ export default defineComponent({
   padding-right: 20px;
 
   & > div {
-    flex: 1;
     user-select: none;
     cursor: pointer;
     height: 44px;
     padding: 5px 20px;
-    margin: 0 30px 20px;
+    margin: 0 20px 10px;
     transition: color 150ms, background-color 150ms;
 
     @include themed() {

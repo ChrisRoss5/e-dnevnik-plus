@@ -18,15 +18,8 @@
       </div>
     </div>
     <div>
-      <div class="title">Dopuštenja</div>
-      <div class="setting card">
-        Tamni prikaz:
-
-        <div class="switch default">
-          <input type="checkbox" class="switch__input" checked disabled />
-          <label class="switch__label">&nbsp;</label>
-        </div>
-      </div>
+      <div class="title">Stranice</div>
+      
     </div>
   </div>
 </template>

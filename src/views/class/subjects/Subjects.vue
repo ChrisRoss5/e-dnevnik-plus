@@ -20,14 +20,14 @@
       <SlickList
         v-if="subjects.length"
         id="subjects-list"
-        :class="{ sorting: subjectsSorting }"
+        :class="{ sorting: subjectsSorting || subjectsResizing }"
         :style="{
           'grid-template-columns':
             'repeat(' +
             (openedSubject ? 1 : savedOptions.zoom) +
             ',minmax(0, 1fr))',
           margin: '0 ' + (openedSubject ? 0 : subjectsMargin) + 'px',
-          transition: 'margin ' + (subjectsResizing ? 0 : 350) + 'ms'
+          transition: 'margin ' + (subjectsResizing ? 0 : 350) + 'ms',
         }"
         v-model:list="subjects"
         axis="xy"
@@ -171,8 +171,8 @@ export default defineComponent({
       if (!(await updateSubjects(this.openedClassInfo, forceUpdate))) return;
       this.subjectsLoading = false;
       this.$emit("sectionLoaded");
-      this.subjects = []; // Trigger soft 'opacity' transition
-      setTimeout(this.resetSubjects, 0); // Large amount of HTML causes flicker
+      this.subjects = [];
+      setTimeout(this.resetSubjects, 0); // Because large amount of HTML causes flicker
     },
     resetSubjects() {
       const cached =

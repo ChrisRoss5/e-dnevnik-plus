@@ -57,15 +57,15 @@ export default defineComponent({
       boxes: [
         {
           type: "min",
-          tooltip: "Najmanji broj bodova upisanog uprogram",
+          tooltip: "Najmanji broj bodova upisanog u program",
         },
         {
           type: "max",
-          tooltip: "Najveći broj bodova upisanog uprogram",
+          tooltip: "Najveći broj bodova upisanog u program",
         },
         {
           type: "average",
-          tooltip: "Prosječni broj bodova upisanog uprogram",
+          tooltip: "Prosječan broj bodova upisanih u program",
         },
       ],
     };

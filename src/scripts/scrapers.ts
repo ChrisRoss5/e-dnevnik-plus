@@ -74,7 +74,7 @@ async function login(
     }, 7000);
     toast("Prva prijava može potrajati malo duže.");
   }
-  await updateClassesHeadteacher();
+  await updateClassesInfo();
   return true;
 }
 
@@ -210,11 +210,11 @@ async function updateSubject(
   return subject;
 }
 
-async function updateClassesHeadteacher(): Promise<void> {
+async function updateClassesInfo(): Promise<void> {
   const classesList = store.getters.user.classesList as ClassInfo[];
   // Because the class response is 302, requests must go 1 by 1
   // prettier-ignore
-  for (let i = 0; i < classesList.length; i++) {  // nosonar: for of
+  for (let i = 0; i < classesList.length; i++) {  // nosonar
     if (classesList[i].headTeacher) continue;
     const classDoc = await authFetch(classesList[i].url);
     if (!classDoc) {
@@ -245,7 +245,7 @@ async function getSectionHTML(
 }
 
 async function getExams(classId: string): Promise<false | CalendarExam[]> {
-  if (classId) {
+  if (classId) {  // todo: delete
     return [
       {
         subject: "Matematika",

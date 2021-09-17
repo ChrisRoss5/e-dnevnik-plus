@@ -28,6 +28,7 @@ export interface Settings {
   subjectsSettings: SubjectsSettings;
   calendarSettings: CalendarSettings;
   calculatorSettings: CalculatorSettings;
+  websitesSettings: WebsiteSettings[];
 }
 
 export interface SubjectsSettings {
@@ -57,6 +58,13 @@ export interface CalculatorSettings {
   selectedProgram: string;
   selectedExtraPoints: string;
   userValues: number[][];
+}
+
+export interface WebsiteSettings {
+  name: string;
+  url: string;
+  tooltip?: string;
+  enabled: boolean;
 }
 
 export interface GlobalSettings {
