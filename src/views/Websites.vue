@@ -1,5 +1,5 @@
 <template>
-  <div id="websites">
+  <div id="websites" class="flex-center">
     <div
       v-if="activeFrames.length > 1"
       id="urls"
@@ -14,7 +14,7 @@
         @close="dropdownClosed"
       ></Dropdown>
     </div>
-    <div id="iframe">
+    <div v-if="activeFrame" id="iframe">
       <iframe
         :class="{ loading }"
         :src="activeFrame.url"
@@ -24,6 +24,7 @@
       ></iframe>
       <Spinner :visible="loading"></Spinner>
     </div>
+    <div v-else>Greška pri učitavanju stranice.</div>
   </div>
 </template>
 
@@ -71,20 +72,10 @@ export default defineComponent({
       const path = this.$route.params.website as string | undefined;
       const website = this.settings.find((w) => convertToPath(w.name) == path);
       if (!website) return [];
-      let urls: WebsiteInfo[] | undefined;
-      if (!website.urls.length) {
-        urls = this.user!.classesList.flatMap(({ schoolUrl, school }) =>
-          schoolUrl && schoolUrl != "/"
-            ? [
-                {
-                  url: schoolUrl,
-                  name: school,
-                },
-              ]
-            : [],
-        );
-      }
-      return urls || [];
+      if (website.urls.length) return website.urls;
+      return this.user!.classesList.flatMap(({ schoolUrl, school }) =>
+        schoolUrl && schoolUrl != "/" ? [{ url: schoolUrl, name: school }] : [],
+      );
     },
     dropdownList(): DropdownItem[] {
       return this.activeFrames.map(({ name, tooltip, url }) => ({

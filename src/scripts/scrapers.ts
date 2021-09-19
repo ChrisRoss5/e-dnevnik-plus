@@ -15,7 +15,7 @@ const URLS = {
   exams: "https://ocjene.skole.hr/exam",
   schoolList: "https://ocjene.skole.hr/school",
   calendarDates:
-    "https://github.com/ChrisRoss5/e-Dnevnik-Plus/tree/master/src/assets/calendar-dates/calendar-dates.json",
+    "https://raw.githubusercontent.com/ChrisRoss5/e-Dnevnik-Plus/master/src/assets/calendar-dates/calendar-dates.json",
 };
 
 async function login(
