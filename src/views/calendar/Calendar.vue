@@ -7,7 +7,7 @@
       Školski kalendar {{ schoolYearTitle }}
       <div id="options" class="toolbar-options">
         <transition-group name="opacity">
-          <template v-if="calendarSettings.showEntireCalendar">
+          <template v-if="settings.showEntireCalendar">
             <div
               :key="1"
               class="material-icons"
@@ -30,7 +30,7 @@
         </transition-group>
         <div
           class="material-icons"
-          :class="{ 'option-enabled': calendarSettings.showEntireCalendar }"
+          :class="{ 'option-enabled': settings.showEntireCalendar }"
           @click="toggleCalendarView"
           v-tooltip="'Prikaži cijeli kalendar'"
           v-wave
@@ -42,18 +42,18 @@
     <v-calendar
       v-if="calendarReady"
       id="calendar"
-      :class="{ 'custom-calendar': !calendarSettings.showEntireCalendar }"
-      :rows="calendarSettings.showEntireCalendar ? calendarRows : 1"
-      :columns="calendarSettings.showEntireCalendar ? calendarColumns : 1"
-      :from-date="calendarSettings.showEntireCalendar ? fromDate : today"
-      :nav-visibility="calendarSettings.showEntireCalendar ? 'hidden' : 'hover'"
+      :class="{ 'custom-calendar': !settings.showEntireCalendar }"
+      :rows="settings.showEntireCalendar ? calendarRows : 1"
+      :columns="settings.showEntireCalendar ? calendarColumns : 1"
+      :from-date="settings.showEntireCalendar ? fromDate : today"
+      :nav-visibility="settings.showEntireCalendar ? 'hidden' : 'hover'"
       :transition="'slide-h'"
       :locale="{
         id: 'hr',
         firstDayOfWeek: 2,
         masks: {
           title: 'MMMM YYYY.',
-          weekdays: calendarSettings.showEntireCalendar ? 'WWW' : 'WWWW',
+          weekdays: settings.showEntireCalendar ? 'WWW' : 'WWWW',
           dayPopover: 'WWWW, D.M.YYYY.',
         },
       }"
@@ -65,7 +65,7 @@
       @dayclick="dayClicked"
     >
       <template
-        v-if="!calendarSettings.showEntireCalendar"
+        v-if="!settings.showEntireCalendar"
         v-slot:day-content="{ day, attributes }"
       >
         <div class="day-container" @click="dayClicked(day)">
@@ -104,7 +104,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { getExams, getSchoolYears } from "@/scripts/scrapers";
+import { getExams, getCalendarDates } from "@/scripts/scrapers";
 import { jsonClone } from "@/scripts/utils";
 import { CalendarSettings, ClassInfo, User } from "@/store/state";
 import { MutationTypes } from "@/store/mutations";
@@ -133,11 +133,22 @@ export default defineComponent({
   },
   methods: {
     async loadCalendar() {
-      const schoolYears = await getSchoolYears();
-      this.fromDate = this.convertToDate(schoolYears[0].startingDate);
-      this.calendarColumns = this.calendarSettings.zoom;
+      this.calendarColumns = this.settings.zoom;
       this.calendarRows = Math.round(12 / this.calendarColumns);
       this.attributes = [
+        ...(await this.getCalendarDates()),
+        ...this.settings.customNotes.map((n) =>
+          this.createNote(n.note, this.convertToDate(n.date)),
+        ),
+      ];
+      await this.addExamsToCalendar("2020./2021." /* this.schoolYearTitle */); // TODO: UNCOMMENT
+      this.calendarReady = true;
+    },
+    async getCalendarDates() {
+      const schoolYears = await getCalendarDates();
+      if (!schoolYears) return [];
+      this.fromDate = this.convertToDate(schoolYears[0].startingDate);
+      return [
         {
           highlight: {
             base: { color: "gray", fillMode: "light" },
@@ -182,18 +193,11 @@ export default defineComponent({
             },
           })),
         ),
-        ...this.calendarSettings.customNotes.map((n) =>
-          this.createNote(n.note, this.convertToDate(n.date)),
-        ),
       ];
-      await this.addExamsToCalendar("2020./2021." /* this.schoolYearTitle */); // TODO: UNCOMMENT
-      this.calendarReady = true;
     },
     async addExamsToCalendar(schoolYear: string) {
-      const thisYearClasses = this.classesList.filter(
-        (classInfo) => classInfo.year == schoolYear,
-      );
-      for (const { url } of thisYearClasses) {
+      for (const { url, year } of this.classesList) {
+        if (year != schoolYear) continue;
         const classId = url.match(/\d+/)![0];
         if (this.loadedClassIdExams.includes(classId)) continue;
         this.loadedClassIdExams.push(classId);
@@ -216,12 +220,11 @@ export default defineComponent({
       return new Date(y, m - 1, d);
     },
     convertFromDate(date: Date) {
-      return [date.getDate(), date.getMonth() + 1, date.getFullYear()].join(
-        ".",
-      );
+      const temp = [date.getDate(), date.getMonth() + 1, date.getFullYear()];
+      return temp.join(".");
     },
     toggleCalendarView() {
-      const settings = jsonClone(this.calendarSettings);
+      const settings = jsonClone(this.settings);
       settings.showEntireCalendar = !settings.showEntireCalendar;
       this.updateSettings(settings);
     },
@@ -229,7 +232,7 @@ export default defineComponent({
       const columns = Math.min(this.calendarColumns + zoom, 5);
       this.calendarColumns = Math.max(1, columns);
       this.calendarRows = Math.round(12 / this.calendarColumns);
-      const settings = jsonClone(this.calendarSettings);
+      const settings = jsonClone(this.settings);
       settings.zoom = this.calendarColumns;
       this.updateSettings(settings);
     },
@@ -253,7 +256,7 @@ export default defineComponent({
       this.selectedDay = day;
     },
     manageNote({ note, method }: { note: string; method: "add" | "remove" }) {
-      const settings = jsonClone(this.calendarSettings);
+      const settings = jsonClone(this.settings);
       const date = this.convertFromDate(this.selectedDay.date);
       if (method == "remove") {
         const i = settings.customNotes.findIndex(
@@ -296,7 +299,7 @@ export default defineComponent({
     classesList(): ClassInfo[] {
       return this.user ? this.user.classesList : [];
     },
-    calendarSettings(): CalendarSettings {
+    settings(): CalendarSettings {
       return this.user
         ? this.user.settings.calendarSettings
         : {

@@ -18,15 +18,17 @@
       </div>
     </div>
     <div>
-      <div class="title">Stranice</div>
-      
+      <div class="title websites">Stranice</div>
+      <div v-for="(website, i) in websiteSettings" :key="i" class="card">
+        <div>{{website.name}}</div>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { GlobalSettings } from "@/store/state";
+import { GlobalSettings, User, WebsiteSettings } from "@/store/state";
 import { MutationTypes } from "@/store/mutations";
 
 export default defineComponent({
@@ -40,6 +42,12 @@ export default defineComponent({
   computed: {
     globalSettings(): GlobalSettings {
       return this.$store.state.settings;
+    },
+    user(): User | undefined {
+      return this.$store.getters.user;
+    },
+    websiteSettings(): WebsiteSettings[] {
+      return this.user ? this.user.settings.websitesSettings : [];
     },
   },
 });
@@ -67,5 +75,9 @@ export default defineComponent({
 
 .switch.default {
   opacity: 0.5;
+}
+
+.websites ~ .card {
+  padding: 10px 20px;
 }
 </style>

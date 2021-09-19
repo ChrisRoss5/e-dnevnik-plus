@@ -18,6 +18,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import { convertToPath } from "@/scripts/utils";
+import { NavbarLink } from "./Navbar.vue";
 
 // TODO: fix v-tooltip empty divs in <body>
 
@@ -25,7 +26,7 @@ export default defineComponent({
   name: "NavbarList",
   props: {
     list: {
-      type: Array as PropType<Array<{ name: string; icon: string }>>,
+      type: Array as PropType<NavbarLink[]>,
       required: true,
     },
     rootLink: {

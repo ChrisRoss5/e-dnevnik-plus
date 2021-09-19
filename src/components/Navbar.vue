@@ -39,7 +39,7 @@
         ></NavbarList>
         <span id="more-horiz" class="material-icons"> more_horiz </span>
         <NavbarList
-          :list="pages"
+          :list="websites"
           rootLink="/stranica/"
           :order="5"
           :navCollapsed="navCollapsed"
@@ -78,6 +78,12 @@
 import { defineComponent } from "vue";
 import NavbarList from "./NavbarList.vue";
 import { MutationTypes } from "@/store/mutations";
+import { User } from "@/store/state";
+
+export interface NavbarLink {
+  name: string;
+  icon: string;
+}
 
 export default defineComponent({
   name: "Navbar",
@@ -103,21 +109,7 @@ export default defineComponent({
           name: "Kalkulator bodova",
           icon: "table_view",
         },
-      ],
-      pages: [
-        {
-          name: "Školska stranica",
-          icon: "home",
-        },
-        {
-          name: "Školski e-Rudnik",
-          icon: "bubble_chart",
-        },
-        {
-          name: "Srednja.hr",
-          icon: "whatshot",
-        },
-      ],
+      ] as NavbarLink[],
       linksBottom: [
         {
           name: "Postavke",
@@ -127,7 +119,7 @@ export default defineComponent({
           name: "O aplikaciji",
           icon: "help_outline",
         },
-      ],
+      ] as NavbarLink[],
     };
   },
   mounted() {
@@ -149,8 +141,18 @@ export default defineComponent({
     },
   },
   computed: {
+    user(): User | undefined {
+      return this.$store.getters.user;
+    },
     isLoginPage(): boolean {
       return this.$route.path == "/" || !this.mounted;
+    },
+    websites(): NavbarLink[] {
+      return this.user
+        ? this.user.settings.websitesSettings
+            .filter((website) => !website.disabled)
+            .map(({ name, icon }) => ({ name, icon: icon || "web" }))
+        : [];
     },
     navCollapsed: {
       get(): boolean {

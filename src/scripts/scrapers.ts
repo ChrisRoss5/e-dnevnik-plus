@@ -13,6 +13,9 @@ const URLS = {
   logout: "https://ocjene.skole.hr/logout",
   classes: "https://ocjene.skole.hr/class",
   exams: "https://ocjene.skole.hr/exam",
+  schoolList: "https://ocjene.skole.hr/school",
+  calendarDates:
+    "https://github.com/ChrisRoss5/e-Dnevnik-Plus/tree/master/src/assets/calendar-dates/calendar-dates.json",
 };
 
 async function login(
@@ -105,7 +108,7 @@ async function getClassesList(
   classesDoc = classesDoc || (await authFetch(URLS.classes));
   if (!classesDoc) return;
   const date = new Date();
-  const [currentYear, currentMonth] = [date.getFullYear(), date.getMonth()];
+  const [currentYear, currentMonth] = [date.getFullYear(), date.getMonth() + 1];
   const classMenus = classesDoc.getElementsByClassName("class-menu-vertical");
   const classesList = [] as ClassInfo[];
   for (const menu of classMenus) {
@@ -117,7 +120,7 @@ async function getClassesList(
       name: UTILS.getElText(menu.querySelector(".class > .bold")),
       year: start + "./" + end + ".",
       isYearCompleted:
-        currentYear > end || (currentYear == end && currentMonth > 6),
+        currentYear > end || (currentYear == end && currentMonth > 7),
       school: UTILS.getElText(menu.querySelector(".school-name")),
       finalGrade: UTILS.getElText(finalGrade) || undefined,
     });
@@ -138,8 +141,8 @@ async function updateSubjects(
   const saveSubject = (updatedSubject: SubjectCache | false) => {
     if (!updatedSubject) return false;
     updatedSubject.lastUpdated = timestamp;
-    const toSave = { classInfo, updatedSubject };
-    store.commit(MutationTypes.UPDATE_SUBJECT, toSave);
+    const commit = { classInfo, updatedSubject };
+    store.commit(MutationTypes.UPDATE_SUBJECT, commit);
     return true;
   };
 
@@ -160,17 +163,15 @@ async function updateSubjects(
     });
 
     // TODO: delete slice
-    [...classDoc.querySelectorAll(".content a[href^='/grade/']")]
-      /* .slice(0, 3) */
-      .forEach((anchor) =>
-        promises.push(
-          updateSubject({
-            url: (anchor as HTMLAnchorElement).href,
-            name: UTILS.getElText(anchor.children[0]),
-            teachers: UTILS.getElText(anchor.children[1]),
-          }).then(saveSubject),
-        ),
-      );
+    classDoc.querySelectorAll(".content a[href^='/grade/']").forEach((anchor) =>
+      promises.push(
+        updateSubject({
+          url: (anchor as HTMLAnchorElement).href,
+          name: UTILS.getElText(anchor.children[0]),
+          teachers: UTILS.getElText(anchor.children[1]),
+        }).then(saveSubject),
+      ),
+    );
   } else
     for (const subject of cachedSubjects)
       if (timestamp - (subject.lastUpdated || 0) > 1800)
@@ -212,23 +213,62 @@ async function updateSubject(
 
 async function updateClassesInfo(): Promise<void> {
   const classesList = store.getters.user.classesList as ClassInfo[];
+  //
   // Because the class response is 302, requests must go 1 by 1
-  // prettier-ignore
-  for (let i = 0; i < classesList.length; i++) {  // nosonar
-    if (classesList[i].headTeacher) continue;
-    const classDoc = await authFetch(classesList[i].url);
+  for (const classInfo of classesList) {
+    const { school, schoolUrl, headTeacher } = classInfo;
+    if (schoolUrl && headTeacher) continue;
+    //
+    // Enter class
+    const classDoc = await authFetch(classInfo.url);
     if (!classDoc) {
       toast.error("Greška pri dobavljanju razreda!");
       return;
     }
-    const headTeacher = classDoc.querySelector(".schoolyear .black");
-    if (headTeacher)
+    //
+    // Find class head teacher
+    if (!headTeacher) {
+      const headTeacherEl = classDoc.querySelector(".schoolyear .black");
       store.commit(MutationTypes.UPDATE_CLASS_PROPERTY, {
-        classInfo: classesList[i],
+        classInfo,
         property: "headTeacher",
-        value: UTILS.getElText(headTeacher),
+        value: headTeacherEl ? UTILS.getElText(headTeacherEl) : "/",
       });
+    }
+    //
+    // Find school website URL
+    if (!schoolUrl) {
+      const url = await findSchoolUrl(school, classesList);
+      store.commit(MutationTypes.UPDATE_CLASS_PROPERTY, {
+        classInfo,
+        property: "schoolUrl",
+        value: url || "/",
+      });
+    }
   }
+}
+
+async function findSchoolUrl(
+  school: string,
+  classesList: ClassInfo[],
+): Promise<string | undefined> {
+  const classesWithSameSchool = classesList.filter((c) => c.school == school);
+  for (const classInfo of classesWithSameSchool)
+    if (classInfo.schoolUrl) return classInfo.schoolUrl;
+
+  const schoolListDoc = await authFetch(URLS.schoolList);
+  if (!schoolListDoc) {
+    toast.error("Greška pri dobavljanju popisa škola!");
+    return;
+  }
+  const _school = school.toLowerCase().replaceAll(";", ",");
+  const row = [...schoolListDoc.querySelectorAll(".list a")!].find(
+    (r) =>
+      UTILS.getElText(r)
+        .toLowerCase()
+        .replaceAll(";", ",") == _school,
+  ) as HTMLAnchorElement;
+  return row && row.href.includes("/skole.hr/") ? "" : row.href;
 }
 
 async function getSectionHTML(
@@ -245,7 +285,8 @@ async function getSectionHTML(
 }
 
 async function getExams(classId: string): Promise<false | CalendarExam[]> {
-  if (classId) {  // todo: delete
+  if (classId) {
+    // todo: delete
     return [
       {
         subject: "Matematika",
@@ -410,69 +451,13 @@ async function getExams(classId: string): Promise<false | CalendarExam[]> {
   });
 }
 
-async function getSchoolYears(): Promise<CalendarYear[]> {
-  return [
-    {
-      startingDate: "6.9.2021",
-      endingDate: "21.6.2022",
-      edgeDays: {
-        "6.9.2021": "Počinje prvo polugodište",
-        "23.12.2021": "Završava prvo polugodište",
-        "10.1.2022": "Počinje drugo polugodište",
-        "25.5.2022": "Završava drugo polugodište za maturante",
-        "21.6.2022": "Završava drugo polugodište",
-      },
-      holidays: {
-        "1.11.2021": "Svi sveti",
-        "18.11.2021": "Dan sjećanja na žrtve Domovinskog rata",
-        "25.12.2021": "Božić",
-        "26.12.2021": "Sveti Stjepan",
-        "1.1.2022": "Nova godina",
-        "6.1.2022": "Sveta tri kralja",
-        "17.4.2022": "Uskrs",
-        "18.4.2022": "Uskrsni ponedjeljak",
-        "1.5.2022": "Međunarodni praznik rada",
-        "30.5.2022": "Dan državnosti",
-        "16.6.2022": "Tijelovo",
-        "22.6.2022": "Dan antifašističke borbe",
-        "5.8.2022":
-          "Dan pobjede i domovinske zahvalnosti i Dan hrvatskih branitelja",
-        "15.8.2022": "Velika Gospa",
-      },
-      vacationRanges: [
-        {
-          start: "1.9.2021",
-          end: "5.9.2021",
-          label: "Ljetni praznici",
-        },
-        {
-          start: "2.11.2021",
-          end: "3.11.2021",
-          label: "Jesenski praznici",
-        },
-        {
-          start: "24.12.2021",
-          end: "9.1.2022",
-          label: "Prvi dio zimskih praznika",
-        },
-        {
-          start: "21.2.2022",
-          end: "27.2.2022",
-          label: "Drugi dio zimskih praznika",
-        },
-        {
-          start: "14.4.2022",
-          end: "24.4.2022",
-          label: "Proljetni praznici",
-        },
-        {
-          start: "23.6.2022",
-          end: "31.8.2022",
-          label: "Ljetni praznici",
-        },
-      ],
-    },
-  ];
+async function getCalendarDates(): Promise<CalendarYear[] | false> {
+  try {
+    return JSON.parse(await (await fetch(URLS.calendarDates)).text());
+  } catch (error) {
+    toast.error("Greška pri dobavljanju datuma za kalendar!");
+    return false;
+  }
 }
 
 async function switchClassIfNeeded(classId: string): Promise<true | undefined> {
@@ -497,5 +482,5 @@ export {
   updateSubjects,
   getSectionHTML,
   getExams,
-  getSchoolYears,
+  getCalendarDates,
 };

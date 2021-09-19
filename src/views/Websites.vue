@@ -9,19 +9,20 @@
       <span class="material-icons"> link </span>
       <Dropdown
         :visible="showDropdown"
-        :list="dropdown"
+        :list="dropdownList"
         sourceElementId="urls"
         @close="dropdownClosed"
       ></Dropdown>
     </div>
     <div id="iframe">
       <iframe
+        :class="{ loading }"
         :src="activeFrame.url"
-        @load="iframeLoaded"
-        @error="iframeError"
+        @load="loading = false"
+        @error="loading = false"
         ref="iframe"
       ></iframe>
-      <Spinner :visible="showSpinner"></Spinner>
+      <Spinner :visible="loading"></Spinner>
     </div>
   </div>
 </template>
@@ -30,12 +31,9 @@
 import { defineComponent } from "vue";
 import Dropdown, { DropdownItem } from "@/components/Dropdown.vue";
 import Spinner from "@/components/Spinner.vue";
-
-interface Website {
-  name: string;
-  url: string;
-  tooltip?: string;
-}
+import { User, WebsiteInfo, WebsiteSettings } from "@/store/state";
+import { MutationTypes } from "@/store/mutations";
+import { convertToPath } from "@/scripts/utils";
 
 export default defineComponent({
   name: "Websites",
@@ -45,89 +43,67 @@ export default defineComponent({
   },
   data() {
     return {
-      showSpinner: false,
+      loading: true,
       showDropdown: false,
-      frames: {
-        "skolska-stranica": [
-          {
-            name: "Školska stranica",
-            url: "http://www.ss-elektrotehnicka-zg.skole.hr/",
-          },
-        ],
-        "skolski-e-rudnik": [
-          {
-            name: "ŠeR - Školski e-Rudnik (Vol. 2)",
-            url: "https://app.powerbi.com/view?r=eyJrIjoiM2Q1NjVmZDEtMGUyMy00MDBiLTkzYWItYjBhMTA3MDFlOWUxIiwidCI6IjJjMTFjYmNjLWI3NjEtNDVkYi1hOWY1LTRhYzc3ZTk0ZTFkNCIsImMiOjh9",
-            tooltip:
-              "Prikazuje statističke podatke o općem uspjehu učenika, njihovim ocjenama,<br> " +
-              "opravdanim i neopravdanim izostancima, pedagoškim mjerama<br> " +
-              "te trendove po školskim godinama.",
-          },
-          {
-            name: "ŠeR - Školski e-Rudnik",
-            url: "https://app.powerbi.com/view?r=eyJrIjoiZWE3YTE4OWQtOWJmNC00OTJmLWE2MjktYTQ5MWJlNDNlZDQ0IiwidCI6IjJjMTFjYmNjLWI3NjEtNDVkYi1hOWY1LTRhYzc3ZTk0ZTFkNCIsImMiOjh9",
-            tooltip:
-              "Prikazuje adresar školskih ustanova, geografsku distribuciju škola i učenika,<br> " +
-              "razne statističke podatke o školama, učenicima i o obrazovnim programima<br> " +
-              "te demografske trendove po školskim godinama.",
-          },
-          {
-            name: "ŠeR - Školski e-Rudnik (Vol. 3)",
-            url: "https://app.powerbi.com/view?r=eyJrIjoiOTUxNTE3YmQtM2E3MC00MDc0LTg3OTQtYTExZWZhYzU3Y2FlIiwidCI6IjJjMTFjYmNjLWI3NjEtNDVkYi1hOWY1LTRhYzc3ZTk0ZTFkNCIsImMiOjh9",
-            tooltip:
-              "Prikazuje rezultate učenika na državnoj maturi, njihove ocjene u završnim<br> " +
-              "razredima osnovnih i srednjih škola, trendove po školskim godinama<br> " +
-              "te upise na visoka učilišta.",
-          },
-        ],
-        "srednja.hr": [{ name: "Srednja.hr", url: "https://www.srednja.hr/" }],
-      } as Record<string, Website[]>,
-      activeFrames: [] as Website[],
-      activeFrame: {} as Website,
+      activeFrame: {} as WebsiteInfo | undefined,
     };
   },
-  beforeMount() {
-    this.changeFrame();
-  },
   methods: {
-    changeFrame() {
-      const site = this.$route.params.website as string;
-      if (!site) return;
-      this.activeFrames = this.frames[site];
-      this.activeFrame = this.frames[site][0];
-      this.showFrame(false);
-    },
-    iframeLoaded() {
-      this.showFrame(true);
-    },
-    iframeError() {
-      this.showFrame(false);
-    },
-    showFrame(show: boolean) {
-      this.showSpinner = !show;
-      const frame = this.$refs.iframe as HTMLElement;
-      if (frame) frame.className = show ? "visible" : "";
-    },
     dropdownClosed(rowName?: string) {
+      this.loading = true;
       this.showDropdown = false;
       if (!rowName) return;
-      this.activeFrame = this.activeFrames.find(
-        (f) => f.name == rowName,
-      ) as Website;
+      this.activeFrame = this.activeFrames.find((f) => f.name == rowName)!;
+    },
+    updateSettings(newSettings: WebsiteSettings[]) {
+      if (!this.user) return;
+      this.$store.commit(MutationTypes.UPDATE_USER_SETTINGS, {
+        user: this.user,
+        settings: { websitesSettings: newSettings },
+      });
     },
   },
   computed: {
-    dropdown(): DropdownItem[] {
-      return this.activeFrames.map((frame) => ({
-        name: frame.name,
-        tooltip: frame.tooltip,
-        active: frame.url == this.activeFrame.url,
+    user(): User | undefined {
+      return this.$store.getters.user;
+    },
+    activeFrames(): WebsiteInfo[] {
+      const path = this.$route.params.website as string | undefined;
+      const website = this.settings.find((w) => convertToPath(w.name) == path);
+      if (!website) return [];
+      let urls: WebsiteInfo[] | undefined;
+      if (!website.urls.length) {
+        urls = this.user!.classesList.flatMap(({ schoolUrl, school }) =>
+          schoolUrl && schoolUrl != "/"
+            ? [
+                {
+                  url: schoolUrl,
+                  name: school,
+                },
+              ]
+            : [],
+        );
+      }
+      return urls || [];
+    },
+    dropdownList(): DropdownItem[] {
+      return this.activeFrames.map(({ name, tooltip, url }) => ({
+        name: name || "Stranica",
+        tooltip,
+        active: url == (this.activeFrame ? this.activeFrame.url : ""),
       }));
+    },
+    settings(): WebsiteSettings[] {
+      return this.user ? this.user.settings.websitesSettings : [];
     },
   },
   watch: {
-    $route() {
-      this.changeFrame();
+    $route: {
+      handler() {
+        this.loading = true;
+        this.activeFrame = this.activeFrames[0];
+      },
+      immediate: true,
     },
   },
 });
@@ -142,11 +118,10 @@ iframe {
 }
 
 iframe {
-  opacity: 0;
   transition: opacity $views-transition;
 
-  &.visible {
-    opacity: 1;
+  &.loading {
+    opacity: 0;
   }
 }
 
