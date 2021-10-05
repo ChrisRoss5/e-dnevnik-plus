@@ -42,7 +42,7 @@
           </thead>
           <tbody>
             <tr v-for="(row, i) in subject.gradesByCategory" :key="i">
-              <td v-tooltip="row.name">
+              <td>
                 {{ row.name }}
               </td>
               <td
@@ -109,7 +109,10 @@ export default defineComponent({
       type: Object as PropType<ExtendedSubjectCache>,
       required: true,
     },
-    savedOptions: Object as PropType<Record<string, any>>,
+    savedOptions: {
+      type: Object as PropType<Record<string, any>>,
+      required: true,
+    },
     isOpenedSubject: Boolean,
     expandTables: Number,
     updateTablesMargin: Number,
@@ -265,8 +268,23 @@ thead {
 
 tbody tr {
   transition: background-color 150ms;
+  position: relative;
 
   &:last-child {
+    @include themed() {
+      background: t("white-background");
+    }
+  }
+
+  &:not(:last-child) td:first-child:hover {
+    position: absolute;
+    overflow: visible;
+    min-width: $first-col-width;
+    width: auto;
+    white-space: unset;
+    min-height: 100%;
+    z-index: 1;
+
     @include themed() {
       background: t("white-background");
     }
@@ -286,6 +304,7 @@ td {
     text-align: left;
     white-space: nowrap;
     text-overflow: ellipsis;
+    transition: background-color 150ms;
   }
 
   @include themed() {

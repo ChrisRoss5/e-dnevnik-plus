@@ -73,10 +73,10 @@
         :key="key"
         class="button choice-button"
         :class="{
-          active: key == (lockedDuration ? lockedDuration : selectedDuration),
-          'disabled-button': key != lockedDuration && settings.selectedProgram,
+          active: parseInt(key) == (lockedDuration ? lockedDuration : selectedDuration),
+          'disabled-button': parseInt(key) != lockedDuration && settings.selectedProgram,
         }"
-        @click="selectedDuration = key"
+        @click="selectedDuration = parseInt(key)"
       >
         {{ duration }}
       </div>
@@ -142,7 +142,7 @@
         :rows="selectedTableTitles.length"
       ></Result>
     </transition-group>
-    <Spinner :visible="loading" :size="'125px'" blur></Spinner>
+    <Spinner :visible="loading" :size="'125px'"></Spinner>
   </div>
 </template>
 
@@ -226,6 +226,7 @@ export default defineComponent({
       const settings = jsonClone(this.settings);
       const { userValues } = settings;
       const subjects = ["hrvatski jezik", "matematika", "engleski jezik"];
+      const re = /(^| ).(( ).)*( |$)/g; // Removes single characters from subject name
       for (const classInfo of this.user ? this.user.classesList : []) {
         const match = classInfo.name.match(/\d/);
         if (!match) continue;
@@ -236,7 +237,7 @@ export default defineComponent({
           userValues[0][studentYear - 5] = parseNum(classInfo.finalGrade);
         if (!(6 < studentYear && studentYear < 9)) continue;
         for (const { name, finalGrade } of classInfo.cachedSubjects!) {
-          const i = subjects.indexOf(name.toLowerCase().replace(/ *i$/, ""));
+          const i = subjects.indexOf(name.toLowerCase().replace(re, ""));
           if (finalGrade && i > -1 && !userValues[i + 1][studentYear - 7])
             userValues[i + 1][studentYear - 7] = finalGrade;
         }

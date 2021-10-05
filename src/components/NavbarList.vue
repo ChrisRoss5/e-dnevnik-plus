@@ -4,8 +4,7 @@
     :key="i"
     :to="rootLink + convertToPath(name)"
     :class="{
-      'router-link-active':
-        $route.href && $route.href.includes('razred') && name == 'Razred',
+      'router-link-active': $route.path.includes('razred') && name == 'Razred',
     }"
     v-tooltip.right="navCollapsed ? name : ''"
     v-wave
@@ -43,8 +42,8 @@ export default defineComponent({
     },
   },
   methods: {
-    convertToPath: (name: string) => convertToPath(name)
-  }
+    convertToPath: (name: string) => convertToPath(name),
+  },
 });
 </script>
 

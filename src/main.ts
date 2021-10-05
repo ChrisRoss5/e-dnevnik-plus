@@ -3,12 +3,14 @@ declare global {
     isAppInitiated: boolean;
     devTestMode: boolean;
     devPause: (t: number) => Promise<void>;
+    clearLocalStorage: () => void;
   }
 }
 
-// TODO: modify
+// TODO: BEFORE BUILD
 window.devTestMode = true;
 window.devPause = (t) => new Promise((res) => setTimeout(res, t));
+window.clearLocalStorage = () => chrome.storage.local.clear();
 
 import { createApp, reactive } from "vue";
 import App from "./App.vue";
@@ -48,7 +50,10 @@ import VCalendar from "v-calendar";
 /* https://www.chartjs.org/chartjs-plugin-annotation/ */
 import { Chart } from "chart.js";
 import annotationPlugin from "chartjs-plugin-annotation";
+/* import "chartjs-plugin-piechart-outlabels"; // outdated - not compatible w chart 3 */
+import GlobalMixin from "./components/GlobalMixin";
 Chart.register(annotationPlugin);
+
 Chart.defaults.font.size = 16;
 Chart.defaults.maintainAspectRatio = false;
 Chart.defaults.interaction.mode = "index";
@@ -70,4 +75,5 @@ app
   /* .use(VueTippy, {
     defaultProps: { animateFill: true },
   }) */
+  .mixin(GlobalMixin)
   .mount("#app");

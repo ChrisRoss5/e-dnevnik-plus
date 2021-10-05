@@ -1838,7 +1838,6 @@ const testState: State = {
           {
             name: "Školska stranica",
             urls: [],
-            icon: "home",
           },
           {
             name: "Školski e-Rudnik",
@@ -1871,12 +1870,10 @@ const testState: State = {
                   "te upise na visoka učilišta.",
               },
             ],
-            icon: "bubble_chart",
           },
           {
             name: "Srednja.hr",
             urls: [{ name: "Srednja.hr", url: "https://www.srednja.hr/" }],
-            icon: "whatshot",
           },
         ],
       },

@@ -9,11 +9,11 @@
 </template>
 
 <script lang="ts">
-import { ActionTypes } from "@/store/actions";
 import { defineComponent } from "vue";
 import Navbar from "@/components/Navbar.vue";
 import Main from "@/components/Main.vue";
 import User from "@/components/User.vue";
+import { ActionTypes } from "@/store/actions";
 
 export default defineComponent({
   name: "App",
@@ -35,7 +35,7 @@ export default defineComponent({
       } else if (!userSignedIn && !isLoginPage) {
         this.$router.replace("/");
       }
-      this.enabledarkTheme(this.$store.state.settings.darkTheme);
+      this.enableDarkTheme(this.$store.state.settings.darkTheme);
       this.isAppInitiated = window.isAppInitiated = true;
       document.body.style.opacity = "1";
     });
@@ -50,7 +50,7 @@ export default defineComponent({
     };
   },
   methods: {
-    enabledarkTheme(enabled: boolean) {
+    enableDarkTheme(enabled: boolean) {
       document.body.classList[enabled ? "add" : "remove"]("theme--dark");
       document.body.classList[enabled ? "remove" : "add"]("theme--default");
     },
@@ -60,7 +60,7 @@ export default defineComponent({
       if (!user) this.$router.replace("/");
     },
     "$store.state.settings.darkTheme"(enabled) {
-      this.enabledarkTheme(enabled);
+      this.enableDarkTheme(enabled);
     },
   },
 });

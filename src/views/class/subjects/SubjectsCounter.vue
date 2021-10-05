@@ -80,7 +80,7 @@ export default defineComponent({
         { subjects: [], count: 0 },
       ];
       for (const subject of this.subjects) {
-        const name = subject.name;
+        if (!subject.gradesCount) continue;
         let row;
         if (subject.finalGrade) {
           row = this.gradeCounts[Math.round(subject.finalGrade) - 1];
@@ -88,7 +88,7 @@ export default defineComponent({
           row = this.gradeCounts[Math.round(subject.gradesAvgOriginal) - 1];
         }
         if (row) {
-          row.subjects.push(name);
+          row.subjects.push(subject.name);
           row.count += 1;
         }
       }

@@ -71,7 +71,7 @@ async function login(
     );
     setTimeout(() => {
       toast.success(
-        "Automatska prijava je omogućena!\nOpciju promijenite u postavkama ⚙️",
+        "Automatska prijava je omogućena!\nOpciju promijeni u postavkama ⚙️",
         { timeout: false },
       );
     }, 7000);
@@ -121,7 +121,6 @@ async function getClassesList(
       year: start + "./" + end + ".",
       isYearCompleted:
         currentYear > end || (currentYear == end && currentMonth > 7),
-      school: UTILS.getElText(menu.querySelector(".school-name")),
       finalGrade: UTILS.getElText(finalGrade) || undefined,
     });
   }
@@ -162,7 +161,6 @@ async function updateSubjects(
       url: classInfo.url,
     });
 
-    // TODO: delete slice
     classDoc.querySelectorAll(".content a[href^='/grade/']").forEach((anchor) =>
       promises.push(
         updateSubject({
@@ -217,7 +215,7 @@ async function updateClassesInfo(): Promise<void> {
   // Because the class response is 302, requests must go 1 by 1
   for (const classInfo of classesList) {
     const { school, schoolUrl, headTeacher } = classInfo;
-    if (schoolUrl && headTeacher) continue;
+    if (school && schoolUrl && headTeacher) continue;
     //
     // Enter class
     const classDoc = await authFetch(classInfo.url);
@@ -236,13 +234,30 @@ async function updateClassesInfo(): Promise<void> {
       });
     }
     //
+    // Find school name
+    let _school = "";
+    if (!school) {
+      const schoolEl = classDoc.querySelector(".school-name");
+      _school = schoolEl ? UTILS.getElText(schoolEl.firstElementChild) : "/";
+      store.commit(MutationTypes.UPDATE_CLASS_PROPERTY, {
+        classInfo,
+        property: "school",
+        value: _school,
+      });
+    }
+    //
     // Find school website URL
     if (!schoolUrl) {
-      const url = await findSchoolUrl(school, classesList);
+      const url = (await findSchoolUrl(school || _school, classesList)) || "/";
+      const user = store.getters.user as User;
+      const websiteInfo = user.settings.websitesSettings.find(
+        (w) => w.name == "Školska stranica",
+      );
+      if (websiteInfo) websiteInfo.urls.push({ name: school || _school, url });
       store.commit(MutationTypes.UPDATE_CLASS_PROPERTY, {
         classInfo,
         property: "schoolUrl",
-        value: url || "/",
+        value: url,
       });
     }
   }
@@ -252,23 +267,23 @@ async function findSchoolUrl(
   school: string,
   classesList: ClassInfo[],
 ): Promise<string | undefined> {
-  const classesWithSameSchool = classesList.filter((c) => c.school == school);
-  for (const classInfo of classesWithSameSchool)
-    if (classInfo.schoolUrl) return classInfo.schoolUrl;
-
+  for (const classInfo of classesList)
+    if (classInfo.school == school && classInfo.schoolUrl)
+      return classInfo.schoolUrl;
   const schoolListDoc = await authFetch(URLS.schoolList);
   if (!schoolListDoc) {
     toast.error("Greška pri dobavljanju popisa škola!");
     return;
   }
   const _school = school.toLowerCase().replaceAll(";", ",");
-  const row = [...schoolListDoc.querySelectorAll(".list a")!].find(
+  const row = [...schoolListDoc.querySelectorAll(".list a")].find(
     (r) =>
       UTILS.getElText(r)
         .toLowerCase()
         .replaceAll(";", ",") == _school,
-  ) as HTMLAnchorElement;
-  return row && row.href.includes("/skole.hr/") ? "" : row.href;
+  ) as HTMLAnchorElement | undefined;
+  if (!(row && row.href) || row.href.includes("/skole.hr/")) return;
+  return row.href;
 }
 
 async function getSectionHTML(
@@ -285,8 +300,7 @@ async function getSectionHTML(
 }
 
 async function getExams(classId: string): Promise<false | CalendarExam[]> {
-  if (classId) {
-    // todo: delete
+  if (window.devTestMode) {
     return [
       {
         subject: "Matematika",
@@ -446,7 +460,7 @@ async function getExams(classId: string): Promise<false | CalendarExam[]> {
   return [...doc.querySelectorAll(".flex-table.row")].map((row) => {
     const [subject, note, _date] = [...row.children].map(UTILS.getElText);
     const date =
-      _date + "20" + (parseInt(_date.split(".")[1]) > 8 ? startYear : endYear);
+      _date + (parseInt(_date.split(".")[1]) > 8 ? startYear : endYear);
     return { subject, note, date };
   });
 }

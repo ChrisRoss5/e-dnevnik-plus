@@ -15,7 +15,7 @@ import Calculator from "@/views/calculator/Calculator.vue";
 
 
 import Websites from "@/views/Websites.vue";
-import Settings from "@/views/Settings.vue";
+import Settings from "@/views/settings/Settings.vue";
 
 /*
 No lazy loading:

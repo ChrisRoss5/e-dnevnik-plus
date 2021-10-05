@@ -148,10 +148,15 @@ export default defineComponent({
       return this.$route.path == "/" || !this.mounted;
     },
     websites(): NavbarLink[] {
+      const icons = {
+        "Školska stranica": "home",
+        "Školski e-Rudnik": "bubble_chart",
+        "Srednja.hr": "whatshot",
+      } as Record<string, string>;
       return this.user
         ? this.user.settings.websitesSettings
             .filter((website) => !website.disabled)
-            .map(({ name, icon }) => ({ name, icon: icon || "web" }))
+            .map(({ name }) => ({ name, icon: icons[name] || "web" }))
         : [];
     },
     navCollapsed: {

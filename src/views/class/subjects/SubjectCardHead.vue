@@ -6,24 +6,23 @@
     <transition name="opacity">
       <div
         v-if="
-          subject.finalGrade &&
-          subject.finalGrade != Math.round(subject.gradesAvgOriginal)
+          subject.finalGrade && subject.finalGrade != gradesAvgOriginalRounded
         "
         class="material-icons subject-diff"
         v-tooltip.top-start="
-          subject.finalGrade > Math.round(subject.gradesAvgOriginal)
-            ? 'Zaključena je ocjena veća od zaokruženog prosjeka.'
-            : 'Zaključena je ocjena manja od zaokruženog prosjeka.'
+          subject.finalGrade > gradesAvgOriginalRounded
+            ? 'Zaključena ocjena je veća od zaokruženog prosjeka.'
+            : 'Zaključena ocjena je manja od zaokruženog prosjeka.'
         "
         :style="{
           color:
-            subject.finalGrade > Math.round(subject.gradesAvgOriginal)
+            subject.finalGrade > gradesAvgOriginalRounded
               ? '#2ab62a'
               : '#ff3924',
         }"
       >
         {{
-          subject.finalGrade > Math.round(subject.gradesAvgOriginal)
+          subject.finalGrade > gradesAvgOriginalRounded
             ? "arrow_upward"
             : "arrow_downward"
         }}
@@ -56,7 +55,7 @@
       @input="avgInputted"
       @focus="avgFocusChanged"
       @blur="avgFocusChanged"
-      :style="{ color: getSubjectAvgColor(subject) }"
+      :style="{ color: getSubjectAvgColor() }"
       :title="subject.gradesAvgOriginal"
     >
       {{
@@ -90,7 +89,10 @@ export default defineComponent({
       type: Object as PropType<ExtendedSubjectCache>,
       required: true,
     },
-    savedOptions: Object as PropType<Record<string, any>>,
+    savedOptions: {
+      type: Object as PropType<Record<string, any>>,
+      required: true,
+    },
   },
   // emits: ["revertSubject", "updateGradesAvgEdited"],
   methods: {
@@ -154,6 +156,11 @@ export default defineComponent({
 
     formatNum: (num: number) => formatNum(num),
   },
+  computed: {
+    gradesAvgOriginalRounded(): number {
+      return Math.round(this.subject.gradesAvgOriginal || 0);
+    },
+  },
 });
 </script>
 
@@ -208,17 +215,11 @@ export default defineComponent({
   flex-shrink: 0;
   width: 50px;
   text-align: center;
+  transition: box-shadow $subject-peek-duration;
+  clip-path: inset(0 0 0 -40px);
 
-  &::after {
-    content: "";
-    position: absolute;
-    left: -45px;
-    height: 100%;
-    width: 30px;
-
-    @include themed() {
-      background: linear-gradient(to right, transparent, t("white-background"));
-    }
+  @include themed() {
+    box-shadow: -30px 0px 20px 5px t("text-disappearing");
   }
 }
 

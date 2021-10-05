@@ -1,7 +1,6 @@
 <template>
   <div id="websites" class="flex-center">
     <div
-      v-if="activeFrames.length > 1"
       id="urls"
       class="flex-center card"
       @click.self="showDropdown = !showDropdown"
@@ -51,10 +50,12 @@ export default defineComponent({
   },
   methods: {
     dropdownClosed(rowName?: string) {
-      this.loading = true;
       this.showDropdown = false;
       if (!rowName) return;
-      this.activeFrame = this.activeFrames.find((f) => f.name == rowName)!;
+      const newFrame = this.activeFrames.find((f) => f.name == rowName)!;
+      if (newFrame == this.activeFrame) return;
+      this.loading = true;
+      this.activeFrame = newFrame;
     },
     updateSettings(newSettings: WebsiteSettings[]) {
       if (!this.user) return;
@@ -71,15 +72,11 @@ export default defineComponent({
     activeFrames(): WebsiteInfo[] {
       const path = this.$route.params.website as string | undefined;
       const website = this.settings.find((w) => convertToPath(w.name) == path);
-      if (!website) return [];
-      if (website.urls.length) return website.urls;
-      return this.user!.classesList.flatMap(({ schoolUrl, school }) =>
-        schoolUrl && schoolUrl != "/" ? [{ url: schoolUrl, name: school }] : [],
-      );
+      return website ? website.urls || [] : [];
     },
     dropdownList(): DropdownItem[] {
       return this.activeFrames.map(({ name, tooltip, url }) => ({
-        name: name || "Stranica",
+        name: name || "Bezimena stranica",
         tooltip,
         active: url == (this.activeFrame ? this.activeFrame.url : ""),
       }));
@@ -91,6 +88,7 @@ export default defineComponent({
   watch: {
     $route: {
       handler() {
+        if (this.activeFrame == this.activeFrames[0]) return;
         this.loading = true;
         this.activeFrame = this.activeFrames[0];
       },

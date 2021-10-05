@@ -32,7 +32,7 @@ export default function newUser(initData: InitData): User {
         expandedSubjects: [],
       },
       calendarSettings: {
-        showEntireCalendar: true,
+        showEntireCalendar: false,
         zoom: 3,
         customNotes: [],
       },
@@ -46,7 +46,6 @@ export default function newUser(initData: InitData): User {
         {
           name: "Školska stranica",
           urls: [],
-          icon: "home",
         },
         {
           name: "Školski e-Rudnik",
@@ -79,12 +78,10 @@ export default function newUser(initData: InitData): User {
                 "te upise na visoka učilišta.",
             },
           ],
-          icon: "bubble_chart",
         },
         {
           name: "Srednja.hr",
-          urls: [{ url: "https://www.srednja.hr/" }],
-          icon: "whatshot",
+          urls: [{ name: "Srednja.hr", url: "https://www.srednja.hr/" }],
         },
       ],
     },

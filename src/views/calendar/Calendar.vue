@@ -39,57 +39,59 @@
         </div>
       </div>
     </div>
-    <v-calendar
-      v-if="calendarReady"
-      id="calendar"
-      :class="{ 'custom-calendar': !settings.showEntireCalendar }"
-      :rows="settings.showEntireCalendar ? calendarRows : 1"
-      :columns="settings.showEntireCalendar ? calendarColumns : 1"
-      :from-date="settings.showEntireCalendar ? fromDate : today"
-      :nav-visibility="settings.showEntireCalendar ? 'hidden' : 'hover'"
-      :transition="'slide-h'"
-      :locale="{
-        id: 'hr',
-        firstDayOfWeek: 2,
-        masks: {
-          title: 'MMMM YYYY.',
-          weekdays: settings.showEntireCalendar ? 'WWW' : 'WWWW',
-          dayPopover: 'WWWW, D.M.YYYY.',
-        },
-      }"
-      :is-dark="isDarkTheme"
-      :attributes="attributes"
-      is-expanded
-      show-iso-weeknumbers
-      @update:from-page="updateSchoolYearTitle"
-      @dayclick="dayClicked"
-    >
-      <template
-        v-if="!settings.showEntireCalendar"
-        v-slot:day-content="{ day, attributes }"
+    <transition name="opacity">
+      <v-calendar
+        v-if="calendarReady"
+        id="calendar"
+        :class="{ 'custom-calendar': !settings.showEntireCalendar }"
+        :rows="settings.showEntireCalendar ? calendarRows : 1"
+        :columns="settings.showEntireCalendar ? calendarColumns : 1"
+        :from-date="settings.showEntireCalendar ? fromDate : today"
+        :nav-visibility="settings.showEntireCalendar ? 'hidden' : 'hover'"
+        :transition="'slide-h'"
+        :locale="{
+          id: 'hr',
+          firstDayOfWeek: 2,
+          masks: {
+            title: 'MMMM YYYY.',
+            weekdays: settings.showEntireCalendar ? 'WWW' : 'WWWW',
+            dayPopover: 'WWWW, D.M.YYYY.',
+          },
+        }"
+        :is-dark="isDarkTheme"
+        :attributes="attributes"
+        is-expanded
+        show-iso-weeknumbers
+        @update:from-page="updateSchoolYearTitle"
+        @dayclick="dayClicked"
       >
-        <div class="day-container" @click="dayClicked(day)">
-          <div>{{ day.day }}</div>
-          <template v-if="attributes">
-            <div
-              v-for="(attr, i) in attributes.filter((attr) => attr.popover)"
-              :key="i"
-              class="day-card card"
-              :style="{
-                'background-color': attr.highlight
-                  ? attr.highlight.base.style.backgroundColor
-                  : '',
-                'border-color': attr.dot
-                  ? attr.dot.base.style.backgroundColor
-                  : '',
-              }"
-            >
-              {{ attr.popover.label }}
-            </div>
-          </template>
-        </div>
-      </template>
-    </v-calendar>
+        <template
+          v-if="!settings.showEntireCalendar"
+          v-slot:day-content="{ day, attributes }"
+        >
+          <div class="day-container" @click="dayClicked(day)">
+            <div>{{ day.day }}</div>
+            <template v-if="attributes">
+              <div
+                v-for="(attr, i) in attributes.filter((attr) => attr.popover)"
+                :key="i"
+                class="day-card card"
+                :style="{
+                  'background-color': attr.highlight
+                    ? attr.highlight.base.style.backgroundColor
+                    : '',
+                  'border-color': attr.dot
+                    ? attr.dot.base.style.backgroundColor
+                    : '',
+                }"
+              >
+                {{ attr.popover.label }}
+              </div>
+            </template>
+          </div>
+        </template>
+      </v-calendar>
+    </transition>
     <transition name="opacity">
       <CalendarNotes
         v-if="selectedDay"
@@ -141,7 +143,7 @@ export default defineComponent({
           this.createNote(n.note, this.convertToDate(n.date)),
         ),
       ];
-      await this.addExamsToCalendar("2020./2021." /* this.schoolYearTitle */); // TODO: UNCOMMENT
+      await this.addExamsToCalendar(this.schoolYearTitle);
       this.calendarReady = true;
     },
     async getCalendarDates() {
@@ -201,17 +203,15 @@ export default defineComponent({
         const classId = url.match(/\d+/)![0];
         if (this.loadedClassIdExams.includes(classId)) continue;
         this.loadedClassIdExams.push(classId);
-        this.attributes.push(
-          ...((await getExams(classId)) || []).map(
-            ({ subject, note, date }) => ({
-              dot: {
-                color: "red",
-                style: { boxShadow: "0 0 12px 4px var(--red-500)" },
-              },
-              popover: { label: subject + ": " + note },
-              dates: this.convertToDate(date),
-            }),
-          ),
+        this.attributes = this.attributes.concat(
+          ((await getExams(classId)) || []).map(({ subject, note, date }) => ({
+            dot: {
+              color: "red",
+              style: { boxShadow: "0 0 12px 4px var(--red-500)" },
+            },
+            popover: { label: subject + ": " + note },
+            dates: this.convertToDate(date),
+          })),
         );
       }
     },

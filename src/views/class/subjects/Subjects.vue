@@ -13,7 +13,7 @@
       <SubjectsCounter
         v-if="options.countAvgs.enabled"
         :subjects="subjects"
-        @close="optionClicked('countAvgs', options.countAvgs)"
+        @close="optionClicked('countAvgs')"
       ></SubjectsCounter>
     </transition>
     <transition name="opacity">
@@ -517,6 +517,15 @@ export default defineComponent({
   }
 }
 
+@mixin expanded-head($background) {
+  @include themed() {
+    :deep(.grade-count) {
+      box-shadow: -30px 0px 20px 5px t($background);
+    }
+    background: t($background);
+  }
+}
+
 .subject {
   position: relative;
   margin: 5px 10px;
@@ -524,18 +533,12 @@ export default defineComponent({
 
   &.is-opened > .subject-head {
     z-index: 4;
-
-    @include themed() {
-      background: t("alice-blue");
-    }
+    @include expanded-head("alice-blue");
   }
 
   &.expanded-keep > div {
     transition-delay: unset !important;
-
-    @include themed() {
-      background: t("white-background");
-    }
+    @include expanded-head("white-background");
   }
 
   &:hover {
@@ -543,10 +546,11 @@ export default defineComponent({
       z-index: 4;
       transition: background-color $subject-peek-duration $subject-peek-delay,
         margin-bottom 500ms;
+      @include expanded-head("alice-blue");
+    }
 
-      @include themed() {
-        background: t("alice-blue");
-      }
+    &:not(.expanded-keep):deep(.grade-count) {
+      transition: box-shadow $subject-peek-duration $subject-peek-delay;
     }
 
     & > .subject-body {

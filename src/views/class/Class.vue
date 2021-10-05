@@ -278,7 +278,7 @@ export default defineComponent({
       return this.openedClassInfo ? this.openedClassInfo.headTeacher || "" : "";
     },
     school(): string {
-      return this.openedClassInfo ? this.openedClassInfo.school : "";
+      return this.openedClassInfo ? this.openedClassInfo.school || "" : "";
     },
     dropdowns(): DropdownInfo[] {
       return [

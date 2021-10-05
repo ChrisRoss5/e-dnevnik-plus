@@ -63,13 +63,12 @@ export interface CalculatorSettings {
 export interface WebsiteSettings {
   name: string;
   urls: WebsiteInfo[];
-  icon?: string;
   disabled?: boolean;
 }
 
 export interface WebsiteInfo {
   url: string;
-  name?: string;
+  name: string;
   tooltip?: string;
 }
 
@@ -85,7 +84,7 @@ export interface ClassInfo {
   name: string;
   year: string;
   isYearCompleted: boolean;
-  school: string;
+  school?: string;
   schoolUrl?: string;
   headTeacher?: string;
   finalGrade?: string;

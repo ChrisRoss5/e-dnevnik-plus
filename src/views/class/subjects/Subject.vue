@@ -1,10 +1,9 @@
 <template>
   <ClassSectionFrame :isSubject="true" class="subject">
-    <div id="subject-info">
+    <div v-if="subject" id="subject-info">
       <div class="subject-name">{{ subject.name }}</div>
       <div class="teachers">{{ subject.teachers }}</div>
       <router-link :to="$route.path.replace(/\/\d+$/, '')" id="close">
-        <div class="teachers">IZVORNI PRIKAZ</div>
         <span class="material-icons"> close </span>
       </router-link>
     </div>
@@ -22,6 +21,7 @@ export default defineComponent({
   props: {
     subject: {
       type: [Object, Boolean] as PropType<ExtendedSubjectCache | false>,
+      required: true
     },
   },
 });

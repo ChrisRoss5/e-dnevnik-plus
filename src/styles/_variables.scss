@@ -21,6 +21,7 @@ $themes: (
   default: (
     body-color: $body-color-default,
     white-background: #fff,
+    text-disappearing: #fff,
     light-gray: #78909c,
     alice-blue: aliceblue,
     alice-blue-light: #e3eaf1,
@@ -40,6 +41,7 @@ $themes: (
   dark: (
     body-color: $body-color-dark,
     white-background: #181a1b,
+    text-disappearing: #0D0D0D,
     light-gray: #9e9689,
     alice-blue: #1b1b1b,
     alice-blue-light: #2e2e2e,

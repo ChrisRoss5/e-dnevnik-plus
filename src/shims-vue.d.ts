@@ -10,6 +10,8 @@ declare module '@/assets/high-school-points/2020-2021.js' {
 }
 
 declare module 'v-tooltip';
+declare module 'chartjs-plugin-piechart-outlabels';
+
 
 /*
 Chrome API types => https://stackoverflow.com/a/64440752/10264782

@@ -51,7 +51,7 @@ export default defineComponent({
               backgroundColor: "rgba(35, 86, 148, .65)",
               hoverBackgroundColor: "transparent",
               borderColor: "#2296da",
-              borderWidth: 3,
+              borderWidth: 1.2,
               data: this.extractMonthsData("gradesCount"),
               yAxisID: "yAxis1",
             },
