@@ -1,90 +1,146 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="hr">
 
 <head>
-  <title>e-Dnevnik Plus</title>
   <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>e-Dnevnik Plus</title>
+
+  <style>
+    @font-face {
+      font-family: "OpenSans";
+      src: url("../assets/font/OpenSans-Regular.ttf");
+    }
+
+    body {
+      font-family: OpenSans;
+      font-size: 16px;
+      width: 320px;
+      margin: 0;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    img {
+      width: 50px;
+      border-radius: 10px;
+    }
+
+    a {
+      text-decoration: none;
+      color: #235694;
+    }
+
+    .card {
+      display: flex;
+      padding: 25px;
+      transition: filter 150ms;
+    }
+
+    .card:hover {
+      filter: brightness(1.3);
+    }
+
+    #plus-card {
+      color: #d8d4cf;
+      background: #031322;
+    }
+
+    #original-card {
+      background: #e0e0e02d;
+    }
+
+    #plus-logo {
+      box-shadow: 0 0 20px -5px #2296da;
+      transition: box-shadow 150ms;
+    }
+
+    #original-logo {
+      width: 40px;
+      padding: 5px;
+      box-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%),
+        0 1px 3px 1px rgb(60 64 67 / 15%);
+    }
+
+    .title {
+      position: relative;
+      font-size: 24px;
+      padding-left: 15px;
+    }
+
+    .title:after {
+      position: absolute;
+      right: 0;
+      top: 26px;
+      font-style: italic;
+    }
+
+    #plus-title {
+      color: white;
+      text-shadow: 0 0 20px #2296da;
+    }
+
+    #plus-title::after {
+      content: "Plus";
+      color: #2296da;
+      text-shadow: 0 0 20px white;
+      font-size: 16px;
+    }
+
+    #original-title::after {
+      content: "Original";
+      font-size: 14px;
+    }
+
+    .run {
+      display: grid;
+      place-items: center;
+      border-left: 1px solid rgba(0, 0, 0, 0.226);
+      padding-left: 20px;
+      margin-left: auto;
+    }
+
+    #plus-run {
+      border-left-color: #1f3c5c;
+    }
+
+    #rate-me {
+      display: block;
+      width: 275px;
+      font-weight: bold;
+      margin: 0 auto;
+      padding: 15px 0;
+      transition: font-size 150ms;
+    }
+
+    #rate-me:hover {
+      font-size: 19px;
+      background: linear-gradient(to right, #50B748, #50B748, #52B348, #58A846, #5F9A45, #976872, #B05187, #AD519E, #AD519E, #AD519E, #865AA6, #6663AC, #4A69B2, #356FB6, #2672B9, #1E74BA, #1B75BB);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
 </head>
 
 <body>
+  <div class="card" id="plus-card">
+    <img id="plus-logo" src="../assets/img/logo.png">
+    <div class="title" id="plus-title">e-Dnevnik </div>
+    <div class="run" id="plus-run">Otvori</div>
+  </div>
+  <div class="card" id="original-card">
+    <img id="original-logo" src="../assets/img/original-logo.png">
+    <div class="title" id="original-title">e-Dnevnik </div>
+    <div class="run">Otvori</div>
+  </div>
+  <a id="rate-me" href='https://chrome.google.com/webstore/detail/bcnccmamhmcabokipgjechdeealcmdbe/reviews'
+    target='_blank'>
+    Ocijeni proširenje ★★★★★
+  </a>
 
-  <div class="title textCenter">
-    <a href="https://ocjene.skole.hr/logout" class="dnevnik">e-Dnevnik</a>
-    <span class="plus">Plus</span>
-  </div>
-
-  <div class="settingText">
-    <span>Proširenje je omogućeno</span>
-    <label class="check">
-      <input type="checkbox" class="checkbox" id="1" checked name="Status proširenja">
-      <svg width="23px" height="23px" viewBox="0 0 18 18">
-        <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path>
-        <polyline points="1 9 7 14 15 4"></polyline>
-      </svg>
-    </label>
-  </div>
-  <div class="settingText">
-    <span>Prikaži nove ocjene</span>
-    <label class="check">
-      <input type="checkbox" class="checkbox" id="2" checked name="Prikaži nove ocjene">
-      <svg width="23px" height="23px" viewBox="0 0 18 18">
-        <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path>
-        <polyline points="1 9 7 14 15 4"></polyline>
-      </svg>
-    </label>
-  </div>
-  <div class="settingText">
-    <span>Brzi pregled ocjena</span>
-    <label class="check">
-      <input type="checkbox" class="checkbox" id="3" checked name="Brzi pregled ocjena">
-      <svg width="23px" height="23px" viewBox="0 0 18 18">
-        <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path>
-        <polyline points="1 9 7 14 15 4"></polyline>
-      </svg>
-    </label>
-  </div>
-    <div class="settingText">
-    <span>Školski kalendar</span>
-    <label class="check">
-      <input type="checkbox" class="checkbox" id="4" checked name="Školski kalendar">
-      <svg width="23px" height="23px" viewBox="0 0 18 18">
-        <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path>
-        <polyline points="1 9 7 14 15 4"></polyline>
-      </svg>
-    </label>
-  </div>
-  <div class="settingText">
-    <span>Puni prikaz</span>
-    <label class="check">
-      <input type="checkbox" class="checkbox" id="5" name="Puni prikaz">
-      <svg width="23px" height="23px" viewBox="0 0 18 18">
-        <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path>
-        <polyline points="1 9 7 14 15 4"></polyline>
-      </svg>
-    </label>
-  </div>
-  <div class="settingText">
-    <span>Tamni prikaz</span>
-    <label class="check">
-      <input type="checkbox" class="checkbox" id="6" name="Tamni prikaz">
-      <svg width="23px" height="23px" viewBox="0 0 18 18">
-        <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path>
-        <polyline points="1 9 7 14 15 4"></polyline>
-      </svg>
-    </label>
-  </div>
-
-  <div class="rateME textCenter">
-    <a href='https://chrome.google.com/webstore/detail/bcnccmamhmcabokipgjechdeealcmdbe/reviews' target='_blank'>
-      Ocijeni proširenje  ★★★★★
-    </a>
-  </div>
-
-  <link rel="stylesheet" href="../libraries/checkbox.css">
-  <link rel="stylesheet" href="popup.css">
-  <script src="../libraries/jquery.min.js"></script>
   <script src="popup.js"></script>
-
 </body>
+
 </html>

@@ -34,8 +34,8 @@
           Pokreni
         </div>
       </div>
-      <div v-else class="abs-cover"
->        <Stats
+      <div v-else class="abs-cover">
+        <Stats
           :selectedClassesId="selectedClassesId"
           @sectionLoading="showSpinner = true"
           @sectionLoaded="showSpinner = false"
@@ -129,12 +129,16 @@ export default defineComponent({
     height: 44px;
     padding: 5px 20px;
     margin: 0 20px 10px;
-    transition: color 150ms, background-color 150ms;
+    opacity: 0.5;
+    transition: color 150ms, background-color 150ms, opacity 150ms;
 
     @include themed() {
+      background-color: t("alice-blue-light");
+
       &.selected {
+        opacity: 1;
         color: t("strong-blue") !important;
-        background-color: $navbar-selected;
+        background-color: t("white-background");
       }
 
       &:hover {

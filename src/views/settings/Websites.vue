@@ -131,7 +131,7 @@ input {
 
 .website {
   padding: 10px 20px;
-  margin: 15px 0;
+  margin-bottom: 15px;
   display: flex;
   flex-direction: column;
 

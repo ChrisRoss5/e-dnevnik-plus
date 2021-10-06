@@ -24,6 +24,7 @@ export interface User {
 }
 
 export interface Settings {
+  autoSignIn: boolean;
   classTabsOrder: string[];
   subjectsSettings: SubjectsSettings;
   calendarSettings: CalendarSettings;

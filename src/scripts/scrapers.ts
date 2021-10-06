@@ -51,9 +51,8 @@ async function login(
   //
   // Either /class or /course
   const nextDoc = UTILS.parseDoc(await fetch2.text(), fetch2.url);
-  const classesList = await getClassesList(
-    fetch2.url == URLS.classes ? nextDoc : undefined,
-  );
+  const isClassChoice = fetch2.url == URLS.classes;
+  const classesList = await getClassesList(isClassChoice ? nextDoc : undefined);
   if (!classesList || !classesList.length) {
     toast.error("Greška u prijavi: Popis razreda je nedostupan!");
     return false;
@@ -75,7 +74,7 @@ async function login(
         { timeout: false },
       );
     }, 7000);
-    toast("Prva prijava može potrajati malo duže.");
+    toast("Dobro došli u novi e-Dnevnik Plus!");
   }
   await updateClassesInfo();
   return true;
@@ -92,6 +91,11 @@ async function authFetch(url: string): Promise<undefined | Document> {
   if (fetch1.url.includes("login")) {
     const user = store.getters.user as User | undefined;
     if (!user) return;
+    if (!user.settings.autoSignIn) {
+      toast.error("Odjavljeni ste jer nemate omogućenu automatsku prijavu!");
+      store.commit(MutationTypes.UPDATE_USER_STATUS, { user, status: false });
+      return;
+    }
     if (!(await login(user.email, user.password, fetch1))) {
       const error = `Greška u prijavi: Promijenili ste lozinku za ${user.email}!`;
       toast.error(error, { timeout: false });
@@ -115,8 +119,12 @@ async function getClassesList(
     const year = UTILS.getElText(menu.querySelector(".class-schoolyear"));
     const [start, end] = year.split("/").map((y) => parseInt("20" + y));
     const finalGrade = menu.querySelector(".overall-grade .bold");
+    const url = (menu.querySelector(".school") as HTMLAnchorElement).href;
+
+    if (!classesList.length) await authFetch(url); // Must enter newest class
+
     classesList.push({
-      url: (menu.querySelector(".school") as HTMLAnchorElement).href,
+      url,
       name: UTILS.getElText(menu.querySelector(".class > .bold")),
       year: start + "./" + end + ".",
       isYearCompleted:

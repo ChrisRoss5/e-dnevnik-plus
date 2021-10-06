@@ -1804,6 +1804,7 @@ const testState: State = {
       ],
       signedIn: true,
       settings: {
+      autoSignIn: true,
         classTabsOrder: [
           "Ocjene",
           "Biljeske",
