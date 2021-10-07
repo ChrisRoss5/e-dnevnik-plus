@@ -16,6 +16,8 @@ const URLS = {
   schoolList: "https://ocjene.skole.hr/school",
   calendarDates:
     "https://raw.githubusercontent.com/ChrisRoss5/e-Dnevnik-Plus/master/src/assets/calendar-dates/calendar-dates.json",
+  aboutPage:
+    "https://raw.githubusercontent.com/ChrisRoss5/e-Dnevnik-Plus/master/src/assets/about-app/about-app.html",
 };
 
 async function login(
@@ -87,7 +89,7 @@ async function logout(): Promise<boolean> {
 }
 
 async function authFetch(url: string): Promise<undefined | Document> {
-  const fetch1 = await fetch(url);
+  let fetch1 = await fetch(url);
   if (fetch1.url.includes("login")) {
     const user = store.getters.user as User | undefined;
     if (!user) return;
@@ -102,6 +104,7 @@ async function authFetch(url: string): Promise<undefined | Document> {
       store.commit(MutationTypes.UPDATE_USER_STATUS, { user, status: false });
       return;
     }
+    fetch1 = await fetch(url);
   }
   return UTILS.parseDoc(await fetch1.text(), fetch1.url);
 }
@@ -258,10 +261,18 @@ async function updateClassesInfo(): Promise<void> {
     if (!schoolUrl) {
       const url = (await findSchoolUrl(school || _school, classesList)) || "/";
       const user = store.getters.user as User;
-      const websiteInfo = user.settings.websitesSettings.find(
+      const websiteSettings = user.settings.websitesSettings.find(
         (w) => w.name == "Školska stranica",
       );
-      if (websiteInfo) websiteInfo.urls.push({ name: school || _school, url });
+      const thisWebsiteInfo = { name: school || _school, url };
+      if (
+        !websiteSettings ||
+        websiteSettings.urls.findIndex(
+          (websiteInfo) => websiteInfo.name == thisWebsiteInfo.name,
+        ) > -1
+      )
+        return;
+      if (websiteSettings) websiteSettings.urls.push(thisWebsiteInfo);
       store.commit(MutationTypes.UPDATE_CLASS_PROPERTY, {
         classInfo,
         property: "schoolUrl",
@@ -474,12 +485,21 @@ async function getExams(classId: string): Promise<false | CalendarExam[]> {
 }
 
 async function getCalendarDates(): Promise<CalendarYear[] | false> {
-  try {
-    return JSON.parse(await (await fetch(URLS.calendarDates)).text());
-  } catch (error) {
+  const response = await fetch(URLS.calendarDates);
+  if (!response.ok) {
     toast.error("Greška pri dobavljanju datuma za kalendar!");
     return false;
   }
+  return JSON.parse(await response.text());
+}
+
+async function getAboutPage(): Promise<string | false> {
+  const response = await fetch(URLS.aboutPage);
+  if (!response.ok) {
+    toast.error("Greška pri dobavljanju stranice o aplikaciji!");
+    return false;
+  }
+  return response.text();
 }
 
 async function switchClassIfNeeded(classId: string): Promise<true | undefined> {
@@ -505,4 +525,5 @@ export {
   getSectionHTML,
   getExams,
   getCalendarDates,
+  getAboutPage,
 };

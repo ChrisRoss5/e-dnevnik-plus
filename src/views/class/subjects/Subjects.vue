@@ -54,6 +54,7 @@
             @mouseleave="subjectMouseLeave(subject)"
           >
             <SubjectCardHead
+              :class="{ 'transitions-ready': transitionsReady }"
               :subject="subject"
               :savedOptions="savedOptions"
               @updateGradesAvgEdited="(v) => updateGradesAvgEdited(subject, v)"
@@ -160,6 +161,7 @@ export default defineComponent({
       originalMouseX: 0,
       subjectsMargin: 0,
       subjectsResizing: false,
+      transitionsReady: false,
     };
   },
   methods: {
@@ -348,6 +350,10 @@ export default defineComponent({
         subject.isOpened = isOpened;
       }
       this.openedSubject = this.subjects.find((s) => s.isOpened) || false;
+      setTimeout(
+        () => (this.transitionsReady = !this.openedSubject),
+        this.openedSubject ? 600 : 300,
+      );
     },
     updateGradesAvgEdited(
       subject: ExtendedSubjectCache,

@@ -35,7 +35,8 @@ export default defineComponent({
       } else if (!userSignedIn && !isLoginPage) {
         this.$router.replace("/");
       }
-      this.enableDarkTheme(this.$store.state.settings.darkTheme);
+      this.toggleDarkTheme(this.$store.state.settings.darkTheme);
+      this.toggleTransitions(this.$store.state.settings.transitions);
       this.isAppInitiated = window.isAppInitiated = true;
       document.body.style.opacity = "1";
     });
@@ -50,9 +51,12 @@ export default defineComponent({
     };
   },
   methods: {
-    enableDarkTheme(enabled: boolean) {
+    toggleDarkTheme(enabled: boolean) {
       document.body.classList[enabled ? "add" : "remove"]("theme--dark");
       document.body.classList[enabled ? "remove" : "add"]("theme--default");
+    },
+    toggleTransitions(enabled: boolean) {
+      document.body.classList[enabled ? "remove" : "add"]("no-transitions");
     },
   },
   watch: {
@@ -60,7 +64,10 @@ export default defineComponent({
       if (!user) this.$router.replace("/");
     },
     "$store.state.settings.darkTheme"(enabled) {
-      this.enableDarkTheme(enabled);
+      this.toggleDarkTheme(enabled);
+    },
+    "$store.state.settings.transitions"(enabled) {
+      this.toggleTransitions(enabled);
     },
   },
 });

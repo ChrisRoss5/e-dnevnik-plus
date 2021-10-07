@@ -55,6 +55,11 @@ body {
     background-image: url("~@/assets/img/background-dark.png");
     color: $body-color-dark;
   }
+
+  &.no-transitions * {
+    transition: none !important;
+    animation: none !important;
+  }
 }
 
 a {

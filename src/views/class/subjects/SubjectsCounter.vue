@@ -17,20 +17,10 @@
           type="number"
           class="card"
         />
+        <span class="material-icons edit"> edit </span>
       </div>
       <div id="finalGrade">
-        <span
-          class="material-icons"
-          v-tooltip.top-start="{
-            content:
-              'Prosjek svih zaključnih ocjena (završni uspjeh).<br>' +
-              'Ako ocjena iz predmeta nije zaključena, zaokružuje se prosjek.' +
-              '<br>Ako predmet nema ocjena, ne uračunava se u ovaj prosjek.',
-            html: true,
-          }"
-        >
-          info </span
-        >{{ finalGrade }}
+        {{ finalGrade }}
       </div>
     </div>
   </div>
@@ -97,8 +87,8 @@ export default defineComponent({
   computed: {
     finalGrade(): string {
       return formatNum(
-        this.gradeCounts.reduce((a, b, i) => a + b.count * (i + 1), 0) /
-          this.gradeCounts.reduce((a, b) => a + b.count, 0),
+        this.gradeCounts.reduce((a, b, i) => a + (b.count || 0) * (i + 1), 0) /
+          this.gradeCounts.reduce((a, b) => a + (b.count || 0), 0),
       );
     },
   },
@@ -122,6 +112,7 @@ export default defineComponent({
   margin: 100px auto;
 
   .card {
+    position: relative;
     display: flex;
     align-items: center;
 
@@ -129,6 +120,10 @@ export default defineComponent({
       text-align: right;
       margin-left: 20px;
       flex: 1;
+    }
+
+    &:hover .edit {
+      opacity: 0;
     }
   }
 
@@ -138,15 +133,25 @@ export default defineComponent({
 }
 
 input {
-  width: 75px;
+  width: 100px;
   font-size: 24px;
   margin: 10px;
 }
 
+.edit {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: opacity 150ms;
+
+  @include themed() {
+    color: t("light-gray");
+  }
+}
+
 #finalGrade {
-  padding: 10px 25px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  padding: 10px 50px;
+  text-align: right;
 }
 </style>

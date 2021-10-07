@@ -83,8 +83,8 @@ export default defineComponent({
   name: "Login",
   data() {
     return {
-      email: "kristijan.rosandic",
-      password: "grandayyy",
+      email: "davor.suman",
+      password: "",
       firstAttempt: true,
       loggingIn: false,
     };

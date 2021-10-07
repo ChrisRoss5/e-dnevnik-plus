@@ -127,7 +127,7 @@ export default defineComponent({
     expandSubject(expand: boolean, doNotSave?: boolean) {
       if (!doNotSave) this.$emit("expandSubject", expand);
       this.$nextTick(() => {
-        const subjectBody = this.$refs["subjectBody"] as HTMLElement;
+        const subjectBody = this.$refs.subjectBody as HTMLElement;
         const margin = expand ? subjectBody.offsetHeight + "px" : "0px";
         this.$emit("updateSubjectMargin", margin);
       });

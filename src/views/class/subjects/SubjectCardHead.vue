@@ -153,7 +153,6 @@ export default defineComponent({
       const fullPath = this.$route.path.replace(/\/(\d+)?$/, "");
       return fullPath + "/" + (match ? match[0] : "");
     },
-
     formatNum: (num: number) => formatNum(num),
   },
   computed: {
@@ -193,11 +192,14 @@ export default defineComponent({
   background: transparent;
   overflow: hidden;
   margin-bottom: 0;
-  transition: background-color $subject-peek-duration, margin-bottom 500ms,
-    z-index 0ms $subject-peek-duration;
-  z-index: 2;
   transform: translateZ(0);
   will-change: margin, margin-bottom;
+  z-index: 2;
+
+  &.transitions-ready {
+    transition: background-color $subject-peek-duration, margin-bottom 500ms,
+      z-index 0ms $subject-peek-duration;
+  }
 }
 
 .subject-info {

@@ -5,33 +5,14 @@
       <Websites :key="websitesKey"></Websites>
     </div>
     <div>
-      <div class="title">Postavke</div>
-      <div class="setting card">
-        <div class="text">Tamni prikaz:</div>
-        <div class="switch">
-          <input
-            :checked="globalSettings.darkTheme"
-            @input="updateGlobalSetting('darkTheme', $event.target.checked)"
-            type="checkbox"
-            id="switch1"
-            class="switch__input"
-          />
-          <label for="switch1" class="switch__label">&nbsp;</label>
-        </div>
-      </div>
-      <div class="setting card">
-        <div class="text">Automatska prijava:</div>
-        <div class="switch">
-          <input
-            :checked="userSettings.autoSignIn"
-            @input="updateUserSetting('autoSignIn', $event.target.checked)"
-            type="checkbox"
-            id="switch2"
-            class="switch__input"
-          />
-          <label for="switch2" class="switch__label">&nbsp;</label>
-        </div>
-      </div>
+      <div class="title">Opcije</div>
+      <Option :text="'Tamni prikaz'" :setting="'darkTheme'"></Option>
+      <Option
+        :text="'Animacije'"
+        :setting="'transitions'"
+        :info="'Za brži rad aplikacije onemogući ovu opciju'"
+      ></Option>
+      <Option :text="'Automatska prijava'" :setting="'autoSignIn'"></Option>
       <div class="title">Podaci</div>
       <div class="text-link" @click="downloadUserData">
         Preuzmi svoje podatke (.json)
@@ -48,7 +29,8 @@
 import { defineComponent } from "vue";
 import { useToast } from "vue-toastification";
 import Websites from "./Websites.vue";
-import { GlobalSettings, Settings, User } from "@/store/state";
+import Option from "./Option.vue";
+import { Settings, User } from "@/store/state";
 import { MutationTypes } from "@/store/mutations";
 import { defaultUserSettings } from "@/scripts/new-user";
 import { jsonClone } from "@/scripts/utils";
@@ -57,22 +39,13 @@ const toast = useToast();
 
 export default defineComponent({
   name: "Settings",
-  components: { Websites },
+  components: { Websites, Option },
   data() {
     return {
       websitesKey: 0, // Used to rerender changes
     };
   },
   methods: {
-    updateGlobalSetting(name: keyof GlobalSettings, value: boolean) {
-      const commit = { name, value };
-      this.$store.commit(MutationTypes.UPDATE_GLOBAL_SETTING, commit);
-    },
-    updateUserSetting(name: keyof Settings, value: boolean) {
-      if (!this.user) return;
-      const commit = { user: this.user, settings: { [name]: value } };
-      this.$store.commit(MutationTypes.UPDATE_USER_SETTINGS, commit);
-    },
     downloadUserData() {
       const download = document.body.appendChild(document.createElement("a"));
       download.href =
@@ -107,12 +80,7 @@ export default defineComponent({
     },
   },
   computed: {
-    globalSettings(): GlobalSettings {
-      return this.$store.state.settings;
-    },
-    userSettings(): Settings {
-      return this.user ? this.user.settings : defaultUserSettings;
-    },
+
     user(): User | undefined {
       return this.$store.getters.user;
     },
@@ -121,8 +89,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import "@/styles/switch.scss";
-
 .title {
   margin: 35px 0 10px;
   font-size: 35px;
@@ -135,16 +101,6 @@ export default defineComponent({
   gap: 40px;
   min-height: 100%;
   padding: 20px;
-}
-
-.setting {
-  display: flex;
-  padding: 10px 30px;
-  margin-bottom: 15px;
-
-  .text {
-    margin-right: auto;
-  }
 }
 
 .text-link {

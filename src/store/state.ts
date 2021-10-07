@@ -1,8 +1,7 @@
 export const state: State = {
   settings: {
     darkTheme: true,
-    appDisabled: false,
-    injectContent: false,
+    transitions: true,
     navbarCollapsed: false,
   },
   users: [],
@@ -75,8 +74,7 @@ export interface WebsiteInfo {
 
 export interface GlobalSettings {
   darkTheme: boolean;
-  appDisabled: boolean;
-  injectContent: boolean;
+  transitions: boolean;
   navbarCollapsed: boolean;
 }
 

@@ -5,8 +5,7 @@ import { jsonClone } from "@/scripts/utils";
 const defaultState: State = {
   settings: {
     darkTheme: false,
-    appDisabled: false,
-    injectContent: false,
+    transitions: true,
     navbarCollapsed: false,
   },
   users: [],
@@ -36,8 +35,7 @@ export default chromeLocalStorage;
 const testState: State = {
   settings: {
     darkTheme: true,
-    appDisabled: false,
-    injectContent: false,
+    transitions: true,
     navbarCollapsed: false,
   },
   users: [

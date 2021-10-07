@@ -16,6 +16,8 @@ import Calculator from "@/views/calculator/Calculator.vue";
 
 import Websites from "@/views/Websites.vue";
 import Settings from "@/views/settings/Settings.vue";
+import About from "@/views/About.vue";
+
 
 /*
 No lazy loading:
@@ -101,6 +103,10 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/postavke",
     component: Settings,
+  },
+  {
+    path: "/o-aplikaciji",
+    component: About,
   },
   {
     path: "/:pathMatch(.*)",
