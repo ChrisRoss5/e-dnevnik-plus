@@ -4,7 +4,7 @@ declare module '*.vue' {
   export default component;
 }
 
-declare module '@/assets/high-school-points/2020-2021.js' {
+declare module '@/assets/high-school-points/2021-2022/2021-2022.js' {
   const points: Record<string, Record<string, number[]>>;
   export default points;
 }

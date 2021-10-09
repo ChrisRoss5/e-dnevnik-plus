@@ -34,7 +34,13 @@
 import { defineComponent, PropType } from "vue";
 import { formatNum, getSum } from "@/scripts/utils";
 import { CalculatorSettings } from "@/store/state";
-import highSchoolPoints from "@/assets/high-school-points/2020-2021.js";
+import highSchoolPoints from "@/assets/high-school-points/2021-2022/2021-2022.js";
+
+interface Points {
+  min: number;
+  max: number;
+  average: number;
+}
 
 interface Percentages {
   min: string;
@@ -67,7 +73,7 @@ export default defineComponent({
           type: "average",
           tooltip: "Prosječan broj bodova upisanih u program",
         },
-      ],
+      ] as { type: keyof Points; tooltip: string }[],
     };
   },
   methods: {
@@ -93,7 +99,7 @@ export default defineComponent({
       }
       return points;
     },
-    points(): { min: number; max: number; average: number } {
+    points(): Points {
       const { selectedSchool, selectedProgram } = this.settings;
       if (!(selectedSchool && selectedProgram))
         return { min: 0, max: 0, average: 0 };

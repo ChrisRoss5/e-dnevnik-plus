@@ -30,7 +30,7 @@ import { defineComponent } from "vue";
 import { useToast } from "vue-toastification";
 import Websites from "./Websites.vue";
 import Option from "./Option.vue";
-import { Settings, User } from "@/store/state";
+import { User } from "@/store/state";
 import { MutationTypes } from "@/store/mutations";
 import { defaultUserSettings } from "@/scripts/new-user";
 import { jsonClone } from "@/scripts/utils";

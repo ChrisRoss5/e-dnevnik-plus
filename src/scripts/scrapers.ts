@@ -221,19 +221,21 @@ async function updateSubject(
 }
 
 async function updateClassesInfo(): Promise<void> {
+  const user = store.getters.user as User;
   const classesList = store.getters.user.classesList as ClassInfo[];
   //
   // Because the class response is 302, requests must go 1 by 1
   for (const classInfo of classesList) {
-    const { school, schoolUrl, headTeacher } = classInfo;
+    const { school, schoolUrl, headTeacher, url } = classInfo;
     if (school && schoolUrl && headTeacher) continue;
     //
     // Enter class
     const classDoc = await authFetch(classInfo.url);
     if (!classDoc) {
       toast.error("Greška pri dobavljanju razreda!");
-      return;
+      continue;
     }
+    store.commit(MutationTypes.UPDATE_LAST_LOADED_CLASS_URL, { user, url });
     //
     // Find class head teacher
     if (!headTeacher) {
@@ -259,24 +261,20 @@ async function updateClassesInfo(): Promise<void> {
     //
     // Find school website URL
     if (!schoolUrl) {
-      const url = (await findSchoolUrl(school || _school, classesList)) || "/";
-      const user = store.getters.user as User;
+      const _url = (await findSchoolUrl(school || _school, classesList)) || "/";
+      const thisWebsiteInfo = { name: school || _school, url: _url };
       const websiteSettings = user.settings.websitesSettings.find(
         (w) => w.name == "Školska stranica",
       );
-      const thisWebsiteInfo = { name: school || _school, url };
       if (
-        !websiteSettings ||
-        websiteSettings.urls.findIndex(
-          (websiteInfo) => websiteInfo.name == thisWebsiteInfo.name,
-        ) > -1
+        websiteSettings &&
+        !websiteSettings.urls.some((w) => w.name == thisWebsiteInfo.name)
       )
-        return;
-      if (websiteSettings) websiteSettings.urls.push(thisWebsiteInfo);
+        websiteSettings.urls.push(thisWebsiteInfo);
       store.commit(MutationTypes.UPDATE_CLASS_PROPERTY, {
         classInfo,
         property: "schoolUrl",
-        value: url,
+        value: _url,
       });
     }
   }

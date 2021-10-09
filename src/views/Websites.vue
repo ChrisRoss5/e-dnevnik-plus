@@ -23,7 +23,7 @@
       ></iframe>
       <Spinner :visible="loading"></Spinner>
     </div>
-    <div v-else>Greška pri učitavanju stranice.</div>
+    <div v-else>Stranica ne postoji.</div>
   </div>
 </template>
 

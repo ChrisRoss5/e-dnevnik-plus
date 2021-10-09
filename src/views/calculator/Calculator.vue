@@ -152,7 +152,7 @@ import Dropdown, { DropdownItem } from "@/components/Dropdown.vue";
 import CustomDropdown from "./CustomDropdown.vue";
 import Result from "./Result.vue";
 import Spinner from "@/components/Spinner.vue";
-import highSchoolPoints from "@/assets/high-school-points/2020-2021.js";
+import highSchoolPoints from "@/assets/high-school-points/2021-2022/2021-2022.js";
 import { jsonClone, parseNum, setEndOfContenteditable } from "@/scripts/utils";
 import { MutationTypes } from "@/store/mutations";
 import { CalculatorSettings, User } from "@/store/state";
@@ -353,7 +353,7 @@ export default defineComponent({
 #calculator {
   margin: 80px auto;
   padding: 30px;
-  width: 954px;
+  width: $original-page-width;
 }
 
 #urls {

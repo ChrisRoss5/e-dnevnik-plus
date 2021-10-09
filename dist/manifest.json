@@ -19,7 +19,7 @@
     "rule_resources": [
       {
         "id": "ruleset",
-        "enabled": true,
+        "enabled": false,
         "path": "rules.json"
       }
     ]

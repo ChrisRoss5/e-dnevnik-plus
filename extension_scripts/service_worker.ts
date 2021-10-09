@@ -5,10 +5,10 @@
 chrome.runtime.setUninstallURL("https://ednevnik.plus/deinstalacija");
 chrome.runtime.onMessage.addListener(onMessage);
 
-function onMessage(
-  request: { message: string; payload: any },
-  sender,
-  sendResponse,
-) {
+function onMessage(request: string, sender, sendResponse) {
+  if (request == "GET_ACTIVE_RULES") {
+    chrome.declarativeNetRequest.getEnabledRulesets(sendResponse);
+  }
+
   return true;
 }

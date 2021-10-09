@@ -115,7 +115,8 @@ export default defineComponent({
   },
   watch: {
     websitesSettingsClone: {
-      handler() {
+      handler(newVal, oldVal) {
+        if (!oldVal.length) return;
         this.updateUserSettings("websitesSettings", this.websitesSettingsClone);
       },
       deep: true,

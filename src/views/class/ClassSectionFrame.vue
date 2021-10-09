@@ -111,7 +111,7 @@ export default defineComponent({
 #section-container {
   position: relative;
   margin: 0 auto;
-  width: 954px;
+  width: $original-page-width;
   min-width: 50%;
   padding: 10px;
 }
