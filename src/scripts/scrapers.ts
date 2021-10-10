@@ -1,4 +1,5 @@
 import { useToast } from "vue-toastification";
+import { useGtag } from "vue-gtag-next";
 import { MutationTypes } from "@/store/mutations";
 import { User, ClassInfo, SubjectCache } from "@/store/state";
 import { store } from "@/store";
@@ -6,6 +7,7 @@ import { CalendarYear, CalendarExam } from "@/views/calendar/interface";
 import newUser from "./new-user";
 import * as UTILS from "./utils";
 
+const gtag = useGtag().event;
 const toast = useToast();
 const URLS = {
   base: "https://ocjene.skole.hr",
@@ -62,6 +64,10 @@ async function login(
   //
   // Old or new user
   const user = store.state.users.find((u) => u.email == email);
+  gtag("request", {
+    event_category: "user auth",
+    event_label: (user ? "" : "new ") + "user signed in",
+  });
   if (user) {
     store.commit(MutationTypes.UPDATE_CLASSES_LIST, { user, classesList });
   } else {

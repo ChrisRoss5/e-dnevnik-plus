@@ -97,6 +97,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { SlickList, SlickItem } from "vue-slicksort";
+import { useGtag } from "vue-gtag-next";
 import { getSubjectColors, jsonClone } from "@/scripts/utils";
 import { updateSubjects } from "@/scripts/scrapers";
 import SubjectsSummary from "./SubjectsSummary.vue";
@@ -133,6 +134,8 @@ export interface Option {
   fontSize?: string;
   enabled?: boolean;
 }
+
+const gtag = useGtag().event;
 
 export default defineComponent({
   name: "Subjects",
@@ -253,12 +256,16 @@ export default defineComponent({
           this.updateSubjects(true);
           return;
       }
-      if (zoomChanged) {
+      if (zoomChanged)
         savedOptions.zoom = Math.min(
           Math.max(savedOptions.zoom, 1),
           this.subjects.length,
         );
-      }
+      gtag("button click", {
+        event_category: "subjects option",
+        event_label: optionName,
+        value: zoomChanged ? savedOptions.zoom : option.enabled,
+      });
       this.updateSettings(savedOptions);
       this.updateTablesMargin += zoomChanged ? 1 : 0;
     },

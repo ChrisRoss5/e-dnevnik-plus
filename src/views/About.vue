@@ -1,6 +1,8 @@
 <template>
   <div id="about">
-    <iframe :class="{ loading }" ref="aboutFrame"></iframe>
+    <div :class="{ loading }" class="flex-center" ref="about">
+      <!-- @/assets/about-app/about-app.html -->
+    </div>
     <Spinner :visible="loading"></Spinner>
   </div>
 </template>
@@ -16,13 +18,10 @@ export default defineComponent({
     Spinner,
   },
   async mounted() {
-    const iframe = this.$refs.aboutFrame as HTMLIFrameElement;
-    const cw = iframe.contentWindow!;
+    const container = this.$refs.about as HTMLElement;
     var html = await getAboutPage();
     if (!html) return;
-    cw.document.open();
-    cw.document.write(html);
-    cw.document.close();
+    container.innerHTML = html;
     this.loading = false;
   },
   data() {
@@ -34,16 +33,14 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-#about,
-iframe {
+div {
   width: 100%;
   height: 100%;
 }
 
-iframe {
+div {
   opacity: 1;
   transition: opacity $views-transition;
-  width: $original-page-width;
 
   &.loading {
     opacity: 0;

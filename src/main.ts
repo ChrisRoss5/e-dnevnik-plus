@@ -3,15 +3,16 @@ declare global {
     isAppInitiated: boolean;
     devTestMode: boolean;
     devPause: (t: number) => Promise<void>;
-    clearLocalStorage: () => void;
+    devClearLocalStorage: () => void;
   }
 }
 
 // TODO: BEFORE BUILD
 window.devTestMode = true;
 window.devPause = (t) => new Promise((res) => setTimeout(res, t));
-window.clearLocalStorage = () => chrome.storage.local.clear();
+window.devClearLocalStorage = () => chrome.storage.local.clear();
 
+/* https://v3.vuejs.org/guide */
 import { createApp, reactive } from "vue";
 import App from "./App.vue";
 
@@ -40,8 +41,8 @@ VTooltip.options.offset = [0, 10];
 VTooltip.options.instantMove = true;
 
 /* https://vue-tippy.netlify.app/ */
-// import VueTippy from "vue-tippy";
-// import "tippy.js/dist/tippy.css";
+/* import VueTippy from "vue-tippy";
+import "tippy.js/dist/tippy.css"; */
 
 /* https://vcalendar.io/ */
 import VCalendar from "v-calendar";
@@ -53,7 +54,6 @@ import annotationPlugin from "chartjs-plugin-annotation";
 /* import "chartjs-plugin-piechart-outlabels"; // outdated - not compatible w chart 3 */
 import GlobalMixin from "./components/GlobalMixin";
 Chart.register(annotationPlugin);
-
 Chart.defaults.font.size = 16;
 Chart.defaults.maintainAspectRatio = false;
 Chart.defaults.interaction.mode = "index";
@@ -61,10 +61,12 @@ Chart.defaults.interaction.mode = "index";
 Chart.defaults.plugins.tooltip.footerMarginTop = 10;
 Chart.defaults.plugins.tooltip.footerAlign = "right";
 
+/* https://matteo-gabriele.gitbook.io/vue-gtag/v/next/ */
+import VueGtag from "vue-gtag-next";
+
 const app = createApp(App);
 app.config.globalProperties.$emitter = mitt();
 app.config.globalProperties.$reactive = reactive({ userOffsetWidth: "0px" });
-
 app
   .use(store)
   .use(router)
@@ -72,6 +74,11 @@ app
   .use(VWave)
   .use(VTooltip)
   .use(VCalendar)
+  .use(VueGtag, {
+    property: {
+      id: "UA-136686462-5",
+    },
+  })
   /* .use(VueTippy, {
     defaultProps: { animateFill: true },
   }) */

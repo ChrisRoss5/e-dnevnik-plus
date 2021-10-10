@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import { store } from "@/store";
+import { trackRouter } from "vue-gtag-next";
 
 import Login from "@/views/Login.vue";
 import Class from "@/views/class/Class.vue";
@@ -119,8 +120,10 @@ const router = createRouter({
   routes,
 });
 
+trackRouter(router);
+
 router.beforeEach((to, from, next) => {
-  if (!window.isAppInitiated) return next(); // App not INIT
+  if (!window.isAppInitiated) return next();
   const isAuthenticated = !!store.getters.user;
   const isLoginPage = to.path == "/";
   if (!isLoginPage && !isAuthenticated) next({ path: "/" });
