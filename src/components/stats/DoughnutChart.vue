@@ -5,7 +5,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import Chart, { ChartItem } from "chart.js/auto";
-import { jsonClone, getGradesColors } from "@/scripts/utils";
+import { getGradesColors } from "@/scripts/utils";
 
 let chart: Chart<"doughnut", number[], string>;
 
