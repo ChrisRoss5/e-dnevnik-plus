@@ -62,14 +62,17 @@ Chart.defaults.interaction.mode = "index";
 Chart.defaults.plugins.tooltip.footerMarginTop = 10;
 Chart.defaults.plugins.tooltip.footerAlign = "right";
 
-/* Global site tag (gtag.js) - Google Analytics */
+/* Google Analytics
+Remove "http:"!=d&&"https:"!=d&&(Rg(29),a.abort()),
+because the actual protocol is "chrome-extension:"
+https://issuetracker.google.com/issues/174954288
+*/
 import "@/scripts/gtag.js";
 window.dataLayer = window.dataLayer || [];
 window.gtag = function() {
   window.dataLayer.push(arguments);
 };
 window.gtag("js", new Date());
-window.gtag("config", "G-ZN6H3YFB7L", { send_page_view: false });
 
 const app = createApp(App);
 app.config.globalProperties.$emitter = mitt();

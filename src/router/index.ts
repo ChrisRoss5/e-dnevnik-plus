@@ -120,7 +120,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   if (!to.path.includes("/-/")) {
     const matched = to.matched[to.matched.length - 1];
-    window.gtag("config", "G-ZN6H3YFB7L", {
+    window.gtag("config", "G-MPMHVT6WTW", {
       page_title: matched ? matched.components.default.name : "--",
       page_location: matched ? matched.path : "--",
       page_path: to.path,
