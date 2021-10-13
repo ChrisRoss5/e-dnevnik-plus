@@ -46,6 +46,11 @@ export default defineComponent({
       if (!this.user) return;
       commit = { user: this.user, settings: { [name]: value } };
       this.$store.commit(MutationTypes.UPDATE_USER_SETTINGS, commit);
+      window.gtag("event", "button click", {
+        event_category: "settings option",
+        event_label: name,
+        value,
+      });
     },
   },
   computed: {

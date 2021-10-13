@@ -1,4 +1,4 @@
-import { User, ClassInfo } from "@/store/state";
+import { User, ClassInfo, Settings } from "@/store/state";
 
 interface InitData {
   email: string;
@@ -7,7 +7,7 @@ interface InitData {
   classesList: ClassInfo[];
 }
 
-export const defaultUserSettings = {
+export const defaultUserSettings: Settings = {
   autoSignIn: true,
   classTabsOrder: [
     "Ocjene",

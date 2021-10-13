@@ -73,8 +73,11 @@
         :key="key"
         class="button choice-button"
         :class="{
-          active: parseInt(key) == (lockedDuration ? lockedDuration : selectedDuration),
-          'disabled-button': parseInt(key) != lockedDuration && settings.selectedProgram,
+          active:
+            parseInt(key) ==
+            (lockedDuration ? lockedDuration : selectedDuration),
+          'disabled-button':
+            parseInt(key) != lockedDuration && settings.selectedProgram,
         }"
         @click="selectedDuration = parseInt(key)"
       >
@@ -157,6 +160,7 @@ import { jsonClone, parseNum, setEndOfContenteditable } from "@/scripts/utils";
 import { MutationTypes } from "@/store/mutations";
 import { CalculatorSettings, User } from "@/store/state";
 import { updateSubjects } from "@/scripts/scrapers";
+import { defaultUserSettings } from "@/scripts/new-user";
 
 export default defineComponent({
   name: "Calculator",
@@ -261,6 +265,8 @@ export default defineComponent({
         }
       }
       this.updateSettings(settings);
+      this.sendAnalyticsButtonClick("schoolSelected", schoolName);
+
     },
     programSelected(programName?: string) {
       this.showSchoolProgram = false;
@@ -268,6 +274,7 @@ export default defineComponent({
       const settings = jsonClone(this.settings);
       settings.selectedProgram = programName == "clear" ? "" : programName;
       this.updateSettings(settings);
+      this.sendAnalyticsButtonClick("programSelected", programName);
     },
     extraPointsSelected(pointsName?: string) {
       this.showExtraPoints = false;
@@ -275,6 +282,7 @@ export default defineComponent({
       const settings = jsonClone(this.settings);
       settings.selectedExtraPoints = pointsName == "clear" ? "" : pointsName;
       this.updateSettings(settings);
+      this.sendAnalyticsButtonClick("extraPointsSelected", pointsName);
     },
     numberInputted(e: InputEvent, i: number, j: number) {
       this.editingInput = i ? -1 : j;
@@ -314,6 +322,13 @@ export default defineComponent({
         settings: { calculatorSettings: newSettings },
       });
     },
+    sendAnalyticsButtonClick(optionName: string, value: string) {
+      window.gtag("event", "button click", {
+        event_category: "calculator option",
+        event_label: optionName,
+        value,
+      });
+    },
   },
   computed: {
     user(): User | undefined {
@@ -338,12 +353,7 @@ export default defineComponent({
     settings(): CalculatorSettings {
       return this.user
         ? this.user.settings.calculatorSettings
-        : {
-            selectedSchool: "",
-            selectedProgram: "",
-            selectedExtraPoints: "",
-            userValues: [[], [], [], [], [], [], []],
-          };
+        : defaultUserSettings.calculatorSettings;
     },
   },
 });

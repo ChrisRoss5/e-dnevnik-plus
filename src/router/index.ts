@@ -1,6 +1,5 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import { store } from "@/store";
-import { trackRouter } from "vue-gtag-next";
 
 import Login from "@/views/Login.vue";
 import Class from "@/views/class/Class.vue";
@@ -14,11 +13,9 @@ import Calendar from "@/views/calendar/Calendar.vue";
 import GlobalStats from "@/views/GlobalStats.vue";
 import Calculator from "@/views/calculator/Calculator.vue";
 
-
 import Websites from "@/views/Websites.vue";
 import Settings from "@/views/settings/Settings.vue";
 import About from "@/views/About.vue";
-
 
 /*
 No lazy loading:
@@ -120,9 +117,15 @@ const router = createRouter({
   routes,
 });
 
-trackRouter(router);
-
 router.beforeEach((to, from, next) => {
+  if (!to.path.includes("/-/")) {
+    const matched = to.matched[to.matched.length - 1];
+    window.gtag("config", "G-ZN6H3YFB7L", {
+      page_title: matched ? matched.components.default.name : "--",
+      page_location: matched ? matched.path : "--",
+      page_path: to.path,
+    });
+  }
   if (!window.isAppInitiated) return next();
   const isAuthenticated = !!store.getters.user;
   const isLoginPage = to.path == "/";

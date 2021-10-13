@@ -1,5 +1,6 @@
 declare global {
   interface Window {
+    dataLayer: any;
     isAppInitiated: boolean;
     devTestMode: boolean;
     devPause: (t: number) => Promise<void>;
@@ -61,8 +62,14 @@ Chart.defaults.interaction.mode = "index";
 Chart.defaults.plugins.tooltip.footerMarginTop = 10;
 Chart.defaults.plugins.tooltip.footerAlign = "right";
 
-/* https://matteo-gabriele.gitbook.io/vue-gtag/v/next/ */
-import VueGtag from "vue-gtag-next";
+/* Global site tag (gtag.js) - Google Analytics */
+import "@/scripts/gtag.js";
+window.dataLayer = window.dataLayer || [];
+window.gtag = function() {
+  window.dataLayer.push(arguments);
+};
+window.gtag("js", new Date());
+window.gtag("config", "G-ZN6H3YFB7L", { send_page_view: false });
 
 const app = createApp(App);
 app.config.globalProperties.$emitter = mitt();
@@ -74,11 +81,6 @@ app
   .use(VWave)
   .use(VTooltip)
   .use(VCalendar)
-  .use(VueGtag, {
-    property: {
-      id: "UA-136686462-5",
-    },
-  })
   /* .use(VueTippy, {
     defaultProps: { animateFill: true },
   }) */

@@ -97,7 +97,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { SlickList, SlickItem } from "vue-slicksort";
-import { useGtag } from "vue-gtag-next";
 import { getSubjectColors, jsonClone } from "@/scripts/utils";
 import { updateSubjects } from "@/scripts/scrapers";
 import SubjectsSummary from "./SubjectsSummary.vue";
@@ -112,6 +111,7 @@ import {
   GradesByCategory,
   SubjectsSettings,
 } from "@/store/state";
+import { defaultUserSettings } from "@/scripts/new-user";
 
 export interface ExtendedSubjectCache extends SubjectCache {
   expanded: boolean;
@@ -134,8 +134,6 @@ export interface Option {
   fontSize?: string;
   enabled?: boolean;
 }
-
-const gtag = useGtag().event;
 
 export default defineComponent({
   name: "Subjects",
@@ -237,8 +235,8 @@ export default defineComponent({
           savedOptions.expandTablesOnHover = !savedOptions.expandTablesOnHover;
           break;
         case "expandTables":
-          this.expandTables = !option.enabled ? this.expandTables + 1 : 0;
-          return;
+          this.expandTables = option.enabled ? 0 : this.expandTables + 1;
+          return this.sendAnalyticsButtonClick(optionName, !option.enabled);
         case "zoomIn":
           savedOptions.zoom -= 1;
           break;
@@ -254,26 +252,36 @@ export default defineComponent({
           break;
         case "updateSubjects":
           this.updateSubjects(true);
-          return;
+          return this.sendAnalyticsButtonClick(optionName);
       }
       if (zoomChanged)
         savedOptions.zoom = Math.min(
           Math.max(savedOptions.zoom, 1),
           this.subjects.length,
         );
-      gtag("button click", {
-        event_category: "subjects option",
-        event_label: optionName,
-        value: zoomChanged ? savedOptions.zoom : option.enabled,
-      });
+      this.sendAnalyticsButtonClick(
+        optionName,
+        zoomChanged ? savedOptions.zoom : !option.enabled,
+      );
       this.updateSettings(savedOptions);
       this.updateTablesMargin += zoomChanged ? 1 : 0;
+    },
+    sendAnalyticsButtonClick(
+      optionName: string,
+      value?: boolean | number | string,
+    ) {
+      window.gtag("event", "button click", {
+        event_category: "subjects option",
+        event_label: optionName,
+        value: value == undefined ? "--" : value,
+      });
     },
     sortOptionClicked(optionName: string) {
       const savedOptions = jsonClone(this.savedOptions);
       if (optionName.includes("Sortiranje")) {
         savedOptions.sortByDragging = !savedOptions.sortByDragging;
         this.updateSettings(savedOptions);
+        this.sendAnalyticsButtonClick("sort", savedOptions.sortByDragging);
         return;
       }
       const isReverse = optionName.includes("silazno");
@@ -289,6 +297,7 @@ export default defineComponent({
         return 0;
       });
       this.subjectsOrderChanged();
+      this.sendAnalyticsButtonClick("sort", sortProperty);
     },
     getSubjectGradesCount(
       subject: ExtendedSubjectCache,
@@ -438,16 +447,7 @@ export default defineComponent({
     savedOptions(): SubjectsSettings {
       return this.user
         ? this.user.settings.subjectsSettings
-        : {
-            margin: 0,
-            zoom: 2,
-            expandTablesOnHover: true,
-            subjectColors: false,
-            countAvgs: false,
-            sortByDragging: true,
-            subjectsOrder: {},
-            expandedSubjects: [],
-          };
+        : defaultUserSettings.subjectsSettings;
     },
     options(): Record<string, Option> {
       return {

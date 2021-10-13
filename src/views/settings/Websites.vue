@@ -97,6 +97,11 @@ export default defineComponent({
         name: this.newWebsiteName,
         urls: [{ name: "", url: "" }],
       });
+      window.gtag("event", "button click", {
+        event_category: "settings option",
+        event_label: "addWebsite",
+        value: this.newWebsiteName
+      });
       this.newWebsiteName = "";
     },
     addUrl(i: number) {

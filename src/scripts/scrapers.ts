@@ -1,13 +1,12 @@
-import { useToast } from "vue-toastification";
-import { useGtag } from "vue-gtag-next";
+import { TYPE, useToast } from "vue-toastification";
 import { MutationTypes } from "@/store/mutations";
 import { User, ClassInfo, SubjectCache } from "@/store/state";
 import { store } from "@/store";
 import { CalendarYear, CalendarExam } from "@/views/calendar/interface";
 import newUser from "./new-user";
 import * as UTILS from "./utils";
+import { ToastOptions } from "vue-toastification/dist/types/types";
 
-const gtag = useGtag().event;
 const toast = useToast();
 const URLS = {
   base: "https://ocjene.skole.hr",
@@ -39,7 +38,7 @@ async function login(
   const loginDoc = UTILS.parseDoc(await fetch1.text(), fetch1.url);
   const csrfElement = loginDoc.getElementsByName("csrf_token")[0];
   if (!csrfElement) {
-    toast.error("Greška u prijavi: Nedostaje CSRF token!");
+    toastError("Greška u prijavi: Nedostaje CSRF token!");
     return false;
   }
   const csrf_token = (csrfElement as HTMLInputElement).value;
@@ -58,15 +57,16 @@ async function login(
   const isClassChoice = fetch2.url == URLS.classes;
   const classesList = await getClassesList(isClassChoice ? nextDoc : undefined);
   if (!classesList || !classesList.length) {
-    toast.error("Greška u prijavi: Popis razreda je nedostupan!");
+    toastError("Greška u prijavi: Popis razreda je nedostupan!");
     return false;
   }
   //
   // Old or new user
   const user = store.state.users.find((u) => u.email == email);
-  gtag("request", {
+  window.gtag("event", "request", {
     event_category: "user auth",
-    event_label: (user ? "" : "new ") + "user signed in",
+    event_label: (user ? "" : "NEW ") + "user signed in",
+    value: classesList.length,
   });
   if (user) {
     store.commit(MutationTypes.UPDATE_CLASSES_LIST, { user, classesList });
@@ -90,7 +90,11 @@ async function login(
 
 async function logout(): Promise<boolean> {
   const success = (await fetch(URLS.logout)).url.includes("login");
-  if (!success) toast.error("Greška u odjavi! Pokušajte ponovo.");
+  if (!success) toastError("Greška u odjavi! Pokušajte ponovo.");
+  window.gtag("event", "request", {
+    event_category: "user auth",
+    event_label: "user signed out",
+  });
   return success;
 }
 
@@ -100,13 +104,13 @@ async function authFetch(url: string): Promise<undefined | Document> {
     const user = store.getters.user as User | undefined;
     if (!user) return;
     if (!user.settings.autoSignIn) {
-      toast.error("Odjavljeni ste jer nemate omogućenu automatsku prijavu!");
+      toastError("Odjavljeni ste jer nemate omogućenu automatsku prijavu!");
       store.commit(MutationTypes.UPDATE_USER_STATUS, { user, status: false });
       return;
     }
     if (!(await login(user.email, user.password, fetch1))) {
       const error = `Greška u prijavi: Promijenili ste lozinku za ${user.email}!`;
-      toast.error(error, { timeout: false });
+      toastError(error, { timeout: false });
       store.commit(MutationTypes.UPDATE_USER_STATUS, { user, status: false });
       return;
     }
@@ -125,12 +129,14 @@ async function getClassesList(
   const classMenus = classesDoc.getElementsByClassName("class-menu-vertical");
   const classesList = [] as ClassInfo[];
   for (const menu of classMenus) {
+    const url = (menu.querySelector(".school") as HTMLAnchorElement).href;
     const year = UTILS.getElText(menu.querySelector(".class-schoolyear"));
     const [start, end] = year.split("/").map((y) => parseInt("20" + y));
-    const finalGrade = menu.querySelector(".overall-grade .bold");
-    const url = (menu.querySelector(".school") as HTMLAnchorElement).href;
+    const finalGrade = UTILS.getElText(
+      menu.querySelector(".overall-grade .bold"),
+    );
 
-    if (!classesList.length) await authFetch(url); // Must enter newest class
+    if (!classesList.length) await authFetch(url); // Must enter the newest class
 
     classesList.push({
       url,
@@ -138,7 +144,12 @@ async function getClassesList(
       year: start + "./" + end + ".",
       isYearCompleted:
         currentYear > end || (currentYear == end && currentMonth > 7),
-      finalGrade: UTILS.getElText(finalGrade) || undefined,
+      finalGrade: finalGrade || undefined,
+    });
+    window.gtag("event", "user info", {
+      event_category: "grade",
+      event_label: "finalGradeOriginal",
+      value: finalGrade || "--",
     });
   }
   return classesList;
@@ -169,7 +180,7 @@ async function updateSubjects(
     // Default: 30 minutes; TODO: add settings
     const classDoc = await authFetch(classInfo.url);
     if (!classDoc) {
-      toast.error("Greška pri dobavljanju razreda!");
+      toastError("Greška pri dobavljanju razreda!");
       return false;
     }
 
@@ -201,7 +212,7 @@ async function updateSubject(
 ): Promise<false | SubjectCache> {
   const subjectDoc = await authFetch(subject.url);
   if (!subjectDoc) {
-    toast.error("Greška: Predmet ne postoji!");
+    toastError("Greška: Predmet ne postoji!");
     return false;
   }
   subject.gradesByCategory = [];
@@ -238,7 +249,7 @@ async function updateClassesInfo(): Promise<void> {
     // Enter class
     const classDoc = await authFetch(classInfo.url);
     if (!classDoc) {
-      toast.error("Greška pri dobavljanju razreda!");
+      toastError("Greška pri dobavljanju razreda!");
       continue;
     }
     store.commit(MutationTypes.UPDATE_LAST_LOADED_CLASS_URL, { user, url });
@@ -295,7 +306,7 @@ async function findSchoolUrl(
       return classInfo.schoolUrl;
   const schoolListDoc = await authFetch(URLS.schoolList);
   if (!schoolListDoc) {
-    toast.error("Greška pri dobavljanju popisa škola!");
+    toastError("Greška pri dobavljanju popisa škola!");
     return;
   }
   const _school = school.toLowerCase().replaceAll(";", ",");
@@ -316,166 +327,17 @@ async function getSectionHTML(
   if (window.devTestMode || (await switchClassIfNeeded(classId))) return false;
   const doc = await authFetch(sectionUrl);
   if (!doc) {
-    toast.error("Greška pri dobavljanju stranice razreda!");
+    toastError("Greška pri dobavljanju stranice razreda!");
     return false;
   }
   return doc.querySelector(".content") || false;
 }
 
 async function getExams(classId: string): Promise<false | CalendarExam[]> {
-  if (window.devTestMode) {
-    return [
-      {
-        subject: "Matematika",
-        note: '1. pisana provjera znanja "Brojevi"',
-        date: "19.10.2021",
-      },
-      {
-        subject: "Strojarske konstrukcije",
-        note: "Prva pisana provjera znanja",
-        date: "22.10.2021",
-      },
-      {
-        subject: "Engleski jezik I",
-        note: "Pismena provjera znanja",
-        date: "30.10.2021",
-      },
-      {
-        subject: "Matematika",
-        note: "Nizovi",
-        date: "30.11.2021",
-      },
-      {
-        subject: "Roboti i manipulatori (izborni)",
-        note: "1. pisana provjera znanja",
-        date: "5.11.2021",
-      },
-      {
-        subject: "Alati i naprave",
-        note: "1. Pisana provjera znanja - Alati za savijanje",
-        date: "6.11.2021",
-      },
-      {
-        subject: "Termodinamika",
-        note: "1. pisana provjera: Motori s unutarnjim izgaranjem",
-        date: "16.11.2021",
-      },
-      {
-        subject: "Hrvatski jezik",
-        note: "Prva pisana provjera znanja",
-        date: "23.11.2021",
-      },
-      {
-        subject: "Hrvatski jezik",
-        note: "Prva školska zadaća",
-        date: "26.11.2021",
-      },
-      {
-        subject: "Pneumatika i hidraulika",
-        note: "1. Pisana provjera znanja",
-        date: "24.11.2021",
-      },
-      {
-        subject: "Matematika",
-        note: "Funkcije: 3. pisana provjera znanja",
-        date: "1.2.2022",
-      },
-      {
-        subject: "Alati i naprave",
-        note: "2. Pisana provjera znanja: Alati za dubokov vučenje",
-        date: "5.2.2022",
-      },
-      {
-        subject: "Hrvatski jezik",
-        note: "Druga školska zadaća",
-        date: "25.2.2022",
-      },
-      {
-        subject: "Matematika",
-        note: "Derivacije: pisana provjera znanja",
-        date: "1.3.2022",
-      },
-      {
-        subject: "Strojarske konstrukcije",
-        note: "3. pisana provjera znanja",
-        date: "11.3.2022",
-      },
-      {
-        subject: "Termodinamika",
-        note: "2.pisana provjera znanja",
-        date: "29.3.2022",
-      },
-      {
-        subject: "Hrvatski jezik",
-        note: "Druga pisana provjera znanja",
-        date: "9.3.2022",
-      },
-      {
-        subject: "Pneumatika i hidraulika",
-        note: "2. Pisana provjera znanja",
-        date: "3.3.2022",
-      },
-      {
-        subject: "Kontrola i osiguranje kvalitete",
-        note: "2. pisana provjera znanja",
-        date: "22.3.2022",
-      },
-      {
-        subject: "CNC tehnologije",
-        note: "Pismena provjera znanja",
-        date: "31.3.2022",
-      },
-      {
-        subject: "Matematika",
-        note: "5. pisana provjera znanja",
-        date: "21.4.2022",
-      },
-      {
-        subject: "Engleski jezik I",
-        note: "Pismena provjera znanja",
-        date: "16.4.2022",
-      },
-      {
-        subject: "Roboti i manipulatori (izborni)",
-        note: "Pisana provjera znanja",
-        date: "23.4.2022",
-      },
-      {
-        subject: "Alati i naprave",
-        note: "3.Pisana provjera znanja - Alati za kovanje",
-        date: "30.4.2022",
-      },
-      {
-        subject: "Strojarske konstrukcije",
-        note: "2. pisana provjera znanja",
-        date: "17.12.2021",
-      },
-      {
-        subject: "Engleski jezik I",
-        note: "Pismena provjera znanja",
-        date: "10.12.2021",
-      },
-      {
-        subject: "Kontrola i osiguranje kvalitete",
-        note: "1. pisana provjera znanja: Osnove kontrole kvalitete",
-        date: "7.12.2021",
-      },
-      {
-        subject: "Strojarske konstrukcije",
-        note: "Četvrta pisana provjera znanja",
-        date: "6.5.2022",
-      },
-      {
-        subject: "Pneumatika i hidraulika",
-        note: "3. Pismena provjera znanja",
-        date: "5.5.2022",
-      },
-    ];
-  }
   if (window.devTestMode || (await switchClassIfNeeded(classId))) return false;
   const doc = await authFetch(URLS.exams);
   if (!doc) {
-    toast.error("Greška pri dobavljanju ispita za kalendar!");
+    toastError("Greška pri dobavljanju ispita za kalendar!");
     return false;
   }
   const classInfo: ClassInfo = store.getters.classInfo(classId);
@@ -491,7 +353,7 @@ async function getExams(classId: string): Promise<false | CalendarExam[]> {
 async function getCalendarDates(): Promise<CalendarYear[] | false> {
   const response = await fetch(URLS.calendarDates);
   if (!response.ok) {
-    toast.error("Greška pri dobavljanju datuma za kalendar!");
+    toastError("Greška pri dobavljanju datuma za kalendar!");
     return false;
   }
   return JSON.parse(await response.text());
@@ -500,7 +362,7 @@ async function getCalendarDates(): Promise<CalendarYear[] | false> {
 async function getAboutPage(): Promise<string | false> {
   const response = await fetch(URLS.aboutPage);
   if (!response.ok) {
-    toast.error("Greška pri dobavljanju stranice o aplikaciji!");
+    toastError("Greška pri dobavljanju stranice o aplikaciji!");
     return false;
   }
   return response.text();
@@ -512,7 +374,7 @@ async function switchClassIfNeeded(classId: string): Promise<true | undefined> {
   const lastLoadedClassUrl = user.lastLoadedClassUrl || "";
   if (lastLoadedClassUrl != classUrl) {
     if (!(await authFetch(classUrl))) {
-      toast.error("Greška pri dobavljanju razreda!");
+      toastError("Greška pri dobavljanju razreda!");
       return true;
     }
     store.commit(MutationTypes.UPDATE_LAST_LOADED_CLASS_URL, {
@@ -520,6 +382,17 @@ async function switchClassIfNeeded(classId: string): Promise<true | undefined> {
       url: classUrl,
     });
   }
+}
+
+function toastError(
+  reason: string,
+  config?: ToastOptions & { type?: TYPE.ERROR },
+) {
+  toast.error(reason, config);
+  window.gtag("event", "error", {
+    event_category: "scrapers",
+    event_label: reason,
+  });
 }
 
 export {

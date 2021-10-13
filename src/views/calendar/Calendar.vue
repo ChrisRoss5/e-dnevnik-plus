@@ -137,13 +137,13 @@ export default defineComponent({
     async loadCalendar() {
       this.calendarColumns = this.settings.zoom;
       this.calendarRows = Math.round(12 / this.calendarColumns);
-      this.attributes = [
+      await this.addExamsToCalendar(this.schoolYearTitle);
+      this.attributes = this.attributes.concat([
         ...(await this.getCalendarDates()),
         ...this.settings.customNotes.map((n) =>
           this.createNote(n.note, this.convertToDate(n.date)),
         ),
-      ];
-      await this.addExamsToCalendar(this.schoolYearTitle);
+      ]);
       this.calendarReady = true;
     },
     async getCalendarDates() {
@@ -223,10 +223,24 @@ export default defineComponent({
       const temp = [date.getDate(), date.getMonth() + 1, date.getFullYear()];
       return temp.join(".");
     },
+    sendAnalyticsButtonClick(
+      optionName: string,
+      value: boolean | number | string,
+    ) {
+      window.gtag("event", "button click", {
+        event_category: "calendar option",
+        event_label: optionName,
+        value,
+      });
+    },
     toggleCalendarView() {
       const settings = jsonClone(this.settings);
       settings.showEntireCalendar = !settings.showEntireCalendar;
       this.updateSettings(settings);
+      this.sendAnalyticsButtonClick(
+        "showEntireCalendar",
+        settings.showEntireCalendar,
+      );
     },
     zoomOptionClicked(zoom: 1 | -1) {
       const columns = Math.min(this.calendarColumns + zoom, 5);
@@ -235,6 +249,7 @@ export default defineComponent({
       const settings = jsonClone(this.settings);
       settings.zoom = this.calendarColumns;
       this.updateSettings(settings);
+      this.sendAnalyticsButtonClick("zoom", settings.zoom);
     },
     updateSettings(newSettings: CalendarSettings) {
       if (!this.user) return;
@@ -269,8 +284,6 @@ export default defineComponent({
             attr.popover.label == note
           );
         });
-        console.log(this.attributes, j);
-
         settings.customNotes.splice(i, 1);
         this.attributes.splice(j, 1);
       } else {
@@ -280,6 +293,7 @@ export default defineComponent({
       }
       this.updateSettings(settings);
       this.selectedDay = null;
+      this.sendAnalyticsButtonClick("manageNote", method);
     },
     createNote(note: string, date: Date) {
       return {

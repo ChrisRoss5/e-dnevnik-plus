@@ -54,6 +54,7 @@ export default defineComponent({
       download.download = "e-Dnevnik-Plus-korisnik.json";
       download.click();
       download.remove();
+      this.sendAnalyticsButtonClick("downloadUserData");
     },
     resetSettings() {
       if (!this.user) return;
@@ -68,6 +69,7 @@ export default defineComponent({
       this.$store.commit(MutationTypes.UPDATE_USER_SETTINGS, commit);
       this.websitesKey += 1;
       toast.success("Postavke računa sada su resetirane.");
+      this.sendAnalyticsButtonClick("resetSettings");
     },
     deleteUserData() {
       const msg = "Svi korisnički podaci bit će trajno obrisani.";
@@ -77,10 +79,16 @@ export default defineComponent({
       state.users.splice(thisUser, 1);
       this.$store.commit(MutationTypes.INIT, state);
       toast.success("Korisnički račun sada je trajno obrisan.");
+      this.sendAnalyticsButtonClick("deleteUserData");
+    },
+    sendAnalyticsButtonClick(optionName: string) {
+      window.gtag("event", "button click", {
+        event_category: "settings option",
+        event_label: optionName,
+      });
     },
   },
   computed: {
-
     user(): User | undefined {
       return this.$store.getters.user;
     },
