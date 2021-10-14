@@ -129,7 +129,7 @@ router.beforeEach((to, from, next) => {
   if (!window.isAppInitiated) return next();
   const isAuthenticated = !!store.getters.user;
   const isLoginPage = to.path == "/";
-  if (!isLoginPage && !isAuthenticated) next({ path: "/" });
+  if (!isLoginPage && !isAuthenticated && to.path != "/o-aplikaciji") next({ path: "/" });
   else if (isLoginPage && isAuthenticated) next(false);
   else next();
 });
