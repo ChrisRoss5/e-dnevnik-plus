@@ -68,7 +68,7 @@
           target="_blank"
           class="button"
           v-wave
-          >Prijava</a
+          >Dolazi uskoro</a
         >
       </div>
     </div>

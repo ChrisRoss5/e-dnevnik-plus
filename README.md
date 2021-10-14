@@ -2,7 +2,7 @@
 ###### Verzija: 5.0
 
 ### Kako instalirati proširenje?
-Preuzmi [/dist](dist) i povuci na `chrome://extensions/`
+Preuzmi [/dist](dist) i povuci na `chrome://extensions/` (*developer mode* omogućen)
 
 Bravo! Sada definitivno imaš najnoviju verziju.
 
