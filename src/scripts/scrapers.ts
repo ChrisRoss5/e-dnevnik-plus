@@ -146,10 +146,10 @@ async function getClassesList(
         currentYear > end || (currentYear == end && currentMonth > 7),
       finalGrade: finalGrade || undefined,
     });
-    window.gtag("event", "user info", {
+    if (finalGrade) window.gtag("event", "user info", {
       event_category: "grade",
       event_label: "finalGradeOriginal",
-      value: finalGrade || "--",
+      value: finalGrade,
     });
   }
   return classesList;

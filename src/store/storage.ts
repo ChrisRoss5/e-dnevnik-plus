@@ -41,7 +41,7 @@ const testState: State = {
   users: [
     {
       email: "kristijan.rosandic@skole.hr",
-      password: "grandayyy",
+      password: "",
       fullName: "Kristijan Rosandić",
       classesList: [
         {
@@ -1802,7 +1802,7 @@ const testState: State = {
       ],
       signedIn: true,
       settings: {
-      autoSignIn: true,
+        autoSignIn: true,
         classTabsOrder: [
           "Ocjene",
           "Biljeske",

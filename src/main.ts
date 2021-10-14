@@ -73,6 +73,7 @@ window.gtag = function() {
   window.dataLayer.push(arguments);
 };
 window.gtag("js", new Date());
+// (window as any)['ga-disable-G-MPMHVT6WTW'] = true;
 
 const app = createApp(App);
 app.config.globalProperties.$emitter = mitt();
