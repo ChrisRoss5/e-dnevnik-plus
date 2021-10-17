@@ -9,7 +9,7 @@ declare global {
 }
 
 // TODO: BEFORE BUILD
-window.devTestMode = false;
+window.devTestMode = true;
 window.devPause = (t) => new Promise((res) => setTimeout(res, t));
 window.devClearLocalStorage = () => chrome.storage.local.clear();
 
@@ -41,8 +41,8 @@ import "v-tooltip/dist/v-tooltip.css";
 VTooltip.options.offset = [0, 10];
 VTooltip.options.instantMove = true;
 
-/* https://vue-tippy.netlify.app/ */
-/* import VueTippy from "vue-tippy";
+/* https://vue-tippy.netlify.app/
+import VueTippy from "vue-tippy";
 import "tippy.js/dist/tippy.css"; */
 
 /* https://vcalendar.io/ */
@@ -63,17 +63,16 @@ Chart.defaults.plugins.tooltip.footerMarginTop = 10;
 Chart.defaults.plugins.tooltip.footerAlign = "right";
 
 /* Google Analytics
-Remove "http:"!=d&&"https:"!=d&&(Rg(29),a.abort()),
+Removed "http:"!=d&&"https:"!=d&&(Rg(29),a.abort()),
 because the actual protocol is "chrome-extension:"
-https://issuetracker.google.com/issues/174954288
-*/
+https://issuetracker.google.com/issues/174954288 */
 import "@/scripts/gtag.js";
 window.dataLayer = window.dataLayer || [];
 window.gtag = function() {
   window.dataLayer.push(arguments);
 };
 window.gtag("js", new Date());
-// (window as any)['ga-disable-G-MPMHVT6WTW'] = true;
+if (window.devTestMode) (window as any)['ga-disable-G-MPMHVT6WTW'] = true;
 
 const app = createApp(App);
 app.config.globalProperties.$emitter = mitt();

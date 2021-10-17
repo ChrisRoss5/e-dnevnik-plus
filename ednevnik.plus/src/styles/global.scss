@@ -1,0 +1,66 @@
+$body-color-default: #000000de;
+$body-color-dark: #d8d4cf;
+$ed-color: #6d6e71;
+$plus-color: #2296da;
+$card-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%);
+
+@font-face {
+  font-family: OpenSans;
+  src: url("~@/assets/font/OpenSans-Regular.ttf");
+}
+
+* {
+  font-family: OpenSans, Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100vh;
+  overflow: hidden;
+  font-size: 18px;
+}
+
+@media only screen and (max-width: 768px) {
+  html {
+    font-size: 12px;
+  }
+}
+
+body {
+  height: 100%;
+  background-image: url("~@/assets/img/background.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 50% 0;
+  color: $body-color-default;
+}
+
+a {
+  text-decoration: none;
+}
+
+.card {
+  border-radius: 8px;
+  box-shadow: $card-shadow;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ed {
+  font-weight: bold;
+  color: $ed-color;
+}
+
+.plus {
+  color: $plus-color;
+}
