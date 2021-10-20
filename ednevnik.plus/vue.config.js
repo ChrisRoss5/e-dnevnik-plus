@@ -3,6 +3,8 @@
  * @type {import('@vue/cli-service').ProjectOptions}
  */
 module.exports = {
+  publicPath: '../',
+  outputDir: '../docs',
   css: {
     loaderOptions: {
       sass: {
