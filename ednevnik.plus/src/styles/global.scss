@@ -2,7 +2,9 @@ $body-color-default: #000000de;
 $body-color-dark: #d8d4cf;
 $ed-color: #6d6e71;
 $plus-color: #2296da;
-$card-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%);
+$card-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%),
+0 1px 3px 1px rgb(60 64 67 / 15%);
+$original-page-width: 954px;
 
 @font-face {
   font-family: OpenSans;
@@ -28,7 +30,7 @@ html {
 
 @media only screen and (max-width: 768px) {
   html {
-    font-size: 12px;
+    font-size: 14px;
   }
 }
 
@@ -39,10 +41,17 @@ body {
   background-repeat: no-repeat;
   background-position: 50% 0;
   color: $body-color-default;
+  overflow: auto;
 }
 
 a {
   text-decoration: none;
+  color: inherit;
+  border: 1px solid transparent;
+
+  &.card:active {
+    border: 1px solid $plus-color;
+  }
 }
 
 .card {

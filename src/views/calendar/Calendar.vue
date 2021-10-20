@@ -111,13 +111,12 @@ import { jsonClone } from "@/scripts/utils";
 import { CalendarSettings, ClassInfo, User } from "@/store/state";
 import { MutationTypes } from "@/store/mutations";
 import CalendarNotes from "../calendar/CalendarNotes.vue";
+import { defaultUserSettings } from "@/scripts/new-user";
 
 export default defineComponent({
   components: { CalendarNotes },
   name: "Calendar",
   created() {
-    const [year, month] = [this.today.getFullYear(), this.today.getMonth() + 1];
-    this.updateSchoolYearTitle({ year, month });
     this.loadCalendar();
   },
   data() {
@@ -137,13 +136,13 @@ export default defineComponent({
     async loadCalendar() {
       this.calendarColumns = this.settings.zoom;
       this.calendarRows = Math.round(12 / this.calendarColumns);
-      await this.addExamsToCalendar(this.schoolYearTitle);
-      this.attributes = this.attributes.concat([
+      this.attributes = [
+        ...(await this.getCalendarExams(this.schoolYearTitle)),
         ...(await this.getCalendarDates()),
         ...this.settings.customNotes.map((n) =>
           this.createNote(n.note, this.convertToDate(n.date)),
         ),
-      ]);
+      ];
       this.calendarReady = true;
     },
     async getCalendarDates() {
@@ -197,13 +196,14 @@ export default defineComponent({
         ),
       ];
     },
-    async addExamsToCalendar(schoolYear: string) {
+    async getCalendarExams(schoolYear: string) {
+      let exams = [] as any;
       for (const { url, year } of this.classesList) {
         if (year != schoolYear) continue;
         const classId = url.match(/\d+/)![0];
         if (this.loadedClassIdExams.includes(classId)) continue;
         this.loadedClassIdExams.push(classId);
-        this.attributes = this.attributes.concat(
+        exams = exams.concat(
           ((await getExams(classId)) || []).map(({ subject, note, date }) => ({
             dot: {
               color: "red",
@@ -214,6 +214,7 @@ export default defineComponent({
           })),
         );
       }
+      return exams;
     },
     convertToDate(str: string) {
       const [d, m, y] = str.split(".").map(Number);
@@ -258,14 +259,15 @@ export default defineComponent({
         settings: { calendarSettings: newSettings },
       });
     },
-    updateSchoolYearTitle(newPage: any) {
+    async updateSchoolYearTitle(newPage: any) {
       const { year, month } = newPage;
       if (!year || !month) return;
       const firstSemester = month > 8 ? 0 : 1;
       const startYear = year - firstSemester;
       const endYear = year + 1 - firstSemester;
       this.schoolYearTitle = startYear + "./" + endYear + ".";
-      this.addExamsToCalendar(this.schoolYearTitle);
+      const exams = await this.getCalendarExams(this.schoolYearTitle);
+      if (exams.length) this.attributes = this.attributes.concat(exams);
     },
     dayClicked(day: any) {
       this.selectedDay = day;
@@ -316,11 +318,7 @@ export default defineComponent({
     settings(): CalendarSettings {
       return this.user
         ? this.user.settings.calendarSettings
-        : {
-            showEntireCalendar: true,
-            zoom: 3,
-            customNotes: [],
-          };
+        : defaultUserSettings.calendarSettings;
     },
     isDarkTheme(): boolean {
       return this.$store.state.settings.darkTheme;

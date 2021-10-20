@@ -2,19 +2,57 @@
   <div id="content">
     <div id="main">
       <div id="downloads">
-        <div class="card">
-          <img src="~@/assets/img/download-icon.png" />
-          <span class="ed">e-Dnevnik</span><span class="plus">Plus</span> za
-          učenike i roditelje
+        <div class="download-item">
+          <a
+            href="https://chrome.google.com/webstore/detail/e-dnevnik-plus/bcnccmamhmcabokipgjechdeealcmdbe"
+            target="_blank"
+            class="card"
+          >
+            <img src="~@/assets/img/download-icon.png" />
+            Preuzmi&nbsp;<em>proširenje</em>&nbsp;za učenike i roditelje
+          </a>
+          <a
+            href="https://chrome.google.com/webstore/detail/e-dnevnik-plus/bcnccmamhmcabokipgjechdeealcmdbe/reviews"
+            target="_blank"
+            class="card"
+          >
+            <img src="~@/assets/img/review-icon.png" />
+          </a>
+          <a
+            href="https://github.com/ChrisRoss5/e-Dnevnik-Plus"
+            target="_blank"
+            class="card"
+          >
+            <img src="~@/assets/img/code-icon.png" />
+          </a>
         </div>
-        <div class="card">
-          <img src="~@/assets/img/download-icon.png" />
-          <span class="ed">e-Dnevnik</span><span class="plus">Plus</span> za
-          nastavnike
+        <div class="download-item">
+          <a
+            href="https://chrome.google.com/webstore/detail/e-dnevnik-plus-za-nastavn/jefappmpehdgllijkjpekdmkbmbigbnl"
+            target="_blank"
+            class="card"
+          >
+            <img src="~@/assets/img/download-icon.png" />
+            Preuzmi&nbsp;<em>proširenje</em>&nbsp;za nastavnike
+          </a>
+          <a
+            href="https://chrome.google.com/webstore/detail/e-dnevnik-plus-za-nastavn/jefappmpehdgllijkjpekdmkbmbigbnl/reviews"
+            target="_blank"
+            class="card"
+          >
+            <img src="~@/assets/img/review-icon.png" />
+          </a>
+          <a
+            href="https://github.com/ChrisRoss5/e-Dnevnik-Plus-za-nastavnike"
+            target="_blank"
+            class="card"
+          >
+            <img src="~@/assets/img/code-icon.png" />
+          </a>
         </div>
       </div>
       <div id="browsers" class="card">
-        <div class="title">Kompatibilni preglednici:</div>
+        <div style="padding-bottom: 10px">Kompatibilni preglednici:</div>
         <div id="browser-icons">
           <div class="flex-center">
             <img src="~@/assets/img/chrome-icon.png" />
@@ -27,7 +65,9 @@
         </div>
       </div>
     </div>
-    <img id="browser" src="~@/assets/img/browser.png" />
+    <div id="browser">
+      <img src="~@/assets/img/browser.png" />
+    </div>
   </div>
 </template>
 
@@ -45,32 +85,55 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 100%;
+}
+
+em {
+  display: contents;
+}
+
+.card {
+  padding: 10px 20px;
+  margin: 10px 0;
 }
 
 #main {
   display: flex;
   flex-wrap: wrap;
+  margin: auto;
+  padding-bottom: 40px;
 
   img {
-    margin-right: 10px;
+    margin-right: 15px;
   }
 }
 
-#downloads {
-  margin-right: 40px;
+.download-item {
+  display: flex;
 
   .card {
     display: flex;
     align-items: center;
-    cursor: pointer;
+    transition: background-color 150ms;
+    margin-right: 10px;
 
-    span {
-      margin-right: 5px;
+    &:first-child {
+      flex: 1;
+    }
+
+    &:not(:first-child) img {
+      margin: 0 !important;
+    }
+
+    &:hover {
+      cursor: pointer;
+      background: #fff;
     }
   }
 }
 
 #browsers {
+  margin-left: 40px;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -84,31 +147,38 @@ export default defineComponent({
   }
 }
 
-.title {
-  padding-bottom: 10px;
-}
-
-.card {
-  padding: 10px 20px;
-  margin: 10px 0;
-}
-
 #browser {
   align-self: flex-end;
-  margin-top: auto;
-  margin-right: calc(50% - 395px);
+  margin: auto calc(50% - 395px) 0 0;
+  padding-bottom: 40px;
   border: 1px solid #777777;
-  box-shadow: 0 0 25px 20px #ccc;
+  background: white;
+  box-shadow: 3px 2px 13px 4px #ccc;
 }
 
 @media only screen and (max-width: 768px) {
-  #downloads {
-    margin: 0 !important;
+  #browsers {
+    margin: 15px 0 0 0 !important;
+    align-items: center;
   }
 
   #downloads,
   #browsers {
     width: 100%;
+  }
+
+  .card {
+    padding: 10px 10px;
+  }
+
+  #browser {
+    width: 1200px;
+    margin-right: calc(50% - 165px);
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
   }
 }
 </style>

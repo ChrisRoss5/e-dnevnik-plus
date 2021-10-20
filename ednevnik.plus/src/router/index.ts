@@ -1,11 +1,15 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Home from '../views/Home.vue'
+import PrivacyPolicy from "../views/PrivacyPolicy.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'Home',
     component: Home
+  },
+  {
+    path: '/politika-privatnosti',
+    component: PrivacyPolicy
   },
 ]
 

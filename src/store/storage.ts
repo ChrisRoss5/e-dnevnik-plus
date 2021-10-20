@@ -1823,7 +1823,7 @@ const testState: State = {
           expandedSubjects: [],
         },
         calendarSettings: {
-          showEntireCalendar: false,
+          showEntireCalendar: true,
           zoom: 3,
           customNotes: [],
         },

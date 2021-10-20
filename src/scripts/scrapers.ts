@@ -334,6 +334,155 @@ async function getSectionHTML(
 }
 
 async function getExams(classId: string): Promise<false | CalendarExam[]> {
+  if (window.devTestMode) {
+    return [
+      {
+        subject: "Matematika",
+        note: '1. pisana provjera znanja "Brojevi"',
+        date: "19.10.2021",
+      },
+      {
+        subject: "Strojarske konstrukcije",
+        note: "Prva pisana provjera znanja",
+        date: "22.10.2021",
+      },
+      {
+        subject: "Engleski jezik I",
+        note: "Pismena provjera znanja",
+        date: "30.10.2021",
+      },
+      {
+        subject: "Matematika",
+        note: "Nizovi",
+        date: "30.11.2021",
+      },
+      {
+        subject: "Roboti i manipulatori (izborni)",
+        note: "1. pisana provjera znanja",
+        date: "5.11.2021",
+      },
+      {
+        subject: "Alati i naprave",
+        note: "1. Pisana provjera znanja - Alati za savijanje",
+        date: "6.11.2021",
+      },
+      {
+        subject: "Termodinamika",
+        note: "1. pisana provjera: Motori s unutarnjim izgaranjem",
+        date: "16.11.2021",
+      },
+      {
+        subject: "Hrvatski jezik",
+        note: "Prva pisana provjera znanja",
+        date: "23.11.2021",
+      },
+      {
+        subject: "Hrvatski jezik",
+        note: "Prva školska zadaća",
+        date: "26.11.2021",
+      },
+      {
+        subject: "Pneumatika i hidraulika",
+        note: "1. Pisana provjera znanja",
+        date: "24.11.2021",
+      },
+      {
+        subject: "Matematika",
+        note: "Funkcije: 3. pisana provjera znanja",
+        date: "1.2.2022",
+      },
+      {
+        subject: "Alati i naprave",
+        note: "2. Pisana provjera znanja: Alati za dubokov vučenje",
+        date: "5.2.2022",
+      },
+      {
+        subject: "Hrvatski jezik",
+        note: "Druga školska zadaća",
+        date: "25.2.2022",
+      },
+      {
+        subject: "Matematika",
+        note: "Derivacije: pisana provjera znanja",
+        date: "1.3.2022",
+      },
+      {
+        subject: "Strojarske konstrukcije",
+        note: "3. pisana provjera znanja",
+        date: "11.3.2022",
+      },
+      {
+        subject: "Termodinamika",
+        note: "2.pisana provjera znanja",
+        date: "29.3.2022",
+      },
+      {
+        subject: "Hrvatski jezik",
+        note: "Druga pisana provjera znanja",
+        date: "9.3.2022",
+      },
+      {
+        subject: "Pneumatika i hidraulika",
+        note: "2. Pisana provjera znanja",
+        date: "3.3.2022",
+      },
+      {
+        subject: "Kontrola i osiguranje kvalitete",
+        note: "2. pisana provjera znanja",
+        date: "22.3.2022",
+      },
+      {
+        subject: "CNC tehnologije",
+        note: "Pismena provjera znanja",
+        date: "31.3.2022",
+      },
+      {
+        subject: "Matematika",
+        note: "5. pisana provjera znanja",
+        date: "21.4.2022",
+      },
+      {
+        subject: "Engleski jezik I",
+        note: "Pismena provjera znanja",
+        date: "16.4.2022",
+      },
+      {
+        subject: "Roboti i manipulatori (izborni)",
+        note: "Pisana provjera znanja",
+        date: "23.4.2022",
+      },
+      {
+        subject: "Alati i naprave",
+        note: "3.Pisana provjera znanja - Alati za kovanje",
+        date: "30.4.2022",
+      },
+      {
+        subject: "Strojarske konstrukcije",
+        note: "2. pisana provjera znanja",
+        date: "17.12.2021",
+      },
+      {
+        subject: "Engleski jezik I",
+        note: "Pismena provjera znanja",
+        date: "10.12.2021",
+      },
+      {
+        subject: "Kontrola i osiguranje kvalitete",
+        note: "1. pisana provjera znanja: Osnove kontrole kvalitete",
+        date: "7.12.2021",
+      },
+      {
+        subject: "Strojarske konstrukcije",
+        note: "Četvrta pisana provjera znanja",
+        date: "6.5.2022",
+      },
+      {
+        subject: "Pneumatika i hidraulika",
+        note: "3. Pismena provjera znanja",
+        date: "5.5.2022",
+      },
+    ];
+  }
   if (window.devTestMode || (await switchClassIfNeeded(classId))) return false;
   const doc = await authFetch(URLS.exams);
   if (!doc) {

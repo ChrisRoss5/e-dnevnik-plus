@@ -1,19 +1,34 @@
 <template>
   <div id="heading">
-    <div id="title">
+    <router-link to="/" id="title">
       <div id="ed" class="ed">e-Dnevnik</div>
       <div id="plus" class="plus">Plus</div>
-    </div>
-    <div id="subtitle">Proširenje za e-Dnevnik</div>
+    </router-link>
+    <div id="subtitle">Proširenje za školski e-Dnevnik</div>
   </div>
-  <router-view />
+  <router-view> </router-view>
+  <div id="footer" class="card" :class="{ default: $route.path != '/' }">
+    <div style="color: gray">
+      Ovo proširenje nije službena CARNET-ova aplikacija.
+    </div>
+    © 2019.-2022. |
+    <a
+      class="plus"
+      href="mailto:kristijan.ros@gmail.com?subject=e-Dnevnik Plus — Kontakt"
+    >
+      kristijan.ros@gmail.com</a
+    >
+    |
+    <router-link to="politika-privatnosti" class="plus">
+      politika privatnosti</router-link
+    >
+  </div>
 </template>
 
 <style lang="scss" >
 #app {
   min-height: 100%;
   display: flex;
-  align-items: center;
   flex-direction: column;
 }
 
@@ -56,8 +71,34 @@
 
 #subtitle {
   font-size: 1.3rem;
-  letter-spacing: 3px;
+  letter-spacing: 2px;
   font-style: italic;
   color: $ed-color;
 }
+
+#footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  padding: 40px;
+  background: white;
+  border-radius: 0;
+
+  &.default {
+    position: relative;
+    margin: 40px auto;
+    border-radius: 8px;
+    text-align: center;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  #footer {
+    position: relative;
+    padding: 20px;
+    text-align: center;
+  }
+}
+
+/* transitions */
 </style>
