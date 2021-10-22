@@ -12,7 +12,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { getSectionHTML } from "@/scripts/scrapers";
+import { getOriginalSectionPage } from "@/scripts/scrapers";
 import Spinner from "@/components/Spinner.vue";
 
 export default defineComponent({
@@ -48,30 +48,31 @@ export default defineComponent({
       const url: string = this.isSubject
         ? "https://ocjene.skole.hr/grade/" + subjectId
         : (this.urls as any)[pathName];
-
-      await this.addStyleTag(doc);
-      const sectionEl = await getSectionHTML(classId as string, url);
-
+      const page = await getOriginalSectionPage(classId as string, url);
+      await this.addStyleTag(doc, page ? page.styleURL : "");
+      if (!page) doc.body.className = "loading-error-plus";
       doc.body.innerHTML = "";
-      doc.body.append(sectionEl || this.errorMessage);
+      doc.body.append(page ? page.content : this.errorMessage);
       iframe.style.height = "150px";
-      if (!sectionEl) doc.body.className = "loading-error-plus";
       const contentEl = doc.body.firstElementChild;
       if (contentEl) iframe.style.height = contentEl.scrollHeight + "px";
-
       this.loading = false;
     },
-    addStyleTag(doc: Document): Promise<void> {
+    addStyleTag(doc: Document, href: string): Promise<void> {
       return new Promise((resolve) => {
         const docHead = doc.getElementsByTagName("head")[0];
-        const link = doc.createElement("link");
+        const link = docHead.appendChild(doc.createElement("link"));
         link.rel = "stylesheet";
         link.type = "text/css";
-        link.href = "https://ocjene.skole.hr/build/layout.c996b0.css";
-        link.onload = link.onerror = () => {
-          const newStyle = document.createElement("style");
-          newStyle.textContent =
-            /* css */ `
+        link.href = href;
+        link.onload = link.onerror = () => resolve();
+        docHead.appendChild(this.getCustomStyle());
+      });
+    },
+    getCustomStyle() {
+      const style = document.createElement("style");
+      style.textContent =
+        /* css */ `
           * {
             background: transparent !important;
             transition: none !important;
@@ -80,20 +81,19 @@ export default defineComponent({
             display: grid;
             place-content: center;
           }
+          .hide {
+            display: flex !important;
+          }
       ` +
-            (this.$store.state.settings.darkTheme
-              ? /* css */ `
+        (this.$store.state.settings.darkTheme
+          ? /* css */ `
           body, * {
             color: white;
             border-color: #2d2d2d !important;
             box-shadow: none !important;
           }`
-              : "");
-          docHead.appendChild(newStyle);
-          resolve();
-        };
-        docHead.appendChild(link);
-      });
+          : "");
+      return style;
     },
   },
   watch: {

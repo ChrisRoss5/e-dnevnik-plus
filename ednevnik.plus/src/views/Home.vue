@@ -68,6 +68,9 @@
     <div id="browser">
       <img src="~@/assets/img/browser.png" />
     </div>
+    <router-link to="/povijest" id="changelog">
+      <img src="~@/assets/img/history-icon.png" />
+    </router-link>
   </div>
 </template>
 
@@ -154,6 +157,12 @@ em {
   border: 1px solid #777777;
   background: white;
   box-shadow: 3px 2px 13px 4px #ccc;
+}
+
+#changelog {
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
 
 @media only screen and (max-width: 768px) {

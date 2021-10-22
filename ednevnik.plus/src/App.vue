@@ -6,12 +6,12 @@
     </router-link>
     <div id="subtitle">Proširenje za školski e-Dnevnik</div>
   </div>
-  <router-view> </router-view>
+  <router-view class="router-view"> </router-view>
   <div id="footer" class="card" :class="{ default: $route.path != '/' }">
     <div style="color: gray">
       Ovo proširenje nije službena CARNET-ova aplikacija.
     </div>
-    © 2019.-2022. |
+    2019.-2021. |
     <a
       class="plus"
       href="mailto:kristijan.ros@gmail.com?subject=e-Dnevnik Plus — Kontakt"
@@ -25,7 +25,7 @@
   </div>
 </template>
 
-<style lang="scss" >
+<style lang="scss">
 #app {
   min-height: 100%;
   display: flex;
@@ -77,10 +77,11 @@
 }
 
 #footer {
+  font-size: 0.75rem;
   position: fixed;
   bottom: 0;
   left: 0;
-  padding: 40px;
+  padding: 20px;
   background: white;
   border-radius: 0;
 
@@ -93,6 +94,10 @@
 }
 
 @media only screen and (max-width: 768px) {
+  .router-view {
+    width: 100% !important;
+  }
+
   #footer {
     position: relative;
     padding: 20px;

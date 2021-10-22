@@ -1,5 +1,5 @@
 <template>
-  <div id="container" class="card">
+  <div class="card content-card">
     <h2>Politika Privatnosti</h2>
     Ovaj dokument pomoći će vam razumjeti kako proširenje e-Dnevnik Plus koristi
     i čuva vaše osobne podatke, prikupljene prilikom njena korištenja. Dokument
@@ -33,16 +33,3 @@ export default defineComponent({
   name: "PrivacyPolicy",
 });
 </script>
-
-<style lang="scss" scoped>
-#container {
-  width: $original-page-width;
-  margin: 0 auto;
-  padding: 20px 40px 40px;
-  background: white;
-}
-
-h2, h3 {
-  color: $ed-color;
-}
-</style>

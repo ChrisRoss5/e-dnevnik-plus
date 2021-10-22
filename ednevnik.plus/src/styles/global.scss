@@ -54,6 +54,10 @@ a {
   }
 }
 
+h2, h3 {
+  color: $ed-color;
+}
+
 .card {
   border-radius: 8px;
   box-shadow: $card-shadow;
@@ -72,4 +76,11 @@ a {
 
 .plus {
   color: $plus-color;
+}
+
+.content-card {
+    width: $original-page-width;
+    margin: 0 auto;
+    padding: 20px 40px 40px;
+    background: white;
 }

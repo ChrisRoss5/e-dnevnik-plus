@@ -146,11 +146,12 @@ async function getClassesList(
         currentYear > end || (currentYear == end && currentMonth > 7),
       finalGrade: finalGrade || undefined,
     });
-    if (finalGrade) window.gtag("event", "user info", {
-      event_category: "grade",
-      event_label: "finalGradeOriginal",
-      value: finalGrade,
-    });
+    if (finalGrade)
+      window.gtag("event", "user info", {
+        event_category: "grade",
+        event_label: "finalGradeOriginal",
+        value: finalGrade,
+      });
   }
   return classesList;
 }
@@ -320,17 +321,21 @@ async function findSchoolUrl(
   return row.href;
 }
 
-async function getSectionHTML(
+async function getOriginalSectionPage(
   classId: string,
   sectionUrl: string,
-): Promise<false | Element> {
+): Promise<{content: Element, styleURL: string} | false> {
   if (window.devTestMode || (await switchClassIfNeeded(classId))) return false;
   const doc = await authFetch(sectionUrl);
   if (!doc) {
     toastError("Greška pri dobavljanju stranice razreda!");
     return false;
   }
-  return doc.querySelector(".content") || false;
+  const link = doc.querySelector("link[rel='stylesheet']");
+  return {
+    content: doc.querySelector(".content")!,
+    styleURL: (link as HTMLLinkElement).href,
+  };
 }
 
 async function getExams(classId: string): Promise<false | CalendarExam[]> {
@@ -548,7 +553,7 @@ export {
   login,
   logout,
   updateSubjects,
-  getSectionHTML,
+  getOriginalSectionPage,
   getExams,
   getCalendarDates,
   getAboutPage,
