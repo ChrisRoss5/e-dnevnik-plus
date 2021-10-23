@@ -1,5 +1,5 @@
 import { defineComponent } from "vue";
-import { Settings } from "@/store/state";
+import { Settings, User } from "@/store/state";
 import { MutationTypes } from "@/store/mutations";
 
 export default defineComponent({
@@ -14,4 +14,9 @@ export default defineComponent({
       this.$store.commit(MutationTypes.UPDATE_USER_SETTINGS, commit);
     },
   },
+  computed: {
+    user(): User | undefined {
+      return this.$store.getters.user;
+    },
+  }
 });

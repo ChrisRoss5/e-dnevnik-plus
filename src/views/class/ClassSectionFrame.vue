@@ -32,7 +32,7 @@ export default defineComponent({
         vladanja: "https://ocjene.skole.hr/behavior",
         raspored: "https://ocjene.skole.hr/schedule",
         "osobni-podaci": "https://ocjene.skole.hr/personal_data",
-      },
+      } as Record<string, string>,
       errorMessage: "Greška pri učitavanju stranice e-Dnevnika.",
     };
   },
@@ -45,11 +45,11 @@ export default defineComponent({
       const iframe = this.$refs.iframe as HTMLIFrameElement;
       const doc = iframe.contentWindow!.document;
       const pathName = this.$route.path.match(/[^/]+$/)![0];
-      const url: string = this.isSubject
+      const url = this.isSubject
         ? "https://ocjene.skole.hr/grade/" + subjectId
-        : (this.urls as any)[pathName];
+        : this.urls[pathName];
       const page = await getOriginalSectionPage(classId as string, url);
-      await this.addStyleTag(doc, page ? page.styleURL : "");
+      await this.addStyleTag(doc, page ? page.styleURL : "", pathName);
       if (!page) doc.body.className = "loading-error-plus";
       doc.body.innerHTML = "";
       doc.body.append(page ? page.content : this.errorMessage);
@@ -58,18 +58,19 @@ export default defineComponent({
       if (contentEl) iframe.style.height = contentEl.scrollHeight + "px";
       this.loading = false;
     },
-    addStyleTag(doc: Document, href: string): Promise<void> {
-      return new Promise((resolve) => {
+    addStyleTag(doc: Document, href: string, pathName: string) {
+      return new Promise<void>((resolve) => {
         const docHead = doc.getElementsByTagName("head")[0];
         const link = docHead.appendChild(doc.createElement("link"));
         link.rel = "stylesheet";
         link.type = "text/css";
         link.href = href;
         link.onload = link.onerror = () => resolve();
-        docHead.appendChild(this.getCustomStyle());
+        if (!href) resolve();
+        docHead.appendChild(this.getCustomStyle(pathName == "raspored"));
       });
     },
-    getCustomStyle() {
+    getCustomStyle(showAll: boolean) {
       const style = document.createElement("style");
       style.textContent =
         /* css */ `
@@ -82,7 +83,7 @@ export default defineComponent({
             place-content: center;
           }
           .hide {
-            display: flex !important;
+            display: ${showAll ? "flex" : "none"} !important;
           }
       ` +
         (this.$store.state.settings.darkTheme

@@ -88,5 +88,6 @@ export default function newUser(initData: InitData): User {
     ...initData,
     signedIn: true,
     settings: defaultUserSettings,
+    classNews: []
   };
 }

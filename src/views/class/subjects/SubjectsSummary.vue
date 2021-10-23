@@ -34,6 +34,7 @@
           </div>
         </div>
       </transition>
+      <News></News>
     </div>
     <div id="options" class="flex-center toolbar-options">
       <div
@@ -66,6 +67,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import Dropdown, { DropdownItem } from "@/components/Dropdown.vue";
+import News from "./News.vue";
 import { Option } from "./Subjects.vue";
 import { formatNum } from "@/scripts/utils";
 
@@ -73,6 +75,7 @@ export default defineComponent({
   name: "SubjectsSummary",
   components: {
     Dropdown,
+    News,
   },
   props: {
     options: {
@@ -83,8 +86,8 @@ export default defineComponent({
       type: Object as PropType<Record<string, any>>,
       required: true,
     },
-    finalGradeOriginal: {type: Number, required: true},
-    finalGrade: {type: Number, required: true},
+    finalGradeOriginal: { type: Number, required: true },
+    finalGrade: { type: Number, required: true },
     isOpenedSubject: Boolean,
   },
   emits: ["optionClicked", "sortOptionClicked"],
@@ -144,5 +147,4 @@ export default defineComponent({
     border-left: 1px solid t("light-border-color");
   }
 }
-
 </style>

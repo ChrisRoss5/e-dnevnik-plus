@@ -43,6 +43,7 @@ const testState: State = {
       email: "kristijan.rosandic@skole.hr",
       password: "",
       fullName: "Kristijan Rosandić",
+      classNews: [],
       classesList: [
         {
           url: "https://ocjene.skole.hr/class_action/4081787930/course",

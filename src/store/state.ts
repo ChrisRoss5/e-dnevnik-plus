@@ -20,6 +20,7 @@ export interface User {
   settings: Settings;
   classesList: ClassInfo[];
   lastLoadedClassUrl?: string;
+  classNews: ClassNews[];
 }
 
 export interface Settings {
@@ -110,4 +111,14 @@ export interface Note {
   note: string;
   date: string;
   grade: string;
+}
+
+export interface ClassNews {
+  subjectName: string;
+  subjectNews: SubjectNews[];
+}
+
+export interface SubjectNews {
+  grade: number | null,
+  note: string
 }

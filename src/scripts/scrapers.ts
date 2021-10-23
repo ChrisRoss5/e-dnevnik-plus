@@ -223,7 +223,7 @@ async function updateSubject(
       if (finalGrade) subject.finalGrade = parseInt(finalGrade[0]);
       return;
     }
-    subject.gradesByCategory?.push({
+    subject.gradesByCategory!.push({
       name: UTILS.capitalize(UTILS.getElText(rowEl.firstElementChild)),
       grades: [...rowEl.children]
         .slice(1)
