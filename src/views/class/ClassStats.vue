@@ -9,8 +9,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
 import Stats from "@/components/stats/Stats.vue";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "ClassStats",

@@ -95,23 +95,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { SlickList, SlickItem } from "vue-slicksort";
-import { getSubjectColors, jsonClone } from "@/scripts/utils";
-import { updateSubjects } from "@/scripts/scrapers";
-import SubjectsSummary from "./SubjectsSummary.vue";
-import SubjectsCounter from "./SubjectsCounter.vue";
-import SubjectCardHead from "./SubjectCardHead.vue";
-import SubjectCardBody from "./SubjectCardBody.vue";
-import { MutationTypes } from "@/store/mutations";
-import {
-  User,
-  ClassInfo,
-  SubjectCache,
-  GradesByCategory,
-  SubjectsSettings,
-} from "@/store/state";
 import { defaultUserSettings } from "@/scripts/new-user";
+import { updateSubjects } from "@/scripts/scrapers/scrapers";
+import { getSubjectColors, jsonClone } from "@/scripts/utils";
+import {
+  ClassInfo,
+  GradesByCategory,
+  SubjectCache,
+  SubjectsSettings
+} from "@/store/state";
+import { defineComponent } from "vue";
+import { SlickItem, SlickList } from "vue-slicksort";
+import SubjectCardBody from "./SubjectCardBody.vue";
+import SubjectCardHead from "./SubjectCardHead.vue";
+import SubjectsCounter from "./SubjectsCounter.vue";
+import SubjectsSummary from "./SubjectsSummary.vue";
 
 export interface ExtendedSubjectCache extends SubjectCache {
   expanded: boolean;
@@ -146,7 +144,7 @@ export default defineComponent({
     SubjectCardBody,
   },
   props: { classId: { type: String, required: true } },
-  /* emits: ["sectionLoading", "sectionLoaded"], */ // TODO: FIX TS ERROR
+  /* emits: ["sectionLoading", "sectionLoaded"], */ // TODO!: FIX TS ERROR
   created() {
     this.updateSubjects();
   },
@@ -223,7 +221,7 @@ export default defineComponent({
       const savedOptions = jsonClone(this.savedOptions);
       const order = this.subjects.map((subject) => subject.url);
       savedOptions.subjectsOrder[this.classId] = order;
-      this.updateSettings(savedOptions);
+      this.updateUserSettings("subjectsSettings", savedOptions);
       this.$nextTick(() => (this.subjectsSorting = false));
     },
     optionClicked(optionName: string) {
@@ -263,7 +261,7 @@ export default defineComponent({
         optionName,
         zoomChanged ? savedOptions.zoom : !option.enabled,
       );
-      this.updateSettings(savedOptions);
+      this.updateUserSettings("subjectsSettings", savedOptions);
       this.updateTablesMargin += zoomChanged ? 1 : 0;
     },
     sendAnalyticsButtonClick(
@@ -280,7 +278,7 @@ export default defineComponent({
       const savedOptions = jsonClone(this.savedOptions);
       if (optionName.includes("Sortiranje")) {
         savedOptions.sortByDragging = !savedOptions.sortByDragging;
-        this.updateSettings(savedOptions);
+        this.updateUserSettings("subjectsSettings", savedOptions);
         this.sendAnalyticsButtonClick("sort", savedOptions.sortByDragging);
         return;
       }
@@ -383,7 +381,7 @@ export default defineComponent({
       const arr = savedOptions.expandedSubjects;
       const idx = arr.indexOf(subject.url);
       expand ? idx == -1 && arr.push(subject.url) : arr.splice(idx, 1);
-      this.updateSettings(savedOptions);
+      this.updateUserSettings("subjectsSettings", savedOptions);
     },
     updateSubjectMargin(subject: ExtendedSubjectCache, margin: string) {
       subject.marginBottom = margin;
@@ -392,13 +390,6 @@ export default defineComponent({
       subject.gradesAvgEdited = undefined;
       subject.gradesByCategory = jsonClone(subject.gradesByCategoryOriginal);
       this.getSubjectGradesAvg(subject, subject.gradesByCategory);
-    },
-    updateSettings(newSettings: SubjectsSettings) {
-      if (!this.user) return;
-      this.$store.commit(MutationTypes.UPDATE_USER_SETTINGS, {
-        user: this.user,
-        settings: { subjectsSettings: newSettings },
-      });
     },
     startResizing(e: MouseEvent) {
       this.subjectsResizing = true;
@@ -412,7 +403,7 @@ export default defineComponent({
       window.removeEventListener("mouseup", this.stopResizing);
       const savedOptions = jsonClone(this.savedOptions);
       savedOptions.margin = this.subjectsMargin;
-      this.updateSettings(savedOptions);
+      this.updateUserSettings("subjectsSettings", savedOptions);
       this.updateTablesMargin += 1;
     },
     resizeSubjects(e: MouseEvent) {
@@ -424,9 +415,6 @@ export default defineComponent({
     },
   },
   computed: {
-    user(): User | undefined {
-      return this.$store.getters.user;
-    },
     openedClassInfo(): ClassInfo | undefined {
       return this.$store.getters.classInfo(this.classId);
     },

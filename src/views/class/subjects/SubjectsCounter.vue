@@ -27,9 +27,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
-import { ExtendedSubjectCache } from "@/views/class/subjects/Subjects.vue";
 import { formatNum } from "@/scripts/utils";
+import { ExtendedSubjectCache } from "@/views/class/subjects/Subjects.vue";
+import { defineComponent, PropType } from "vue";
 
 interface Row {
   subjects: string[];

@@ -1,6 +1,6 @@
-import { Store } from "./store";
+import { Settings, User } from "@/store/state";
 import { Emitter } from "mitt";
-import { User, Settings } from "@/store/state";
+import { Store } from "./store";
 
 declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {

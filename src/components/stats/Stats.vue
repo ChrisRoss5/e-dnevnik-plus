@@ -31,18 +31,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
-import LineChart, { ChartMonthData } from "./LineChart.vue";
-import DoughnutChart, { DoughnutChartData } from "./DoughnutChart.vue";
-import BarChart, { ChartBarData } from "./BarChart.vue";
-import { ClassInfo, SubjectCache } from "@/store/state";
+import { updateSubjects } from "@/scripts/scrapers/scrapers";
 import {
   getAverage,
   getSum,
   numberToColorHsl,
-  removeAllparentheses,
+  removeAllparentheses
 } from "@/scripts/utils";
-import { updateSubjects } from "@/scripts/scrapers";
+import { ClassInfo, SubjectCache } from "@/store/state";
+import { defineComponent, PropType } from "vue";
+import BarChart, { ChartBarData } from "./BarChart.vue";
+import DoughnutChart, { DoughnutChartData } from "./DoughnutChart.vue";
+import LineChart, { ChartMonthData } from "./LineChart.vue";
 
 export default defineComponent({
   name: "Stats",

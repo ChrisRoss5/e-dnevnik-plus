@@ -9,51 +9,55 @@ declare global {
 }
 
 // TODO: BEFORE BUILD
-window.devTestMode = true;
+window.devTestMode = false;
 window.devPause = (t) => new Promise((res) => setTimeout(res, t));
 window.devClearLocalStorage = () => chrome.storage.local.clear();
 
 /* https://v3.vuejs.org/guide */
-import { createApp, reactive } from "vue";
-import App from "./App.vue";
-
-/* https://next.vuex.vuejs.org/ */
-import { store } from "./store";
-
-/* https://next.router.vuejs.org/ */
-import router from "./router";
-
+/* Google Analytics
+Removed "http:"!=d&&"https:"!=d&&(Rg(29),a.abort()),
+because the actual protocol is "chrome-extension:"
+https://issuetracker.google.com/issues/174954288 */
+import "@/scripts/gtag.js";
+/* https://www.chartjs.org/ */
+/* https://www.chartjs.org/chartjs-plugin-annotation/ */
+import { Chart } from "chart.js";
+import annotationPlugin from "chartjs-plugin-annotation";
 /* https://github.com/developit/mitt */
 import mitt from "mitt";
-
-/* https://github.com/Maronato/vue-toastification/tree/next */
-import Toast, { PluginOptions } from "vue-toastification";
-import "vue-toastification/dist/index.css";
-
-/* https://github.com/justintaddei/v-wave */
-import VWave from "v-wave";
-
+/* https://vue-tippy.netlify.app/
+import VueTippy from "vue-tippy";
+import "tippy.js/dist/tippy.css"; */
+/* https://vcalendar.io/ */
+import VCalendar from "v-calendar";
 /* https://v-tooltip.netlify.app/ */
 import VTooltip from "v-tooltip";
 import "v-tooltip/dist/v-tooltip.css";
+/* https://github.com/justintaddei/v-wave */
+import VWave from "v-wave";
+import { createApp, reactive } from "vue";
+/* https://github.com/Maronato/vue-toastification/tree/next */
+import Toast, { PluginOptions } from "vue-toastification";
+import "vue-toastification/dist/index.css";
+import App from "./App.vue";
+/* import "chartjs-plugin-piechart-outlabels"; // outdated - not compatible w chart 3 */
+import GlobalMixin from "./components/GlobalMixin";
+/* https://next.router.vuejs.org/ */
+import router from "./router";
+/* https://next.vuex.vuejs.org/ */
+import { store } from "./store";
+
+
+
+
+
+
 
 /* https://v-tooltip.netlify.app/guide/config.html#default-values */
 VTooltip.options.offset = [0, 10];
 VTooltip.options.instantMove = true;
 
-/* https://vue-tippy.netlify.app/
-import VueTippy from "vue-tippy";
-import "tippy.js/dist/tippy.css"; */
 
-/* https://vcalendar.io/ */
-import VCalendar from "v-calendar";
-
-/* https://www.chartjs.org/ */
-/* https://www.chartjs.org/chartjs-plugin-annotation/ */
-import { Chart } from "chart.js";
-import annotationPlugin from "chartjs-plugin-annotation";
-/* import "chartjs-plugin-piechart-outlabels"; // outdated - not compatible w chart 3 */
-import GlobalMixin from "./components/GlobalMixin";
 Chart.register(annotationPlugin);
 Chart.defaults.font.size = 16;
 Chart.defaults.maintainAspectRatio = false;
@@ -62,11 +66,6 @@ Chart.defaults.interaction.mode = "index";
 Chart.defaults.plugins.tooltip.footerMarginTop = 10;
 Chart.defaults.plugins.tooltip.footerAlign = "right";
 
-/* Google Analytics
-Removed "http:"!=d&&"https:"!=d&&(Rg(29),a.abort()),
-because the actual protocol is "chrome-extension:"
-https://issuetracker.google.com/issues/174954288 */
-import "@/scripts/gtag.js";
 window.dataLayer = window.dataLayer || [];
 window.gtag = function() {
   window.dataLayer.push(arguments);

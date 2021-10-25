@@ -150,17 +150,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import highSchoolPoints from "@/assets/high-school-points/2021-2022/2021-2022.js";
 import Dropdown, { DropdownItem } from "@/components/Dropdown.vue";
+import Spinner from "@/components/Spinner.vue";
+import { defaultUserSettings } from "@/scripts/new-user";
+import { updateSubjects } from "@/scripts/scrapers/scrapers";
+import { jsonClone, parseNum, setEndOfContenteditable } from "@/scripts/utils";
+import { CalculatorSettings } from "@/store/state";
+import { defineComponent } from "vue";
 import CustomDropdown from "./CustomDropdown.vue";
 import Result from "./Result.vue";
-import Spinner from "@/components/Spinner.vue";
-import highSchoolPoints from "@/assets/high-school-points/2021-2022/2021-2022.js";
-import { jsonClone, parseNum, setEndOfContenteditable } from "@/scripts/utils";
-import { MutationTypes } from "@/store/mutations";
-import { CalculatorSettings, User } from "@/store/state";
-import { updateSubjects } from "@/scripts/scrapers";
-import { defaultUserSettings } from "@/scripts/new-user";
 
 export default defineComponent({
   name: "Calculator",
@@ -246,7 +245,10 @@ export default defineComponent({
             userValues[i + 1][studentYear - 7] = finalGrade;
         }
       }
-      this.updateSettings({ ...settings, userValues });
+      this.updateUserSettings("calculatorSettings", {
+        ...settings,
+        userValues,
+      });
       this.loading = false;
     },
     schoolSelected(schoolName?: string) {
@@ -264,16 +266,15 @@ export default defineComponent({
           setTimeout(() => (this.showSchoolProgram = true), 150);
         }
       }
-      this.updateSettings(settings);
+      this.updateUserSettings("calculatorSettings", settings);
       this.sendAnalyticsButtonClick("schoolSelected", schoolName);
-
     },
     programSelected(programName?: string) {
       this.showSchoolProgram = false;
       if (!programName) return;
       const settings = jsonClone(this.settings);
       settings.selectedProgram = programName == "clear" ? "" : programName;
-      this.updateSettings(settings);
+      this.updateUserSettings("calculatorSettings", settings);
       this.sendAnalyticsButtonClick("programSelected", programName);
     },
     extraPointsSelected(pointsName?: string) {
@@ -281,7 +282,7 @@ export default defineComponent({
       if (!pointsName) return;
       const settings = jsonClone(this.settings);
       settings.selectedExtraPoints = pointsName == "clear" ? "" : pointsName;
-      this.updateSettings(settings);
+      this.updateUserSettings("calculatorSettings", settings);
       this.sendAnalyticsButtonClick("extraPointsSelected", pointsName);
     },
     numberInputted(e: InputEvent, i: number, j: number) {
@@ -297,7 +298,7 @@ export default defineComponent({
         settings.userValues[i][j] = 0;
         target.textContent = "";
       }
-      this.updateSettings(settings);
+      this.updateUserSettings("calculatorSettings", settings);
       this.$nextTick(() => {
         if (target.textContent) {
           if (i) target.textContent = value.toString();
@@ -315,13 +316,6 @@ export default defineComponent({
       if (str.length == 4) return str;
       return str + (str.length == 1 ? ",00" : "0");
     },
-    updateSettings(newSettings: CalculatorSettings) {
-      if (!this.user) return;
-      this.$store.commit(MutationTypes.UPDATE_USER_SETTINGS, {
-        user: this.user,
-        settings: { calculatorSettings: newSettings },
-      });
-    },
     sendAnalyticsButtonClick(optionName: string, value: string) {
       window.gtag("event", "button click", {
         event_category: "calculator option",
@@ -331,9 +325,6 @@ export default defineComponent({
     },
   },
   computed: {
-    user(): User | undefined {
-      return this.$store.getters.user;
-    },
     schoolPrograms(): string[] {
       const { selectedSchool } = this.settings;
       if (!selectedSchool) return [];

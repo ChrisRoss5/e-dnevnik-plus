@@ -27,8 +27,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
 import Dropdown from "@/components/Dropdown.vue";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "CustomDropdown",

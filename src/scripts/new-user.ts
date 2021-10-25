@@ -1,4 +1,4 @@
-import { User, ClassInfo, Settings } from "@/store/state";
+import { ClassInfo, Settings, User } from "@/store/state";
 
 interface InitData {
   email: string;

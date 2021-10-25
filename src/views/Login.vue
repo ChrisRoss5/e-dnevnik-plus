@@ -63,21 +63,17 @@
           Iz pedagoških razloga, ocjene se prikazuju s vremenskim odmakom od 48
           sati.
         </div>
-        <a
-          href="https://ocjene.skole.hr/nias"
-          target="_blank"
-          class="button"
-          v-wave
-          >Dolazi uskoro</a
-        >
+        <div target="_blank" class="button" @click="loginParent" v-wave>
+          Prijava
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import { login } from "@/scripts/scrapers/auth";
 import { defineComponent } from "vue";
-import { login } from "@/scripts/scrapers";
 
 export default defineComponent({
   name: "Login",
@@ -109,6 +105,15 @@ export default defineComponent({
         }
         this.firstAttempt = this.loggingIn = false;
       }
+    },
+    loginParent() {
+      const q =
+        "e-Dnevnik Plus App nije prilagođen za roditelje.\nŽelite li nastaviti prijavu na Classic verziji proširenja?";
+      if (!window.confirm(q)) return;
+      chrome.declarativeNetRequest.updateEnabledRulesets(
+        { disableRulesetIds: ["ruleset"] },
+        () => window.location.replace("https://ocjene.skole.hr/nias"),
+      );
     },
   },
   computed: {

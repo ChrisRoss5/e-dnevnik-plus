@@ -77,10 +77,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
-import { ExtendedSubjectCache } from "@/views/class/subjects/Subjects.vue";
-import { GradesByCategory } from "@/store/state";
 import { formatNum, setEndOfContenteditable } from "@/scripts/utils";
+import { GradesByCategory } from "@/store/state";
+import { ExtendedSubjectCache } from "@/views/class/subjects/Subjects.vue";
+import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
   name: "SubjectCardHead",

@@ -1,6 +1,6 @@
-import { ActionTree, ActionContext } from "vuex";
-import { State } from "./state";
+import { ActionContext, ActionTree } from "vuex";
 import { Mutations, MutationTypes } from "./mutations";
+import { State } from "./state";
 import chromeLocalStorage from "./storage";
 
 type AugmentedActionContext = {

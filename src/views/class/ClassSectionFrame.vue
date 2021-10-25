@@ -11,9 +11,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { getOriginalSectionPage } from "@/scripts/scrapers";
 import Spinner from "@/components/Spinner.vue";
+import { getOriginalSectionPage } from "@/scripts/scrapers/scrapers";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "ClassSectionFrame",

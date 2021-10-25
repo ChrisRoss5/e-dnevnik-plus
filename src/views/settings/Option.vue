@@ -17,10 +17,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
-import { MutationTypes } from "@/store/mutations";
-import { GlobalSettings, Settings, User } from "@/store/state";
 import { defaultUserSettings } from "@/scripts/new-user";
+import { MutationTypes } from "@/store/mutations";
+import { GlobalSettings, Settings } from "@/store/state";
+import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
   name: "Option",
@@ -54,9 +54,6 @@ export default defineComponent({
     },
   },
   computed: {
-    user(): User | undefined {
-      return this.$store.getters.user;
-    },
     globalSettings(): GlobalSettings {
       return this.$store.state.settings;
     },

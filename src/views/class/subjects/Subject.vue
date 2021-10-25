@@ -11,9 +11,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
-import { ExtendedSubjectCache } from "@/views/class/subjects/Subjects.vue";
 import ClassSectionFrame from "@/views/class/ClassSectionFrame.vue";
+import { ExtendedSubjectCache } from "@/views/class/subjects/Subjects.vue";
+import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
   name: "Subject",
@@ -21,7 +21,7 @@ export default defineComponent({
   props: {
     subject: {
       type: [Object, Boolean] as PropType<ExtendedSubjectCache | false>,
-      required: true
+      required: true,
     },
   },
 });

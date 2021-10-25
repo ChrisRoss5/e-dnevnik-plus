@@ -31,10 +31,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import highSchoolPoints from "@/assets/high-school-points/2021-2022/2021-2022.js";
 import { formatNum, getSum } from "@/scripts/utils";
 import { CalculatorSettings } from "@/store/state";
-import highSchoolPoints from "@/assets/high-school-points/2021-2022/2021-2022.js";
+import { defineComponent, PropType } from "vue";
 
 interface Points {
   min: number;

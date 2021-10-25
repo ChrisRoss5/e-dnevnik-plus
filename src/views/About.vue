@@ -8,9 +8,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { getAboutPage } from "@/scripts/scrapers";
 import Spinner from "@/components/Spinner.vue";
+import { getAboutPage } from "@/scripts/scrapers/scrapers";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "About",

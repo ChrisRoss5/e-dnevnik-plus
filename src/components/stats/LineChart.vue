@@ -3,9 +3,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
-import Chart, { ChartItem } from "chart.js/auto";
 import { formatNum, jsonClone } from "@/scripts/utils";
+import Chart, { ChartItem } from "chart.js/auto";
+import { defineComponent, PropType } from "vue";
 
 let chart: Chart<"bar" | "line", number[], string>;
 

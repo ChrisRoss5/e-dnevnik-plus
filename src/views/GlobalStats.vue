@@ -47,11 +47,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import Stats from "@/components/stats/Stats.vue";
 import Spinner from "@/components/Spinner.vue";
-import { User, ClassInfo } from "@/store/state";
+import Stats from "@/components/stats/Stats.vue";
 import { formatNum } from "@/scripts/utils";
+import { ClassInfo } from "@/store/state";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "GlobalStats",
@@ -89,9 +89,6 @@ export default defineComponent({
     formatNum: (num: string) => formatNum(num),
   },
   computed: {
-    user(): User | undefined {
-      return this.$store.getters.user;
-    },
     classesList(): ClassInfo[] {
       return this.user ? this.user.classesList : [];
     },

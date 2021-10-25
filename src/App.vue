@@ -9,11 +9,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import Navbar from "@/components/Navbar.vue";
 import Main from "@/components/Main.vue";
+import Navbar from "@/components/Navbar.vue";
 import User from "@/components/User.vue";
 import { ActionTypes } from "@/store/actions";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "App",

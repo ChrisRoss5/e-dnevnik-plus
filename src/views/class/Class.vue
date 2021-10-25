@@ -109,13 +109,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { User, ClassInfo } from "@/store/state";
-import { MutationTypes } from "@/store/mutations";
 import Dropdown, { DropdownItem } from "@/components/Dropdown.vue";
-import { SlickList, SlickItem } from "vue-slicksort";
-import { formatNum } from "@/scripts/utils";
 import Spinner from "@/components/Spinner.vue";
+import { formatNum } from "@/scripts/utils";
+import { ClassInfo } from "@/store/state";
+import { defineComponent } from "vue";
+import { SlickItem, SlickList } from "vue-slicksort";
 
 interface DropdownInfo {
   id: string;
@@ -183,11 +182,9 @@ export default defineComponent({
       line.style.display = started ? "none" : "block";
     },
     tabsOrderChanged() {
-      if (this.user)
-        this.$store.commit(MutationTypes.UPDATE_CLASS_TABS_ORDER, {
-          user: this.user,
-          tabs: this.tabs.map((tab) => tab.name),
-        });
+      if (!this.user) return;
+      const newOrder = this.tabs.map((t) => t.name);
+      this.updateUserSettings("classTabsOrder", newOrder);
       const sections = this.getSectionsContainer();
       if (!sections) return;
       sections.classList.add("no-transition");
@@ -262,10 +259,7 @@ export default defineComponent({
     },
   },
   computed: {
-    /* TODO: FIX mapGetters TYPES */
-    user(): User | undefined {
-      return this.$store.getters.user;
-    },
+    /* TODO: FIX mapGetters TYPES!!! */
     openedClassInfo(): ClassInfo | undefined {
       return this.$store.getters.classInfo(
         this.$route.params.classId as string,

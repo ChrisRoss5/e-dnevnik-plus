@@ -75,10 +75,9 @@
 </template>
 
 <script lang="ts" scoped>
+import { MutationTypes } from "@/store/mutations";
 import { defineComponent } from "vue";
 import NavbarList from "./NavbarList.vue";
-import { MutationTypes } from "@/store/mutations";
-import { User } from "@/store/state";
 
 export interface NavbarLink {
   name: string;
@@ -141,9 +140,6 @@ export default defineComponent({
     },
   },
   computed: {
-    user(): User | undefined {
-      return this.$store.getters.user;
-    },
     isLoginPage(): boolean {
       return this.$route.path == "/" || !this.mounted;
     },

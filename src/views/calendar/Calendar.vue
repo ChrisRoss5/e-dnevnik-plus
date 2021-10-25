@@ -105,13 +105,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { getExams, getCalendarDates } from "@/scripts/scrapers";
-import { jsonClone } from "@/scripts/utils";
-import { CalendarSettings, ClassInfo, User } from "@/store/state";
-import { MutationTypes } from "@/store/mutations";
-import CalendarNotes from "../calendar/CalendarNotes.vue";
 import { defaultUserSettings } from "@/scripts/new-user";
+import { getCalendarDates, getExams } from "@/scripts/scrapers/scrapers";
+import { jsonClone } from "@/scripts/utils";
+import { CalendarSettings, ClassInfo } from "@/store/state";
+import { defineComponent } from "vue";
+import CalendarNotes from "../calendar/CalendarNotes.vue";
 
 export default defineComponent({
   components: { CalendarNotes },
@@ -237,7 +236,7 @@ export default defineComponent({
     toggleCalendarView() {
       const settings = jsonClone(this.settings);
       settings.showEntireCalendar = !settings.showEntireCalendar;
-      this.updateSettings(settings);
+      this.updateUserSettings("calendarSettings", settings);
       this.sendAnalyticsButtonClick(
         "showEntireCalendar",
         settings.showEntireCalendar,
@@ -249,15 +248,8 @@ export default defineComponent({
       this.calendarRows = Math.round(12 / this.calendarColumns);
       const settings = jsonClone(this.settings);
       settings.zoom = this.calendarColumns;
-      this.updateSettings(settings);
+      this.updateUserSettings("calendarSettings", settings);
       this.sendAnalyticsButtonClick("zoom", settings.zoom);
-    },
-    updateSettings(newSettings: CalendarSettings) {
-      if (!this.user) return;
-      this.$store.commit(MutationTypes.UPDATE_USER_SETTINGS, {
-        user: this.user,
-        settings: { calendarSettings: newSettings },
-      });
     },
     async updateSchoolYearTitle(newPage: any) {
       const { year, month } = newPage;
@@ -293,7 +285,7 @@ export default defineComponent({
         const newNote = this.createNote(note, this.selectedDay.date);
         this.attributes = this.attributes.concat([newNote]);
       }
-      this.updateSettings(settings);
+      this.updateUserSettings("calendarSettings", settings);
       this.selectedDay = null;
       this.sendAnalyticsButtonClick("manageNote", method);
     },
@@ -309,9 +301,6 @@ export default defineComponent({
     },
   },
   computed: {
-    user(): User | undefined {
-      return this.$store.getters.user;
-    },
     classesList(): ClassInfo[] {
       return this.user ? this.user.classesList : [];
     },

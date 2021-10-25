@@ -48,8 +48,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
 import { capitalize } from "@/scripts/utils";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "CalendarNotes",

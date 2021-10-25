@@ -65,11 +65,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
 import Dropdown, { DropdownItem } from "@/components/Dropdown.vue";
+import { formatNum } from "@/scripts/utils";
+import { defineComponent, PropType } from "vue";
 import News from "./News.vue";
 import { Option } from "./Subjects.vue";
-import { formatNum } from "@/scripts/utils";
 
 export default defineComponent({
   name: "SubjectsSummary",

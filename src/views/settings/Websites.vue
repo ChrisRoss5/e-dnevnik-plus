@@ -1,79 +1,78 @@
 <template>
-    <SlickList
-      id="sections"
-      v-model:list="websitesSettingsClone"
-      axis="y"
-      lockAxis="y"
-      :lockOffset="10"
-      :lockToContainerEdges="true"
-      :distance="5"
+  <SlickList
+    id="sections"
+    v-model:list="websitesSettingsClone"
+    axis="y"
+    lockAxis="y"
+    :lockOffset="10"
+    :lockToContainerEdges="true"
+    :distance="5"
+  >
+    <SlickItem
+      v-for="(website, i) in websitesSettingsClone"
+      :key="website.name"
+      :index="i"
+      class="card website"
     >
-      <SlickItem
-        v-for="(website, i) in websitesSettingsClone"
-        :key="website.name"
-        :index="i"
-        class="card website"
-      >
-        <div class="website-title flex-center">
-          {{ website.name }}
-          <span class="material-icons add-url" @click="addUrl(i)"> add </span>
-        </div>
-        <SlickList
-          v-model:list="website.urls"
-          axis="y"
-          lockAxis="y"
-          :lockOffset="10"
-          :lockToContainerEdges="true"
-          :distance="5"
-          :useDragHandle="true"
-        >
-          <SlickItem
-            v-for="(websiteInfo, j) of website.urls"
-            :key="j"
-            :index="j"
-            class="website-info card flex-center"
-          >
-            <div>
-              <input
-                type="text"
-                v-model="websiteInfo.name"
-                spellcheck="false"
-                placeholder="Unesi naziv..."
-              />
-              <input
-                type="text"
-                v-model="websiteInfo.url"
-                spellcheck="false"
-                placeholder="Unesi link..."
-              />
-            </div>
-            <div class="flex-center">
-              <div class="remove-url material-icons" @click="deleteUrl(i, j)">
-                delete
-              </div>
-              <div class="drag-handle material-icons" v-handle>drag_handle</div>
-            </div>
-          </SlickItem>
-        </SlickList>
-      </SlickItem>
-      <div id="add-website" class="flex-center card">
-        <input
-          v-model="newWebsiteName"
-          type="text"
-          placeholder="Unesi naziv stranice..."
-          spellcheck="false"
-        />
-        <div class="button" @click="addWebsite">Dodaj</div>
+      <div class="website-title flex-center">
+        {{ website.name }}
+        <span class="material-icons add-url" @click="addUrl(i)"> add </span>
       </div>
-    </SlickList>
-
+      <SlickList
+        v-model:list="website.urls"
+        axis="y"
+        lockAxis="y"
+        :lockOffset="10"
+        :lockToContainerEdges="true"
+        :distance="5"
+        :useDragHandle="true"
+      >
+        <SlickItem
+          v-for="(websiteInfo, j) of website.urls"
+          :key="j"
+          :index="j"
+          class="website-info card flex-center"
+        >
+          <div>
+            <input
+              type="text"
+              v-model="websiteInfo.name"
+              spellcheck="false"
+              placeholder="Unesi naziv..."
+            />
+            <input
+              type="text"
+              v-model="websiteInfo.url"
+              spellcheck="false"
+              placeholder="Unesi link..."
+            />
+          </div>
+          <div class="flex-center">
+            <div class="remove-url material-icons" @click="deleteUrl(i, j)">
+              delete
+            </div>
+            <div class="drag-handle material-icons" v-handle>drag_handle</div>
+          </div>
+        </SlickItem>
+      </SlickList>
+    </SlickItem>
+    <div id="add-website" class="flex-center card">
+      <input
+        v-model="newWebsiteName"
+        type="text"
+        placeholder="Unesi naziv stranice..."
+        spellcheck="false"
+      />
+      <div class="button" @click="addWebsite">Dodaj</div>
+    </div>
+  </SlickList>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { SlickList, SlickItem, HandleDirective } from "vue-slicksort";
-import {  User, WebsiteSettings } from "@/store/state";
 import { jsonClone } from "@/scripts/utils";
+import { WebsiteSettings } from "@/store/state";
+import { defineComponent } from "vue";
+import { HandleDirective, SlickItem, SlickList } from "vue-slicksort";
 
 export default defineComponent({
   name: "Websites",
@@ -100,7 +99,7 @@ export default defineComponent({
       window.gtag("event", "button click", {
         event_category: "settings option",
         event_label: "addWebsite",
-        value: this.newWebsiteName
+        value: this.newWebsiteName,
       });
       this.newWebsiteName = "";
     },
@@ -113,11 +112,7 @@ export default defineComponent({
         this.websitesSettingsClone.splice(i, 1);
     },
   },
-  computed: {
-    user(): User | undefined {
-      return this.$store.getters.user;
-    },
-  },
+
   watch: {
     websitesSettingsClone: {
       handler(newVal, oldVal) {

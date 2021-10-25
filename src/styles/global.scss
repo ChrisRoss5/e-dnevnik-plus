@@ -99,7 +99,9 @@ input {
     }
   }
 
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
+
     &::-webkit-inner-spin-button,
     &::-webkit-outer-spin-button {
       opacity: 0.3;
@@ -242,30 +244,28 @@ iframe {
 
 .toolbar {
   display: flex;
+  flex-wrap: wrap;
   font-size: 24px;
-  height: 44px;
+  min-height: 44px;
   padding: 0 30px;
+  white-space: nowrap;
 
   @include themed() {
-    background: linear-gradient(
-        45deg,
+    background: linear-gradient(45deg,
         transparent 55%,
         t("alice-blue-light") 65%,
-        t("alice-blue") calc(65% + 10px)
-      ),
-      linear-gradient(
-        -45deg,
+        t("alice-blue") calc(65% + 10px)),
+      linear-gradient(-45deg,
         t("white-background") 65%,
         t("alice-blue-light") calc(75% - 10px),
-        t("alice-blue") 75%
-      );
+        t("alice-blue") 75%);
   }
 }
 
 .toolbar-options {
   margin-left: auto;
 
-  & > div {
+  &>div {
     position: relative;
     width: 24px;
     height: 24px;
@@ -297,7 +297,7 @@ iframe {
 
 /*
   following is moved from Subjects.vue because themed() isn't possible with :deep()
-  TODO: find better solution?
+  TODO?: find better solution?
 */
 
 .subject-name {

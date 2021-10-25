@@ -1,6 +1,6 @@
-import { defineComponent } from "vue";
-import { Settings, User } from "@/store/state";
 import { MutationTypes } from "@/store/mutations";
+import { Settings, User } from "@/store/state";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   methods: {

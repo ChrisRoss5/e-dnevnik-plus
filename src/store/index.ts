@@ -6,15 +6,12 @@ https://developer.chrome.com/docs/extensions/reference/storage/#property-local
  */
 
 import {
-  createStore,
-  Store as VuexStore,
-  CommitOptions,
-  DispatchOptions,
+  CommitOptions, createStore, DispatchOptions, Store as VuexStore
 } from "vuex";
-import { State, state } from "./state";
+import { Actions, actions, ActionTypes } from "./actions";
 import { Getters, getters } from "./getters";
 import { Mutations, mutations } from "./mutations";
-import { Actions, actions, ActionTypes } from "./actions";
+import { State, state } from "./state";
 import chromeLocalStorage from "./storage";
 
 function storeMutated(_store: Store) {

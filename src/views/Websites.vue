@@ -28,12 +28,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
 import Dropdown, { DropdownItem } from "@/components/Dropdown.vue";
 import Spinner from "@/components/Spinner.vue";
-import { User, WebsiteInfo, WebsiteSettings } from "@/store/state";
-import { MutationTypes } from "@/store/mutations";
 import { convertToPath } from "@/scripts/utils";
+import { WebsiteInfo, WebsiteSettings } from "@/store/state";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "Websites",
@@ -57,18 +56,8 @@ export default defineComponent({
       this.loading = true;
       this.activeFrame = newFrame;
     },
-    updateSettings(newSettings: WebsiteSettings[]) {
-      if (!this.user) return;
-      this.$store.commit(MutationTypes.UPDATE_USER_SETTINGS, {
-        user: this.user,
-        settings: { websitesSettings: newSettings },
-      });
-    },
   },
   computed: {
-    user(): User | undefined {
-      return this.$store.getters.user;
-    },
     activeFrames(): WebsiteInfo[] {
       const path = this.$route.params.website as string | undefined;
       const website = this.settings.find((w) => convertToPath(w.name) == path);

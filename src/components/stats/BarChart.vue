@@ -34,9 +34,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
-import Chart, { ChartItem } from "chart.js/auto";
 import { formatNum, jsonClone } from "@/scripts/utils";
+import Chart, { ChartItem } from "chart.js/auto";
+import { defineComponent, PropType } from "vue";
 
 let chart: Chart<"bar", number[], string>;
 
@@ -165,7 +165,7 @@ export default defineComponent({
                       if (!count) return false;
                       return title + ": " + count;
                     })
-                    .filter(g => g)
+                    .filter((g) => g)
                     .join("\n");
                 },
               },

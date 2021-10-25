@@ -19,11 +19,10 @@
 </template>
 
 <script lang="ts">
+import { logout } from "@/scripts/scrapers/auth";
+import { MutationTypes } from "@/store/mutations";
 import { defineComponent } from "vue";
 import Dropdown, { DropdownItem } from "./Dropdown.vue";
-import { MutationTypes } from "@/store/mutations";
-import { User } from "@/store/state";
-import { logout } from "@/scripts/scrapers";
 
 export default defineComponent({
   name: "User",
@@ -51,9 +50,6 @@ export default defineComponent({
     },
   },
   computed: {
-    user(): User | undefined {
-      return this.$store.getters.user;
-    },
     dropdown(): DropdownItem[] {
       return [
         {

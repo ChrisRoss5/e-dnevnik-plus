@@ -1,21 +1,21 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import { store } from "@/store";
-
-import Login from "@/views/Login.vue";
+import About from "@/views/About.vue";
+import Calculator from "@/views/calculator/Calculator.vue";
+import Calendar from "@/views/calendar/Calendar.vue";
 import Class from "@/views/class/Class.vue";
-
-import Subjects from "@/views/class/subjects/Subjects.vue";
-import Subject from "@/views/class/subjects/Subject.vue";
 import ClassSectionFrame from "@/views/class/ClassSectionFrame.vue";
 import ClassStats from "@/views/class/ClassStats.vue";
-
-import Calendar from "@/views/calendar/Calendar.vue";
+import Subject from "@/views/class/subjects/Subject.vue";
+import Subjects from "@/views/class/subjects/Subjects.vue";
 import GlobalStats from "@/views/GlobalStats.vue";
-import Calculator from "@/views/calculator/Calculator.vue";
-
-import Websites from "@/views/Websites.vue";
+import Login from "@/views/Login.vue";
 import Settings from "@/views/settings/Settings.vue";
-import About from "@/views/About.vue";
+import Websites from "@/views/Websites.vue";
+import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
+
+
+
+
 
 /*
 No lazy loading:

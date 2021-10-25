@@ -5,12 +5,8 @@
   "author": "Kristijan Rosandić",
   "version": "5.0",
   "permissions": [
-    "tabs",
     "storage",
     "declarativeNetRequest"
-  ],
-  "optional_permissions": [
-    "notifications"
   ],
   "host_permissions": [
     "*://*/*"

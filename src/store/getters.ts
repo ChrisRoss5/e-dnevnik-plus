@@ -1,4 +1,4 @@
-import { State, User, ClassInfo } from "./state";
+import { ClassInfo, State, User } from "./state";
 
 export type Getters = {
   user(state: State): User | undefined;

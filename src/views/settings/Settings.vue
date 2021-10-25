@@ -26,14 +26,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { useToast } from "vue-toastification";
-import Websites from "./Websites.vue";
-import Option from "./Option.vue";
-import { User } from "@/store/state";
-import { MutationTypes } from "@/store/mutations";
 import { defaultUserSettings } from "@/scripts/new-user";
 import { jsonClone } from "@/scripts/utils";
+import { MutationTypes } from "@/store/mutations";
+import { defineComponent } from "vue";
+import { useToast } from "vue-toastification";
+import Option from "./Option.vue";
+import Websites from "./Websites.vue";
 
 const toast = useToast();
 
@@ -86,11 +85,6 @@ export default defineComponent({
         event_category: "settings option",
         event_label: optionName,
       });
-    },
-  },
-  computed: {
-    user(): User | undefined {
-      return this.$store.getters.user;
     },
   },
 });
