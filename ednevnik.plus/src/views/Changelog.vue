@@ -1,7 +1,7 @@
 <template>
   <div class="card content-card">
     <h2>Povijest ažuriranja</h2>
-    <hr>
+    <hr />
     <h3>Verzija 5.0 (za učenike i roditelje)</h3>
     <ul>
       <li>Uklonjene sve funkcionalnosti prethodne verzije proširenja.</li>
@@ -30,11 +30,17 @@
         <span class="plus">Classic</span> verzija dodaje prosjeke na stranici
         e-Dnevnika:
         <ul>
-          <li>Na stranici odabira predmeta, za svaki predmet i završni prosjek.</li>
+          <li>
+            Na stranici odabira predmeta, za svaki predmet i završni prosjek.
+          </li>
           <li>Na stranici predmeta.</li>
         </ul>
       </li>
     </ul>
+    <h3>Verzija &lt;= 4.8:</h3>
+    <a class="plus" href="https://chrisross5.github.io/e-Dnevnik-Plus-WEB-stari/"
+      >https://chrisross5.github.io/e-Dnevnik-Plus-WEB-stari/</a
+    >
   </div>
 </template>
 
@@ -49,6 +55,10 @@ export default defineComponent({
 <style lang="scss" scoped>
 .card > ul > li {
   padding: 7px 0;
+}
+
+h3:not(:first-of-type) {
+  padding-top: 20px;
 }
 
 img {

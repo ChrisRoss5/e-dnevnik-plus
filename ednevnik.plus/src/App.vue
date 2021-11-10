@@ -1,4 +1,9 @@
 <template>
+  <div id="important">
+    <a href="https://chrisross5.github.io/e-Dnevnik-Plus-WEB-stari/"
+      >Nova verzija dolazi uskoro. Za prikaz stare verzije klikni ovdje.</a
+    >
+  </div>
   <div id="heading">
     <router-link to="/" id="title">
       <div id="ed" class="ed">e-Dnevnik</div>
@@ -41,6 +46,16 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+#important {
+  top: 0;
+  position: sticky;
+  background: #182e41;
+  color: white;
+  text-align: center;
+  padding: 18px;
+  z-index: 1;
+}
+
 #app {
   min-height: 100%;
   display: flex;
