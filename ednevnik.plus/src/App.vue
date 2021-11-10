@@ -25,6 +25,21 @@
   </div>
 </template>
 
+<script lang="ts">
+import { defineComponent } from "vue";
+
+export default defineComponent({
+  name: "App",
+  mounted() {
+    const path = localStorage.getItem("path");
+    if (path) {
+      localStorage.removeItem("path");
+      this.$router.replace(path);
+    }
+  },
+});
+</script>
+
 <style lang="scss">
 #app {
   min-height: 100%;

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "e-Dnevnik Plus",
-  "description": "Moderna verzija e-Dnevnika za učenike i roditelje.",
+  "description": "Napredna verzija e-Dnevnika za učenike i roditelje.",
   "author": "Kristijan Rosandić",
   "version": "5.0",
   "permissions": [
@@ -15,7 +15,7 @@
     "rule_resources": [
       {
         "id": "ruleset",
-        "enabled": false,
+        "enabled": true,
         "path": "rules.json"
       }
     ]
