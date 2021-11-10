@@ -69,6 +69,7 @@ export const mutations: MutationTree<State> & Mutations = {
     state.users.push(user);
   },
   [MutationTypes.UPDATE_USER_STATUS](state, { user, status }) {
+    if (!status) user.password = "";
     user.signedIn = status;
   },
   [MutationTypes.UPDATE_LAST_LOADED_CLASS_URL](state, { user, url }) {

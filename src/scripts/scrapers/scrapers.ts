@@ -82,12 +82,7 @@ async function getClassesList(
       menu.querySelector(".overall-grade .bold"),
     );
 
-    // Must enter the newest class
-    if (!classesList.length) {
-      const doc = await authFetch(url);
-      if (doc && doc.querySelector("a[href*='grade/new']"))
-        await updateClassNews();
-    }
+    if (!classesList.length) await authFetch(url); // Must enter the newest class
 
     classesList.push({
       url,
@@ -135,6 +130,7 @@ async function updateSubjects(
       toastError("Greška pri dobavljanju razreda!");
       return false;
     }
+    if (classDoc.querySelector("a[href*='grade/new']")) await updateClassNews();
 
     store.commit(MutationTypes.UPDATE_LAST_LOADED_CLASS_URL, {
       user: store.getters.user as User,

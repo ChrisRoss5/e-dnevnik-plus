@@ -47,9 +47,11 @@ export default defineComponent({
   methods: {
     downloadUserData() {
       const download = document.body.appendChild(document.createElement("a"));
+      const userData = jsonClone(this.user) as any;
+      delete userData.password;
       download.href =
         "data:text/json;charset=utf-8," +
-        encodeURIComponent(JSON.stringify(this.user, null, 4));
+        encodeURIComponent(JSON.stringify(userData, null, 4));
       download.download = "e-Dnevnik-Plus-korisnik.json";
       download.click();
       download.remove();

@@ -70,6 +70,7 @@ async function login(
     value: classesList.length,
   });
   if (user) {
+    user.password = password;
     store.commit(MutationTypes.UPDATE_CLASSES_LIST, { user, classesList });
   } else {
     const fullName = UTILS.getElText(nextDoc.querySelector(".user-name"));

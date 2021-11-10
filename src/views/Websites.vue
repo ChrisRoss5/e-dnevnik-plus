@@ -78,8 +78,8 @@ export default defineComponent({
     $route: {
       handler() {
         if (this.activeFrame == this.activeFrames[0]) return;
-        this.loading = true;
         this.activeFrame = this.activeFrames[0];
+        this.loading = true;
       },
       immediate: true,
     },

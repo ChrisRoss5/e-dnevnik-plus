@@ -1,70 +1,82 @@
 <template>
   <div id="content">
-    <div id="main">
-      <div id="downloads">
-        <div class="download-item">
-          <a
-            href="https://chrome.google.com/webstore/detail/e-dnevnik-plus/bcnccmamhmcabokipgjechdeealcmdbe"
-            target="_blank"
-            class="card"
-          >
-            <img src="~@/assets/img/download-icon.png" />
-            Preuzmi&nbsp;<em>proširenje</em>&nbsp;za učenike i roditelje
-          </a>
-          <a
-            href="https://chrome.google.com/webstore/detail/e-dnevnik-plus/bcnccmamhmcabokipgjechdeealcmdbe/reviews"
-            target="_blank"
-            class="card"
-          >
-            <img src="~@/assets/img/review-icon.png" />
-          </a>
-          <a
-            href="https://github.com/ChrisRoss5/e-Dnevnik-Plus"
-            target="_blank"
-            class="card"
-          >
-            <img src="~@/assets/img/code-icon.png" />
-          </a>
+    <transition name="opacity" mode="out-in">
+      <div v-if="$route.hash == '#instaliran'" id="main" class="main-message">
+        Proširenje je uspješno instalirano!
+      </div>
+      <div
+        v-else-if="$route.hash == '#azuriran'"
+        id="main"
+        class="main-message"
+      >
+        Proširenje je ažurirano na najnoviju verziju 5.0!
+      </div>
+      <div v-else id="main">
+        <div id="downloads">
+          <div class="download-item">
+            <a
+              href="https://chrome.google.com/webstore/detail/e-dnevnik-plus/bcnccmamhmcabokipgjechdeealcmdbe"
+              target="_blank"
+              class="card"
+            >
+              <img src="~@/assets/img/download-icon.png" />
+              Preuzmi&nbsp;<em>proširenje</em>&nbsp;za učenike i roditelje
+            </a>
+            <a
+              href="https://chrome.google.com/webstore/detail/e-dnevnik-plus/bcnccmamhmcabokipgjechdeealcmdbe/reviews"
+              target="_blank"
+              class="card"
+            >
+              <img src="~@/assets/img/review-icon.png" />
+            </a>
+            <a
+              href="https://github.com/ChrisRoss5/e-Dnevnik-Plus"
+              target="_blank"
+              class="card"
+            >
+              <img src="~@/assets/img/code-icon.png" />
+            </a>
+          </div>
+          <div class="download-item">
+            <a
+              href="https://chrome.google.com/webstore/detail/e-dnevnik-plus-za-nastavn/jefappmpehdgllijkjpekdmkbmbigbnl"
+              target="_blank"
+              class="card"
+            >
+              <img src="~@/assets/img/download-icon.png" />
+              Preuzmi&nbsp;<em>proširenje</em>&nbsp;za nastavnike
+            </a>
+            <a
+              href="https://chrome.google.com/webstore/detail/e-dnevnik-plus-za-nastavn/jefappmpehdgllijkjpekdmkbmbigbnl/reviews"
+              target="_blank"
+              class="card"
+            >
+              <img src="~@/assets/img/review-icon.png" />
+            </a>
+            <a
+              href="https://github.com/ChrisRoss5/e-Dnevnik-Plus-za-nastavnike"
+              target="_blank"
+              class="card"
+            >
+              <img src="~@/assets/img/code-icon.png" />
+            </a>
+          </div>
         </div>
-        <div class="download-item">
-          <a
-            href="https://chrome.google.com/webstore/detail/e-dnevnik-plus-za-nastavn/jefappmpehdgllijkjpekdmkbmbigbnl"
-            target="_blank"
-            class="card"
-          >
-            <img src="~@/assets/img/download-icon.png" />
-            Preuzmi&nbsp;<em>proširenje</em>&nbsp;za nastavnike
-          </a>
-          <a
-            href="https://chrome.google.com/webstore/detail/e-dnevnik-plus-za-nastavn/jefappmpehdgllijkjpekdmkbmbigbnl/reviews"
-            target="_blank"
-            class="card"
-          >
-            <img src="~@/assets/img/review-icon.png" />
-          </a>
-          <a
-            href="https://github.com/ChrisRoss5/e-Dnevnik-Plus-za-nastavnike"
-            target="_blank"
-            class="card"
-          >
-            <img src="~@/assets/img/code-icon.png" />
-          </a>
+        <div id="browsers" class="card">
+          <div style="padding-bottom: 10px">Kompatibilni preglednici:</div>
+          <div id="browser-icons">
+            <div class="flex-center">
+              <img src="~@/assets/img/chrome-icon.png" />
+              Chrome
+            </div>
+            <div class="flex-center">
+              <img src="~@/assets/img/edge-icon.png" />
+              Edge
+            </div>
+          </div>
         </div>
       </div>
-      <div id="browsers" class="card">
-        <div style="padding-bottom: 10px">Kompatibilni preglednici:</div>
-        <div id="browser-icons">
-          <div class="flex-center">
-            <img src="~@/assets/img/chrome-icon.png" />
-            Chrome
-          </div>
-          <div class="flex-center">
-            <img src="~@/assets/img/edge-icon.png" />
-            Edge
-          </div>
-        </div>
-      </div>
-    </div>
+    </transition>
     <div id="browser">
       <img src="~@/assets/img/browser.png" />
     </div>
@@ -79,6 +91,11 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "Home",
+  mounted() {
+    // todo: fix router typescript
+    if (this.$route.hash)
+      setTimeout(() => this.$router.replace({ hash: "#jupiiiii" }), 6000);
+  },
 });
 </script>
 
@@ -188,6 +205,29 @@ em {
       width: 100%;
       height: 100%;
     }
+  }
+}
+
+.main-message {
+  font-size: 40px;
+  color: #68af68;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 100%;
+    bottom: 0;
+    height: 5px;
+    background: #68af68;
+    animation: reveal 5s forwards 1s;
+  }
+}
+
+@keyframes reveal {
+  to {
+    right: 0;
   }
 }
 </style>

@@ -13,10 +13,6 @@ import Settings from "@/views/settings/Settings.vue";
 import Websites from "@/views/Websites.vue";
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 
-
-
-
-
 /*
 No lazy loading:
 https://router.vuejs.org/guide/advanced/lazy-loading.html#grouping-components-in-the-same-chunk
@@ -129,7 +125,8 @@ router.beforeEach((to, from, next) => {
   if (!window.isAppInitiated) return next();
   const isAuthenticated = !!store.getters.user;
   const isLoginPage = to.path == "/";
-  if (!isLoginPage && !isAuthenticated && to.path != "/o-aplikaciji") next({ path: "/" });
+  if (!isLoginPage && !isAuthenticated && to.path != "/o-aplikaciji")
+    next({ path: "/" });
   else if (isLoginPage && isAuthenticated) next(false);
   else next();
 });

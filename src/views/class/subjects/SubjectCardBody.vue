@@ -203,11 +203,12 @@ export default defineComponent({
   }
 
   .red {
-    text-shadow: 0 0 3px white !important;
+    text-shadow: 0 0 3px black !important;
   }
 
   .line-through {
-    text-shadow: 0 0 1px white !important;
+    color: black !important;
+    text-shadow: 0 0 6px white !important;
   }
 }
 </style>

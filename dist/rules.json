@@ -34,7 +34,8 @@
     "condition": {
       "resourceTypes": [
         "sub_frame"
-      ]
+      ],
+	  "domains": ["bcnccmamhmcabokipgjechdeealcmdbe"]
     }
   }
 ]

@@ -15,7 +15,9 @@ window.devClearLocalStorage = () => chrome.storage.local.clear();
 
 /* https://v3.vuejs.org/guide */
 /* Google Analytics
-Removed "http:"!=d&&"https:"!=d&&(Rg(29),a.abort()),
+https://www.googletagmanager.com/gtag/js?id=G-MPMHVT6WTW [current]
+https://www.googletagmanager.com/gtag/js?id=G-2E1XXCCWPP
+Removed "http:"!=c&&"https:"!=c&&(Rg(29),a.abort()),
 because the actual protocol is "chrome-extension:"
 https://issuetracker.google.com/issues/174954288 */
 import "@/scripts/gtag.js";
@@ -47,16 +49,9 @@ import router from "./router";
 /* https://next.vuex.vuejs.org/ */
 import { store } from "./store";
 
-
-
-
-
-
-
 /* https://v-tooltip.netlify.app/guide/config.html#default-values */
 VTooltip.options.offset = [0, 10];
 VTooltip.options.instantMove = true;
-
 
 Chart.register(annotationPlugin);
 Chart.defaults.font.size = 16;
@@ -71,7 +66,7 @@ window.gtag = function() {
   window.dataLayer.push(arguments);
 };
 window.gtag("js", new Date());
-if (window.devTestMode) (window as any)['ga-disable-G-MPMHVT6WTW'] = true;
+if (window.devTestMode) (window as any)["ga-disable-G-MPMHVT6WTW"] = true;
 
 const app = createApp(App);
 app.config.globalProperties.$emitter = mitt();

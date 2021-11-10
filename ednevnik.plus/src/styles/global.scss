@@ -20,6 +20,8 @@ html,
 body {
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 html {
@@ -54,7 +56,8 @@ a {
   }
 }
 
-h2, h3 {
+h2,
+h3 {
   color: $ed-color;
 }
 
@@ -79,8 +82,20 @@ h2, h3 {
 }
 
 .content-card {
-    width: $original-page-width;
-    margin: 0 auto;
-    padding: 20px 40px 40px;
-    background: white;
+  width: $original-page-width;
+  margin: 0 auto;
+  padding: 20px 40px 40px;
+  background: white;
+}
+
+/* transitions */
+
+.opacity-enter-active,
+.opacity-leave-active {
+  transition: opacity 250ms;
+}
+
+.opacity-enter-from,
+.opacity-leave-to {
+  opacity: 0;
 }

@@ -6,6 +6,13 @@ document.getElementById("original-card").onclick = () =>
 /* https://developer.chrome.com/docs/extensions/reference/declarativeNetRequest/#method-updateEnabledRulesets */
 
 function updateRules(method) {
+  /* if (method == "enableRulesetIds") {
+    chrome.permissions.request({
+      origins: ['all urls pls']  // Optional origins not supported yet :(
+    }, (granted) => {
+      console.log(granted);
+    });
+  } */
   const updateRulesetOptions = { [method]: ["ruleset"] };
   chrome.declarativeNetRequest.updateEnabledRulesets(updateRulesetOptions, () =>
     window.open("https://ocjene.skole.hr/", "_blank"),

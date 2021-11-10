@@ -2,7 +2,7 @@
   <div class="card content-card">
     <h2>Povijest ažuriranja</h2>
     <hr>
-    <h3>Verzija 5.0 <span style="opacity: 0.5">(open source)</span></h3>
+    <h3>Verzija 5.0 (za učenike i roditelje)</h3>
     <ul>
       <li>Uklonjene sve funkcionalnosti prethodne verzije proširenja.</li>
       <li>
@@ -30,7 +30,7 @@
         <span class="plus">Classic</span> verzija dodaje prosjeke na stranici
         e-Dnevnika:
         <ul>
-          <li>Na stranici odabira predmeta, za svaki predmet.</li>
+          <li>Na stranici odabira predmeta, za svaki predmet i završni prosjek.</li>
           <li>Na stranici predmeta.</li>
         </ul>
       </li>

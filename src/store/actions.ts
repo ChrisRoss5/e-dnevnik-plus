@@ -21,7 +21,6 @@ export interface Actions {
 export const actions: ActionTree<State, State> & Actions = { // nosonar: Index signature
   async [ActionTypes.INIT]({ commit }) {
     const state = await chromeLocalStorage();
-    console.log("LOCAL STORAGE: ", state);
     if (!state) return false;
     commit(MutationTypes.INIT, state);
     return !!state.users.find((user) => user.signedIn);

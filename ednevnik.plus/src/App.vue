@@ -7,7 +7,7 @@
     <div id="subtitle">Proširenje za školski e-Dnevnik</div>
   </div>
   <router-view class="router-view"> </router-view>
-  <div id="footer" class="card" :class="{ default: $route.path != '/' }">
+  <div id="footer" :class="{ default: $route.path != '/' }">
     <div style="color: gray">
       Ovo proširenje nije službena CARNET-ova aplikacija.
     </div>
@@ -82,13 +82,10 @@
   bottom: 0;
   left: 0;
   padding: 20px;
-  background: white;
-  border-radius: 0;
 
   &.default {
     position: relative;
     margin: 40px auto;
-    border-radius: 8px;
     text-align: center;
   }
 }
