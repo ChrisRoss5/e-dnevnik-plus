@@ -1,7 +1,12 @@
 <template>
   <div id="important">
     <a href="https://chrisross5.github.io/e-Dnevnik-Plus-WEB-stari/"
-      >Nova verzija dolazi uskoro. Za prikaz stare verzije klikni ovdje.</a
+      >Nova verzija je stigla!
+      <span style="font-weight: bold"
+        >Potrebno je potvrditi ažuriranje kako bi proširenje ispravno
+        radilo.</span
+      >
+      Za prikaz stare verzije klikni ovdje.</a
     >
   </div>
   <div id="heading">

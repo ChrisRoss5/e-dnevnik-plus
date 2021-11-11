@@ -3,6 +3,7 @@ import Changelog from "../views/Changelog.vue";
 import Home from "../views/Home.vue";
 import PrivacyPolicy from "../views/PrivacyPolicy.vue";
 import Uninstalled from "../views/Uninstalled.vue";
+import Donations from "../views/Donations.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -20,6 +21,10 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/deinstalacija",
     component: Uninstalled,
+  },
+  {
+    path: "/donacije",
+    component: Donations,
   },
   {
     path: "/:pathMatch(.*)",
