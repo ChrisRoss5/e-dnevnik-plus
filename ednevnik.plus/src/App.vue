@@ -1,9 +1,9 @@
 <template>
   <div id="important">
-    Nova verzija je stigla!
+    Nova verzija za učenike i roditelje je stigla!
     <strong
-      >Potrebno je potvrditi ažuriranje kako bi proširenje ispravno
-      radilo.</strong
+      >Postojeći korisnici trebaju potvrditi nova dopuštenja kako bi proširenje nastavilo
+      raditi.</strong
     >
   </div>
   <div id="heading">
