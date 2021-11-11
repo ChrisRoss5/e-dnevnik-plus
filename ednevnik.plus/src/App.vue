@@ -1,9 +1,9 @@
 <template>
   <div id="important">
     Nova verzija je stigla!
-    <span style="font-weight: bold"
+    <strong
       >Potrebno je potvrditi ažuriranje kako bi proširenje ispravno
-      radilo.</span
+      radilo.</strong
     >
   </div>
   <div id="heading">
