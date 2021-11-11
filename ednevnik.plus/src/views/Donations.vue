@@ -107,6 +107,7 @@ export default defineComponent({
         "GET",
         "https://storage.googleapis.com/e-dnevnik-plus.appspot.com/donacije.json",
       );
+      donationsXhr.overrideMimeType("application/xml; charset=UTF-8");
       donationsXhr.send();
       donationsXhr.onload = donationsLoaded;
 
@@ -163,7 +164,7 @@ export default defineComponent({
 
           donationsContainer.appendChild(donation);
 
-          ++i != keys.length && i < 10 && setTimeout(addDonation, 250);
+          ++i != keys.length && setTimeout(addDonation, 250);
         })();
       }
 
@@ -347,8 +348,23 @@ export default defineComponent({
 
 <style lang="scss">
 #donations-content {
-  .two-boxes .box {
-    width: calc(50% - 15px);
+  .two-boxes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 35px 0 50px;
+
+    .box {
+      flex: 1;
+
+      &:first-child {
+        margin-left: 10px;
+      }
+
+      &:last-child {
+        margin-right: 10px;
+      }
+    }
   }
 
   .quantity {
@@ -661,12 +677,6 @@ export default defineComponent({
     right: 0;
     top: 35px;
     transition: opacity 250ms, visibility 1ms 250ms, transform 350ms;
-  }
-
-  .two-boxes {
-    display: flex;
-    justify-content: space-between;
-    margin: 35px 0 50px;
   }
 }
 </style>
