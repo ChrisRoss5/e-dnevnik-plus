@@ -1,23 +1,50 @@
 <!DOCTYPE html>
 <html lang="hr">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0"
+    />
+    <meta
+      name="keywords"
+      content="e dnevnik, učitelji, prijava, nastavnici, skole"
+    />
+    <meta
+      name="description"
+      content="Sve o aplikaciji e-Dnevnik Plus možete pronaći ovdje."
+    />
+    <meta name="author" content="Kristijan Rosandić, kristijan.ros@gmail.com" />
+    <meta name="google" content="notranslate" />
+    <link rel="icon" href="<%= BASE_URL %>favicon.png" />
+    <title><%= htmlWebpackPlugin.options.title %></title>
 
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  <meta name="keywords" content="e dnevnik, učitelji, prijava, nastavnici, skole">
-  <meta name="description" content="Sve o aplikaciji e-Dnevnik Plus možete pronaći ovdje.">
-  <meta name="author" content="Kristijan Rosandić, kristijan.ros@gmail.com">
-  <meta name="google" content="notranslate">
-  <link rel="icon" href="<%= BASE_URL %>favicon.png">
-  <title><%= htmlWebpackPlugin.options.title %></title>
-</head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-7NB9L0MRKR"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-<body>
-  <noscript style="font-size: 40px; display: grid; place-content: center; min-height: 50vh;">
-    <strong><%= htmlWebpackPlugin.options.title %> ne radi bez Javascript-a!</strong>
-  </noscript>
-  <div id="app"></div>
-</body>
+      gtag("config", "G-7NB9L0MRKR");
+    </script>
+  </head>
 
+  <body>
+    <noscript
+      style="font-size: 40px; display: grid; place-content: center; min-height: 50vh;"
+    >
+      <strong
+        ><%= htmlWebpackPlugin.options.title %> ne radi bez
+        Javascript-a!</strong
+      >
+    </noscript>
+    <div id="app"></div>
+  </body>
 </html>
