@@ -7,7 +7,7 @@
         @click="newsDropdownVisible = true"
         v-wave
       >
-        Novi zapisi: 3
+        Novi zapisi: {{ news.reduce((a, b) => a + b.subjectNews.length, 0) }}
         <div class="material-icons">arrow_drop_down</div>
         <Dropdown
           :visible="newsDropdownVisible"

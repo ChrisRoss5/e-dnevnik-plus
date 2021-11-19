@@ -144,7 +144,7 @@ export default defineComponent({
     SubjectCardBody,
   },
   props: { classId: { type: String, required: true } },
-  /* emits: ["sectionLoading", "sectionLoaded"], */ // TODO!: FIX TS ERROR
+  /* emits: ["sectionLoading", "sectionLoaded"], */ // TODO: FIX TS ERROR
   created() {
     this.updateSubjects();
   },

@@ -8,8 +8,8 @@ declare global {
   }
 }
 
-// TODO: BEFORE BUILD
-window.devTestMode = false;
+// TODO!: devTestMode
+window.devTestMode = true;
 window.devPause = (t) => new Promise((res) => setTimeout(res, t));
 window.devClearLocalStorage = () => chrome.storage.local.clear();
 

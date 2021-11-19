@@ -38,10 +38,6 @@ html {
 
 body {
   height: 100%;
-  background-image: url("~@/assets/img/background.png");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: 50% 0;
   color: $body-color-default;
   overflow: auto;
 }

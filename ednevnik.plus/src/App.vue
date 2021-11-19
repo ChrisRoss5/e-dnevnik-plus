@@ -2,9 +2,14 @@
   <div id="important">
     Nova verzija za učenike i roditelje je stigla!
     <strong
-      >Postojeći korisnici trebaju potvrditi nova dopuštenja kako bi proširenje nastavilo
-      raditi.</strong
+      >Postojeći korisnici trebaju potvrditi nova dopuštenja kako bi proširenje
+      nastavilo raditi.</strong
     >
+  </div>
+  <div id="background">
+    <ul class="circles">
+      <li v-for="i in 10" :key="i"></li>
+    </ul>
   </div>
   <div id="heading">
     <router-link to="/" id="title">
@@ -48,6 +53,14 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+@import "styles/circles.scss";
+
+#app {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 #important {
   top: 0;
   position: sticky;
@@ -56,12 +69,6 @@ export default defineComponent({
   text-align: center;
   padding: 18px;
   z-index: 1;
-}
-
-#app {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
 #heading {

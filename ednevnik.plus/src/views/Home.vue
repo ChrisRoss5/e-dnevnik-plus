@@ -78,7 +78,7 @@
       </div>
     </transition>
     <div id="browser">
-      <img src="~@/assets/img/browser.png" />
+      <img src="~@/assets/img/browser2.png" />
     </div>
     <router-link to="/povijest" id="changelog">
       <img src="~@/assets/img/history-icon.png" />
@@ -170,10 +170,8 @@ em {
 #browser {
   align-self: flex-end;
   margin: auto calc(50% - 395px) 0 0;
-  padding-bottom: 40px;
-  border: 1px solid #777777;
-  background: white;
-  box-shadow: 3px 2px 13px 4px #ccc;
+  border: 1px solid rgba(119, 119, 119, 0.507);
+  box-shadow: 3px 2px 13px 4px rgba(204, 204, 204, 0.5);
 }
 
 #changelog {
