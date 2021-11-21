@@ -21,32 +21,40 @@
             spellcheck="false"
             class="card"
             @keyup.enter="loginStudent"
-            autocomplete="on"
+            autocomplete="email"
             autofocus
           />
           <div class="skolehr">@skole.hr</div>
         </div>
         <div>Lozinka:</div>
-        <input
-          v-model="password"
-          type="password"
-          spellcheck="false"
-          class="card"
-          @keyup.enter="loginStudent"
-          autocomplete="on"
-        />
-        <div
+        <div style="position: relative">
+          <input
+            v-model="password"
+            :type="passwordVisible ? 'text' : 'password'"
+            spellcheck="false"
+            class="card"
+            @keyup.enter="loginStudent"
+            autocomplete="password"
+          />
+          <div
+            class="toggle-password material-icons"
+            @click="passwordVisible = !passwordVisible"
+          >
+            {{ passwordVisible ? "visibility_off" : "visibility" }}
+          </div>
+        </div>
+        <button
           class="button"
           :class="{
             'disabled-button': !loginReady || loggingIn,
             loggingIn: loggingIn,
           }"
           :tabindex="loginReady ? 0 : -1"
-          @click="loginStudent"
+          @submit="loginStudent"
           v-wave
         >
           Prijava
-        </div>
+        </button>
       </form>
       <div class="card" id="parents">
         <div class="card-title">
@@ -63,9 +71,7 @@
           Iz pedagoških razloga, ocjene se prikazuju s vremenskim odmakom od 48
           sati.
         </div>
-        <div target="_blank" class="button" @click="loginParent" v-wave>
-          Prijava
-        </div>
+        <div class="button" @click="loginParent" v-wave>Prijava</div>
       </div>
     </div>
   </div>
@@ -81,12 +87,14 @@ export default defineComponent({
     return {
       email: "",
       password: "",
+      passwordVisible: false,
       firstAttempt: true,
       loggingIn: false,
     };
   },
   methods: {
-    async loginStudent() {
+    async loginStudent(e: Event) {
+      e.preventDefault();
       if (!this.loginReady || this.loggingIn) return;
       this.loggingIn = true;
       const errorCard = this.$refs.errorCard as HTMLElement;
@@ -179,17 +187,33 @@ export default defineComponent({
   padding-bottom: 20px;
 }
 
-.skolehr {
+.skolehr,
+.toggle-password {
   position: absolute;
   right: 10px;
-  top: 17.5px;
+  top: 17px;
   color: gray;
   font-size: 15px;
   pointer-events: none;
 }
 
+.toggle-password {
+  pointer-events: auto;
+  font-size: 20px;
+  transition: color 150ms;
+
+  &:hover {
+    cursor: pointer;
+
+    @include themed() {
+      color: t("body-color");
+    }
+  }
+}
+
 .button {
   margin-top: auto;
+  font-size: 1rem;
 }
 
 .loggingIn {

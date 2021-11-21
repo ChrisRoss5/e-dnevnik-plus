@@ -209,13 +209,14 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 #nav-mid :deep(a) {
   display: flex;
   align-items: center;
-  height: 60px;
-  padding: 20px 30px;
+  height: 50px;
+  padding: 0 30px;
   box-shadow: $nav-shadow-bottom;
 }
 
 #nav-top {
   align-items: flex-start;
+  padding-top: 15px;
 }
 
 #nav-mid {
@@ -250,7 +251,7 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 
 #nav-top,
 #collapse {
-  height: 110px !important;
+  height: 104px !important;
   user-select: none;
 }
 
@@ -289,7 +290,7 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 
 #main-title {
   position: relative;
-  font-size: 35px;
+  font-size: 2rem;
   line-height: 35px;
   color: white;
   text-shadow: 0 0 20px $plus-color;
@@ -300,8 +301,8 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
     right: 0;
     top: 100%;
     font-style: italic;
-    font-size: $body-font-size;
-    line-height: 15px;
+    font-size: 1.1rem;
+    line-height: 0.8rem;
     color: $plus-color;
     text-shadow: 0 0 20px white;
   }
@@ -312,7 +313,7 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 }
 
 #welcome {
-  font-size: 24px;
+  font-size: 1.5rem;
   letter-spacing: 2px;
   pointer-events: none;
   color: white;
@@ -329,7 +330,7 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 
 #collapse-arrow {
   margin-left: auto;
-  font-size: 50px;
+  font-size: 3rem;
   width: 35px;
   box-shadow: none !important;
   transition: color 150ms, transform $collapse-duration;

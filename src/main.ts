@@ -54,7 +54,7 @@ VTooltip.options.offset = [0, 10];
 VTooltip.options.instantMove = true;
 
 Chart.register(annotationPlugin);
-Chart.defaults.font.size = 16;
+Chart.defaults.font.size = 14;
 Chart.defaults.maintainAspectRatio = false;
 Chart.defaults.interaction.mode = "index";
 (Chart.defaults.plugins.tooltip.footerFont as any) = { weight: "normal" };

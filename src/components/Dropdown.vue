@@ -159,7 +159,7 @@ export default defineComponent({
   transform-origin: top right;
   right: 0;
   left: auto;
-  font-size: $body-font-size;
+  font-size: 1rem;
 }
 
 .user-dropdown {

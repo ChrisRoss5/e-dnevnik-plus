@@ -32,6 +32,8 @@ export default chromeLocalStorage;
 
 /* Paste testing State Object here */
 
+//let testState: State;
+
 const testState: State = {
   settings: {
     darkTheme: true,

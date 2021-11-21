@@ -95,7 +95,7 @@ export default defineComponent({
 #news-list {
   width: 30vw;
   max-height: 200px;
-  font-size: $body-font-size;
+  font-size: 1rem;
   overflow: auto;
 
   @include themed() {

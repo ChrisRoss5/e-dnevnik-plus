@@ -1,6 +1,5 @@
 $body-color-default: #000000de;
 $body-color-dark: #d8d4cf;
-$body-font-size: 18px;
 $tooltip-background: #000000cc;
 
 $navbar-text-color: #fffc;
@@ -18,9 +17,7 @@ $soft-red: #ff3924;
 $navbar-max-width: 350px;
 $original-page-width: 954px;
 
-$themes: (
-  default: (
-    body-color: $body-color-default,
+$themes: (default: (body-color: $body-color-default,
     white-background: #fff,
     text-disappearing: #fff,
     light-gray: #78909c,
@@ -33,14 +30,12 @@ $themes: (
     gray-blue: #476282,
     light-border-color: #c3cfdd,
     light-light-border-color: #eeeeee,
-    card-shadow: (
-      0 1px 2px 0 rgb(60 64 67 / 30%),
+    card-shadow: (0 1px 2px 0 rgb(60 64 67 / 30%),
       0 1px 3px 1px rgb(60 64 67 / 15%),
     ),
     gray-shadow: 0 0 5px #cacccc,
   ),
-  dark: (
-    body-color: $body-color-dark,
+  dark: (body-color: $body-color-dark,
     white-background: #181a1b,
     text-disappearing: #0D0D0D,
     light-gray: #9e9689,
@@ -53,8 +48,7 @@ $themes: (
     gray-blue: #90abc2,
     light-border-color: #2f4053,
     light-light-border-color: rgb(44 44 44 / 55%),
-    card-shadow: (
-      rgb(43 46 48) 0px 1px 2px 0px,
+    card-shadow: (rgb(43 46 48) 0px 1px 2px 0px,
       rgb(43 46 48) 0px 1px 3px 1px,
     ),
     gray-shadow: 0 0 5px #454545,
@@ -62,18 +56,18 @@ $themes: (
 );
 
 @mixin themed() {
-  @each $theme, $map in $themes {
+
+  @each $theme,
+  $map in $themes {
     .theme--#{$theme} & {
       $theme-map: () !global;
 
-      @each $key, $submap in $map {
+      @each $key,
+      $submap in $map {
         $value: map-get(map-get($themes, $theme), "#{$key}");
-        $theme-map: map-merge(
-          $theme-map,
-          (
-            $key: $value,
-          )
-        ) !global;
+        $theme-map: map-merge($theme-map,
+            ($key: $value,
+            )) !global;
       }
 
       @content;

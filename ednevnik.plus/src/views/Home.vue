@@ -77,9 +77,7 @@
         </div>
       </div>
     </transition>
-    <div id="browser">
-      <img src="~@/assets/img/browser2.png" />
-    </div>
+    <img id="browser" src="~@/assets/img/browser2.png" />
     <router-link to="/povijest" id="changelog">
       <img src="~@/assets/img/history-icon.png" />
     </router-link>
@@ -92,7 +90,6 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "Home",
   mounted() {
-    // todo: fix router typescript
     if (this.$route.hash)
       setTimeout(() => this.$router.replace({ hash: "#jupiiiii" }), 6000);
   },

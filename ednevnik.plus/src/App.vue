@@ -7,9 +7,13 @@
     >
   </div>
   <div id="background">
-    <ul class="circles">
-      <li v-for="i in 10" :key="i"></li>
-    </ul>
+    <img
+      src="@/assets/img/favicon.png"
+      v-for="(rect, i) in rectangles"
+      :key="i"
+      class="rect"
+      :style="rect"
+    />
   </div>
   <div id="heading">
     <router-link to="/" id="title">
@@ -42,19 +46,52 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "App",
+  data() {
+    return {
+      rectangles: [] as Record<string, string>[],
+    };
+  },
   mounted() {
     const path = localStorage.getItem("path");
     if (path) {
       localStorage.removeItem("path");
       this.$router.replace(path);
     }
+
+    for (let i = 0; i < 20; i++)
+      setTimeout(() => this.updateRect(i), this.rand(0, 15000));
+  },
+  methods: {
+    updateRect(i: number) {
+      const transition = this.rand(10000, 20000);
+      const size = this.rand(30, 150);
+      this.rectangles[i] = { bottom: size * -2 + "px", opacity: "1" };
+
+      setTimeout(() => {
+        this.rectangles[i] = {
+          bottom: "100%",
+          opacity: "0",
+          left: this.rand(0, 100) + "%",
+          width: size + "px",
+          height: size + "px",
+          borderRadius: this.rand(size / 10, size / 3) + "px",
+          transform: "translateX(-50%)",
+          transition: `bottom ${transition}ms, opacity ${transition * 0.2}ms ${
+            transition * 0.5
+          }ms`,
+        };
+
+        setTimeout(() => this.updateRect(i), transition);
+      }, 100);
+    },
+    rand(min: number, max: number) {
+      return Math.floor(Math.random() * (max - min + 1) + min);
+    },
   },
 });
 </script>
 
 <style lang="scss">
-@import "styles/circles.scss";
-
 #app {
   min-height: 100%;
   display: flex;
@@ -69,6 +106,22 @@ export default defineComponent({
   text-align: center;
   padding: 18px;
   z-index: 1;
+}
+
+#background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+
+  .rect {
+    /* background: rgba($plus-color, 0.5); */
+    opacity: 0;
+    filter: opacity(0.4);
+    position: absolute;
+  }
 }
 
 #heading {
@@ -140,6 +193,4 @@ export default defineComponent({
     text-align: center;
   }
 }
-
-/* transitions */
 </style>
