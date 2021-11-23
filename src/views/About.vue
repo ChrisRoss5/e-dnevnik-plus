@@ -1,8 +1,7 @@
 <template>
   <div id="about">
-    <div :class="{ loading }" class="flex-center" ref="about">
-      <!-- @/assets/about-app/about-app.html -->
-    </div>
+    <!-- @/assets/about-app/about-app.html -->
+    <div :class="{ loading }" class="flex-center" v-html="content"></div>
     <Spinner :visible="loading"></Spinner>
   </div>
 </template>
@@ -18,15 +17,17 @@ export default defineComponent({
     Spinner,
   },
   async mounted() {
-    const container = this.$refs.about as HTMLElement;
-    var html = await getAboutPage();
+    const html = await getAboutPage();
     if (!html) return;
-    container.innerHTML = html;
+    this.content = html;
     this.loading = false;
+    if (!chrome.storage) return;
+    chrome.storage.sync.remove("newUpdates");
   },
   data() {
     return {
       loading: true,
+      content: "",
     };
   },
 });

@@ -9,7 +9,7 @@ declare global {
 }
 
 // TODO!: devTestMode
-window.devTestMode = true;
+window.devTestMode = false;
 window.devPause = (t) => new Promise((res) => setTimeout(res, t));
 window.devClearLocalStorage = () => chrome.storage.local.clear();
 
@@ -78,8 +78,5 @@ app
   .use(VWave)
   .use(VTooltip)
   .use(VCalendar)
-  /* .use(VueTippy, {
-    defaultProps: { animateFill: true },
-  }) */
   .mixin(GlobalMixin)
   .mount("#app");

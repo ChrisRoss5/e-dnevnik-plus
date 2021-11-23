@@ -10,7 +10,7 @@
       >
         <transition name="subject-colors">
           <div
-            v-if="savedOptions.subjectColors"
+            v-if="savedOptions.subjectColumnColors"
             class="column-colors"
             :style="{ background: subject.columnColors }"
           ></div>
@@ -99,6 +99,7 @@
 
 <script lang="ts">
 import { formatGradeText, setEndOfContenteditable } from "@/scripts/utils";
+import { SubjectsSettings } from "@/store/state";
 import { ExtendedSubjectCache } from "@/views/class/subjects/Subjects.vue";
 import { defineComponent, PropType } from "vue";
 
@@ -110,7 +111,7 @@ export default defineComponent({
       required: true,
     },
     savedOptions: {
-      type: Object as PropType<Record<string, any>>,
+      type: Object as PropType<SubjectsSettings>,
       required: true,
     },
     isOpenedSubject: Boolean,

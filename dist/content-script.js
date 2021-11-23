@@ -24,7 +24,7 @@ function onLogout(e) {
         return;
     else
         e.preventDefault();
-    chrome.storage.sync.clear(() => {
+    chrome.storage.sync.remove("login", () => {
         logoutCleared = true;
         e.target.click();
     });

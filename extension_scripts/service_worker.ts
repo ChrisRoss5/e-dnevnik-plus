@@ -22,8 +22,28 @@ function onInstalled(details: any) {
       chrome.storage.sync.clear();
       chrome.storage.local.clear();
       chrome.tabs.create({ url: "https://ednevnik.plus/#azuriran" });
-    }
+    } else if (previousVersion == "5.0") update501();
   }
+}
+
+function update501() {
+  chrome.storage.local.get(null, (state) => {
+    if (!state || !state.users) return;
+    state.users.forEach((user: any) => {
+      const subjectsSettings = user.settings.subjectsSettings;
+      const showColors: boolean = subjectsSettings.subjectColors;
+      delete subjectsSettings.subjectColors;
+      user.settings.subjectsSettings = {
+        ...subjectsSettings,
+        ...{
+          subjectLineColors: showColors,
+          subjectColumnColors: showColors,
+        },
+      };
+    });
+    chrome.storage.local.set(state);
+  });
+  chrome.storage.sync.set({"newUpdates": true, "updateNotif": true});
 }
 
 function onMessage(request: string, sender: any, sendResponse: () => any) {

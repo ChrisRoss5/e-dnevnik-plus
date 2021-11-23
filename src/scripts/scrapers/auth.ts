@@ -65,7 +65,7 @@ async function login(
   // Old or new user
   const user = store.state.users.find((u) => u.email == email);
   window.gtag("event", "request", {
-    event_category: "user auth",
+    event_category: "user auth 5.0.1",
     event_label: (user ? "" : "NEW ") + "user signed in",
     value: classesList.length,
   });

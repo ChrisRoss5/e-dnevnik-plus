@@ -22,7 +22,7 @@ let logoutCleared = false;
 function onLogout(e: MouseEvent) {
   if (logoutCleared) return;
   else e.preventDefault();
-  chrome.storage.sync.clear(() => {
+  chrome.storage.sync.remove("login", () => {
     logoutCleared = true;
     (e.target as HTMLAnchorElement).click();
   });

@@ -36,7 +36,8 @@ export interface SubjectsSettings {
   margin: number;
   zoom: number;
   expandTablesOnHover: boolean;
-  subjectColors: boolean;
+  subjectLineColors: boolean,
+  subjectColumnColors: boolean,
   countAvgs: boolean;
   sortByDragging: boolean;
   subjectsOrder: Record<string, string[] | undefined>;

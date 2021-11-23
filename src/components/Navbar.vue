@@ -77,11 +77,15 @@
 <script lang="ts" scoped>
 import { MutationTypes } from "@/store/mutations";
 import { defineComponent } from "vue";
+import { useToast } from "vue-toastification";
 import NavbarList from "./NavbarList.vue";
+
+const toast = useToast();
 
 export interface NavbarLink {
   name: string;
   icon: string;
+  blinking?: boolean;
 }
 
 export default defineComponent({
@@ -124,6 +128,15 @@ export default defineComponent({
   mounted() {
     // If navbar is expanded, always show a "welcome" message for a second
     setTimeout(() => (this.mounted = true), this.navCollapsed ? 100 : 1000);
+    if (!chrome.storage) return;
+    chrome.storage.sync.get(["newUpdates", "updateNotif"], (data) => {
+      this.linksBottom[1].blinking = data.newUpdates;
+      if (data.updateNotif)
+        toast.success("Proširenje je ažurirano! Nova verzija: 5.0.1", {
+          timeout: 10000,
+        });
+      chrome.storage.sync.remove("updateNotif");
+    });
   },
   methods: {
     initResizeObserver() {
@@ -273,7 +286,7 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 }
 
 #app-logo {
-  margin-right: 25px;
+  margin: 3px 25px 0 0;
 
   img {
     height: 50px;

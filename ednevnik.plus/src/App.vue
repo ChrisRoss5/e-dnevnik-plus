@@ -7,13 +7,12 @@
     >
   </div>
   <div id="background">
-    <img
-      src="@/assets/img/favicon.png"
+    <div
       v-for="(rect, i) in rectangles"
       :key="i"
       class="rect"
       :style="rect"
-    />
+    ></div>
   </div>
   <div id="heading">
     <router-link to="/" id="title">
@@ -27,7 +26,7 @@
     <div style="color: gray">
       Ovo proširenje nije službena CARNET-ova aplikacija.
     </div>
-    2019.-2021. |
+    2019.-{{ new Date().getFullYear() }}. |
     <a
       class="plus"
       href="mailto:kristijan.ros@gmail.com?subject=e-Dnevnik Plus — Kontakt"
@@ -42,13 +41,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { CSSProperties, defineComponent } from "vue";
 
 export default defineComponent({
   name: "App",
   data() {
     return {
-      rectangles: [] as Record<string, string>[],
+      rectangles: [] as CSSProperties[],
+      speed: 20000,
     };
   },
   mounted() {
@@ -57,30 +57,30 @@ export default defineComponent({
       localStorage.removeItem("path");
       this.$router.replace(path);
     }
-
-    for (let i = 0; i < 20; i++)
-      setTimeout(() => this.updateRect(i), this.rand(0, 15000));
+    for (let i = 0; i < 10; i++) this.updateRect(i, true);
   },
   methods: {
-    updateRect(i: number) {
-      const transition = this.rand(10000, 20000);
+    updateRect(i: number, init?: boolean) {
       const size = this.rand(30, 150);
-      this.rectangles[i] = { bottom: size * -2 + "px", opacity: "1" };
-
+      const bottomPerc = this.rand(0, 100);
+      const bottom = init ? bottomPerc + "%" : -size + "px";
+      const transition =
+        this.rand(this.speed, this.speed * 2) *
+        (init ? 1 - bottomPerc / 100 : 1);
+      this.rectangles[i] = { bottom, opacity: "1" };
       setTimeout(() => {
         this.rectangles[i] = {
           bottom: "100%",
           opacity: "0",
-          left: this.rand(0, 100) + "%",
+          left: this.rand(-10, 100) + "%",
           width: size + "px",
           height: size + "px",
           borderRadius: this.rand(size / 10, size / 3) + "px",
-          transform: "translateX(-50%)",
-          transition: `bottom ${transition}ms, opacity ${transition * 0.2}ms ${
-            transition * 0.5
-          }ms`,
+          animation: "rotate " + size * 100 + "ms linear infinite",
+          transition: `bottom ${transition}ms ease-out, opacity ${
+            transition * 0.2
+          }ms ${transition * 0.5}ms`,
         };
-
         setTimeout(() => this.updateRect(i), transition);
       }, 100);
     },
@@ -115,12 +115,29 @@ export default defineComponent({
   right: 0;
   bottom: 0;
   z-index: -1;
+  opacity: 0;
+  transform: scale(0) rotate(45deg);
+  animation: show-background 3s forwards;
 
   .rect {
-    /* background: rgba($plus-color, 0.5); */
+    background: rgba($plus-color, 0.5);
     opacity: 0;
     filter: opacity(0.4);
     position: absolute;
+    will-change: bottom, opacity;
+  }
+}
+
+@keyframes show-background {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
   }
 }
 

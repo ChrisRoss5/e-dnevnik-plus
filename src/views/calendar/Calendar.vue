@@ -1,16 +1,16 @@
 <template>
   <div id="calendar-container">
     <div
-      class="toolbar card"
+      class="card toolbar"
       :style="{ 'margin-right': $reactive.userOffsetWidth }"
     >
       Školski kalendar {{ schoolYearTitle }}
-      <div id="options" class="toolbar-options">
+      <div class="flex-center toolbar-options">
         <transition-group name="opacity">
           <template v-if="settings.showEntireCalendar">
             <div
               :key="1"
-              class="material-icons"
+              class="material-icons flex-center"
               @click="zoomOptionClicked(-1)"
               v-tooltip="'Povećaj prikaz'"
               v-wave
@@ -19,7 +19,7 @@
             </div>
             <div
               :key="2"
-              class="material-icons"
+              class="material-icons flex-center"
               @click="zoomOptionClicked(1)"
               v-tooltip="'Smanji prikaz'"
               v-wave
@@ -29,7 +29,7 @@
           </template>
         </transition-group>
         <div
-          class="material-icons"
+          class="material-icons flex-center"
           :class="{ 'option-enabled': settings.showEntireCalendar }"
           @click="toggleCalendarView"
           v-tooltip="'Prikaži cijeli kalendar'"

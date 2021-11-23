@@ -7,6 +7,8 @@ interface InitData {
   classesList: ClassInfo[];
 }
 
+const { width } = window.screen;
+
 export const defaultUserSettings: Settings = {
   autoSignIn: true,
   classTabsOrder: [
@@ -22,7 +24,8 @@ export const defaultUserSettings: Settings = {
     margin: 0,
     zoom: 2,
     expandTablesOnHover: true,
-    subjectColors: false,
+    subjectLineColors: false,
+    subjectColumnColors: false,
     countAvgs: false,
     sortByDragging: true,
     subjectsOrder: {},
@@ -30,7 +33,7 @@ export const defaultUserSettings: Settings = {
   },
   calendarSettings: {
     showEntireCalendar: false,
-    zoom: 3,
+    zoom: width >= 1440 ? 4 : 3,
     customNotes: [],
   },
   calculatorSettings: {
@@ -88,6 +91,6 @@ export default function newUser(initData: InitData): User {
     ...initData,
     signedIn: true,
     settings: defaultUserSettings,
-    classNews: []
+    classNews: [],
   };
 }

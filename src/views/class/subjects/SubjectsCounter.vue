@@ -122,8 +122,10 @@ export default defineComponent({
       flex: 1;
     }
 
-    &:hover .edit {
+    &:hover .edit,
+    input:focus + .edit {
       opacity: 0;
+      pointer-events: none;
     }
   }
 

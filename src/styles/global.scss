@@ -50,6 +50,7 @@ body {
   background-size: cover;
   background-repeat: no-repeat;
   color: $body-color-default;
+  font-size: inherit;
   transition: opacity 1s;
 
   &.theme--dark {
@@ -247,7 +248,7 @@ iframe {
 .toolbar {
   display: flex;
   flex-wrap: wrap;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   min-height: 44px;
   padding: 0 30px;
   white-space: nowrap;
@@ -266,6 +267,7 @@ iframe {
 
 .toolbar-options {
   margin-left: auto;
+  align-self: stretch;
 
   &>div {
     position: relative;

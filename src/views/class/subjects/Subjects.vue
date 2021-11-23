@@ -102,7 +102,7 @@ import {
   ClassInfo,
   GradesByCategory,
   SubjectCache,
-  SubjectsSettings
+  SubjectsSettings,
 } from "@/store/state";
 import { defineComponent } from "vue";
 import { SlickItem, SlickList } from "vue-slicksort";
@@ -230,33 +230,28 @@ export default defineComponent({
       const zoomChanged = optionName.includes("zoom");
       switch (optionName) {
         case "expandTablesOnHover":
-          savedOptions.expandTablesOnHover = !savedOptions.expandTablesOnHover;
+        case "countAvgs":
+          savedOptions[optionName] = !savedOptions[optionName];
           break;
         case "expandTables":
           this.expandTables = option.enabled ? 0 : this.expandTables + 1;
           return this.sendAnalyticsButtonClick(optionName, !option.enabled);
         case "zoomIn":
-          savedOptions.zoom -= 1;
-          break;
         case "zoomOut":
-          savedOptions.zoom += 1;
+          savedOptions.zoom = Math.min(
+            Math.max(savedOptions.zoom + (optionName == "zoomIn" ? -1 : 1), 1),
+            this.subjects.length,
+          );
           break;
-        case "subjectColors":
-          savedOptions.subjectColors = !savedOptions.subjectColors;
+        case "subjectLineColors":
+        case "subjectColumnColors":
+          savedOptions[optionName] = !savedOptions[optionName];
           this.subjects.forEach(this.updateSubjectColors);
-          break;
-        case "countAvgs":
-          savedOptions.countAvgs = !savedOptions.countAvgs;
           break;
         case "updateSubjects":
           this.updateSubjects(true);
           return this.sendAnalyticsButtonClick(optionName);
       }
-      if (zoomChanged)
-        savedOptions.zoom = Math.min(
-          Math.max(savedOptions.zoom, 1),
-          this.subjects.length,
-        );
       this.sendAnalyticsButtonClick(
         optionName,
         zoomChanged ? savedOptions.zoom : !option.enabled,
@@ -305,7 +300,11 @@ export default defineComponent({
       const gradesCount = (gradesByCategory || []).reduce((a, row) => {
         return a + row.grades.flat().length;
       }, 0);
-      if (this.savedOptions.subjectColors) this.updateSubjectColors(subject);
+      if (
+        this.savedOptions.subjectLineColors ||
+        this.savedOptions.subjectColumnColors
+      )
+        this.updateSubjectColors(subject);
       if (!original) subject.gradesCount = gradesCount;
       return gradesCount;
     },
@@ -461,11 +460,17 @@ export default defineComponent({
           tooltip: "Smanji prikaz",
           hideWhenSubjectIsOpen: true,
         },
-        subjectColors: {
+        subjectLineColors: {
           icon: "border_color",
-          tooltip: "Prikaži boje ocjena",
-          fontSize: "18px",
-          enabled: this.savedOptions.subjectColors,
+          tooltip: "Prikaži boje ocjena po ukupnom broju",
+          fontSize: "1rem",
+          enabled: this.savedOptions.subjectLineColors,
+        },
+        subjectColumnColors: {
+          icon: "format_paint",
+          tooltip: "Prikaži boje ocjena po mjesecima",
+          fontSize: "1.15rem",
+          enabled: this.savedOptions.subjectColumnColors,
         },
         countAvgs: {
           icon: "functions",

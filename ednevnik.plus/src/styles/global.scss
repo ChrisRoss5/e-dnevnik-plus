@@ -21,6 +21,8 @@ body {
   margin: 0;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
+  /* background: linear-gradient(110deg, #e3f1ff, #0000, #dfefff); */
+  background: radial-gradient(circle at 0% 260%, #c5f7db 40%, #0000 70%), linear-gradient(110deg, #cae0ee, #0000, #f5def0);
   touch-action: manipulation;
 }
 

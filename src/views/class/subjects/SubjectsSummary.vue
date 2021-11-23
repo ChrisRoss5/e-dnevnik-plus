@@ -45,7 +45,7 @@
           'option-enabled': option.enabled,
           'option-hidden': option.hideWhenSubjectIsOpen && isOpenedSubject,
         }"
-        :style="{ 'font-size': option.fontSize || '' }"
+        :style="{ 'font-size': option.fontSize + ' !important' || '' }"
         v-tooltip="option.tooltip"
         v-wave
         @click.self="optionClicked(optionName)"
@@ -67,6 +67,7 @@
 <script lang="ts">
 import Dropdown, { DropdownItem } from "@/components/Dropdown.vue";
 import { formatNum } from "@/scripts/utils";
+import { SubjectsSettings } from "@/store/state";
 import { defineComponent, PropType } from "vue";
 import News from "./News.vue";
 import { Option } from "./Subjects.vue";
@@ -83,7 +84,7 @@ export default defineComponent({
       required: true,
     },
     savedOptions: {
-      type: Object as PropType<Record<string, any>>,
+      type: Object as PropType<SubjectsSettings>,
       required: true,
     },
     finalGradeOriginal: { type: Number, required: true },

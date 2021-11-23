@@ -50,7 +50,7 @@
             loggingIn: loggingIn,
           }"
           :tabindex="loginReady ? 0 : -1"
-          @submit="loginStudent"
+          @click="loginStudent"
           v-wave
         >
           Prijava

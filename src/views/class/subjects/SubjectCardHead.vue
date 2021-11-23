@@ -68,7 +68,7 @@
     </div>
     <transition name="subject-colors">
       <div
-        v-if="savedOptions.subjectColors"
+        v-if="savedOptions.subjectLineColors"
         class="line-colors"
         :style="{ background: subject.lineColors }"
       ></div>
@@ -78,7 +78,7 @@
 
 <script lang="ts">
 import { formatNum, setEndOfContenteditable } from "@/scripts/utils";
-import { GradesByCategory } from "@/store/state";
+import { GradesByCategory, SubjectsSettings } from "@/store/state";
 import { ExtendedSubjectCache } from "@/views/class/subjects/Subjects.vue";
 import { defineComponent, PropType } from "vue";
 
@@ -90,7 +90,7 @@ export default defineComponent({
       required: true,
     },
     savedOptions: {
-      type: Object as PropType<Record<string, any>>,
+      type: Object as PropType<SubjectsSettings>,
       required: true,
     },
   },

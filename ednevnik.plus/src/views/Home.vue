@@ -9,7 +9,7 @@
         id="main"
         class="main-message"
       >
-        Proširenje je ažurirano na najnoviju verziju 5.0!
+        Proširenje je ažurirano na najnoviju verziju 5.0.1!
       </div>
       <div v-else id="main">
         <div id="downloads">
@@ -110,6 +110,7 @@ em {
 }
 
 .card {
+  background: white;
   padding: 10px 20px;
   margin: 10px 0;
 }
@@ -133,6 +134,8 @@ em {
     align-items: center;
     transition: background-color 150ms;
     margin-right: 10px;
+    cursor: pointer;
+
 
     &:first-child {
       flex: 1;
@@ -140,11 +143,6 @@ em {
 
     &:not(:first-child) img {
       margin: 0 !important;
-    }
-
-    &:hover {
-      cursor: pointer;
-      background: #fff;
     }
   }
 }

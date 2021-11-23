@@ -1,7 +1,6 @@
 # e-Dnevnik Plus
 
-###### Verzija: 5.0
-
+###### Verzija:
 ## Kako instalirati proširenje?
 
 Preuzmi [/dist](dist) i povuci na `chrome://extensions/` (_developer mode_ omogućen)
@@ -21,3 +20,6 @@ Preuzmi [verziju iz trgovine](https://chrome.google.com/webstore/detail/e-dnevni
   * [/service-worker.ts](extension_scripts/service_worker.ts) zamijenio je "background.js" iz manifesta v2
   * [/content-script.ts](extension_scripts/content-script.ts) je cijeli e-Dnevnik Plus Classic
 * Ostali dokumenti sastav su Vue projekta koji tvore e-Dnevnik Plus App u [/dist/app](dist/app)
+
+
+Više informacija uskoro...
