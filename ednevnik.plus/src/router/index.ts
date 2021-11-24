@@ -2,8 +2,6 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Changelog from "../views/Changelog.vue";
 import Home from "../views/Home.vue";
 import PrivacyPolicy from "../views/PrivacyPolicy.vue";
-import Uninstalled from "../views/Uninstalled.vue";
-import Donations from "../views/Donations.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -20,11 +18,11 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/deinstalacija",
-    component: Uninstalled,
+    component: () => import("../views/Uninstalled.vue"),
   },
   {
     path: "/donacije",
-    component: Donations,
+    component: () => import("../views/Donations.vue"),
   },
   {
     path: "/:pathMatch(.*)",

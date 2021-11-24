@@ -12,7 +12,7 @@
       </div>
     </h2>
     <template v-if="!selectedApp">
-      <h3>Verzija 5.0.1<span>(22.11.2021.)</span></h3>
+      <h3>Verzija {{ $lastVersion }}<span>(22.11.2021.)</span></h3>
       <ul>
         <li>e-Dnevnik Plus <span class="plus">App</span>:</li>
         <ul>

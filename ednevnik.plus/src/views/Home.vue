@@ -9,7 +9,7 @@
         id="main"
         class="main-message"
       >
-        Proširenje je ažurirano na najnoviju verziju 5.0.1!
+        Proširenje je ažurirano na najnoviju verziju {{ $lastVersion }}!
       </div>
       <div v-else id="main">
         <div id="downloads">
@@ -77,7 +77,9 @@
         </div>
       </div>
     </transition>
-    <img id="browser" src="~@/assets/img/browser2.png" />
+    <div id="browser">
+      <img src="~@/assets/img/browser.png" />
+    </div>
     <router-link to="/povijest" id="changelog">
       <img src="~@/assets/img/history-icon.png" />
     </router-link>
@@ -136,7 +138,6 @@ em {
     margin-right: 10px;
     cursor: pointer;
 
-
     &:first-child {
       flex: 1;
     }
@@ -163,10 +164,16 @@ em {
 }
 
 #browser {
-  align-self: flex-end;
-  margin: auto calc(50% - 395px) 0 0;
-  border: 1px solid rgba(119, 119, 119, 0.507);
-  box-shadow: 3px 2px 13px 4px rgba(204, 204, 204, 0.5);
+  position: relative;
+  height: 462px;
+
+  img {
+    position: absolute;
+    height: 462px;
+    transform: translateX(-1720px);
+    border: 1px solid rgba(119, 119, 119, 0.507);
+    box-shadow: 3px 2px 13px 4px rgba(204, 204, 204, 0.5);
+  }
 }
 
 #changelog {
@@ -193,12 +200,13 @@ em {
   }
 
   #browser {
-    width: 1200px;
-    margin-right: calc(50% - 165px);
+    height: 231px;
+    width: 100%;
 
     img {
-      width: 100%;
-      height: 100%;
+      right: 0;
+      transform: scale(0.5);
+      transform-origin: top right;
     }
   }
 }
