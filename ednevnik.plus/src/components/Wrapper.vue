@@ -5,11 +5,12 @@
         Tvoja trenutno instalirana verzija proširenja: {{ $lastVersion }}
       </strong>
       <template v-else>
-        Nova verzija za učenike i roditelje je stigla!
+        Više od <strong>40,000</strong> učenika koristi e-Dnevnik Plus svaki tjedan!
+        <!-- Nova verzija za učenike i roditelje je stigla!
         <strong
           >Postojeći korisnici trebaju potvrditi nova dopuštenja kako bi
           proširenje nastavilo raditi.</strong
-        >
+        > -->
       </template>
     </div>
     <div id="background">
