@@ -1,6 +1,6 @@
 # e-Dnevnik Plus
 
-###### Verzija:
+###### Verzija: 5.0.1
 ## Kako instalirati proširenje?
 
 Preuzmi [/dist](dist) i povuci na `chrome://extensions/` (_developer mode_ omogućen)
