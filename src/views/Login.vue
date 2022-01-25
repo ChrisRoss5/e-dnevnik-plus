@@ -126,7 +126,7 @@ export default defineComponent({
   },
   computed: {
     loginReady(): boolean {
-      return (!!this.email && !!this.password) || true;
+      return !!this.email && !!this.password;
     },
   },
 });

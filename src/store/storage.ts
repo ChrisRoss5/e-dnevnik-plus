@@ -249,11 +249,11 @@ const testState: State = {
               gradesByCategory: [
                 {
                   name: "Usvojenost programskih sadržaja",
-                  grades: [[], [], [5], [5], [], [], [5], [5], [], []],
+                  grades: [[], [1], [2], [2], [2], [], [2], [2], [], []],
                 },
                 {
                   name: "Primjena znanja",
-                  grades: [[], [], [5], [5], [], [], [5], [5], [], []],
+                  grades: [[], [], [2], [5], [4], [], [5], [5], [], []],
                 },
                 {
                   name: "Sudjelovanje u nastavnom procesu",
@@ -271,7 +271,7 @@ const testState: State = {
                   ],
                 },
               ],
-              finalGrade: 5,
+              finalGrade: 3,
               lastNote: {
                 note: "Projektni zadatak: JS Browser BOM",
                 date: "21.4.2021.",
@@ -312,18 +312,18 @@ const testState: State = {
               gradesByCategory: [
                 {
                   name: "Usvojenost programskih sadržaja",
-                  grades: [[], [], [5], [5], [], [], [], [], [5], []],
+                  grades: [[], [], [5], [4], [2], [], [], [], [5], []],
                 },
                 {
                   name: "Primjena znanja",
-                  grades: [[5], [], [5], [5, 5], [], [5], [], [], [3], []],
+                  grades: [[5], [], [5], [2, 3], [], [2], [], [], [3], []],
                 },
                 {
                   name: "Sudjelovanje u nastavnom procesu",
-                  grades: [[], [], [], [5], [], [], [5, 5], [], [3, 1], []],
+                  grades: [[], [], [], [2], [], [], [2, 4], [], [3, 1], []],
                 },
               ],
-              finalGrade: 5,
+              finalGrade: 4,
               lastNote: {
                 note: "Projektni zadatak Knjižnica",
                 date: "24.5.2021.",
@@ -457,7 +457,7 @@ const testState: State = {
                 {
                   name:
                     "001. usvojenost temeljnih koncepata političke i ekonomske pismenosti",
-                  grades: [[], [], [4], [], [], [5], [5], [], [4], []],
+                  grades: [[], [], [4], [], [], [3], [5], [], [4], []],
                 },
                 {
                   name: "002. vještina primjene naučenih koncepata",

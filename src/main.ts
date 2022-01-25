@@ -9,7 +9,7 @@ declare global {
 }
 
 // TODO!: devTestMode
-window.devTestMode = false;
+window.devTestMode = true;
 window.devPause = (t) => new Promise((res) => setTimeout(res, t));
 window.devClearLocalStorage = () => chrome.storage.local.clear();
 
