@@ -97,8 +97,6 @@ export default defineComponent({
 
 <style lang="scss">
 #wrapper {
-  flex: 1;
-  min-height: 100%;
   display: flex;
   flex-direction: column;
 }

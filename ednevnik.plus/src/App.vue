@@ -1,8 +1,6 @@
 <template>
   <Wrapper></Wrapper>
-  <transition name="previews">
-    <Previews v-if="showPreviews"></Previews>
-  </transition>
+  <Previews v-if="$route.path == '/'"></Previews>
 </template>
 
 <script lang="ts">
@@ -13,30 +11,28 @@ import Previews from "./components/Previews.vue";
 export default defineComponent({
   name: "App",
   components: { Wrapper, Previews },
-  data() {
-    return {
-      showPreviews: false,
-    };
-  },
   mounted() {
     const path = localStorage.getItem("path");
     if (path) {
       localStorage.removeItem("path");
       this.$router.replace(path);
     }
-  },
-  watch: {
-    $route(to) {
-      this.showPreviews = to.path == "/";
-    },
+    document.body.addEventListener("scroll", () => {
+      if (this.$route.path != "/") return;
+      if (document.body.scrollTop == 0)
+        document
+          .querySelector("#previews")!
+          .scrollIntoView({ behavior: "smooth" });
+    });
   },
 });
 </script>
 
 <style lang="scss">
 #app {
-  display: flex;
-  height: 100%;
+  & > div {
+    min-height: 100vh;
+  }
 }
 
 /* transitions */
