@@ -17,13 +17,36 @@ export default defineComponent({
       localStorage.removeItem("path");
       this.$router.replace(path);
     }
-    document.body.addEventListener("scroll", () => {
+    let prevent = false;
+    let scrollTop = document.body.scrollTop;
+    document.body.addEventListener("scroll", (e) => {
+      if (prevent) e.preventDefault();
       if (this.$route.path != "/") return;
-      if (document.body.scrollTop == 0)
-        document
-          .querySelector("#previews")!
-          .scrollIntoView({ behavior: "smooth" });
+      if (scrollTop == 0) {
+        this.scroll(
+          document.body.scrollTop +
+            document.querySelector("#tour")!.getBoundingClientRect().top,
+          500,
+        );
+      }
+      scrollTop = document.body.scrollTop;
     });
+  },
+  methods: {
+    scroll(elementY: number, duration: number) {
+      var startingY = document.body.scrollTop;
+      var diff = elementY - startingY;
+      var start = 0;
+      window.requestAnimationFrame(function step(timestamp) {
+        if (!start) start = timestamp;
+        var time = timestamp - start;
+        var percent = Math.min(time / duration, 1);
+        document.body.scrollTo(0, startingY + diff * percent);
+        if (time < duration) {
+          window.requestAnimationFrame(step);
+        }
+      });
+    },
   },
 });
 </script>
