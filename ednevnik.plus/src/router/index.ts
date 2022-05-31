@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Changelog from "../views/Changelog.vue";
+import Author from "../views/Author.vue";
 import Home from "../views/Home.vue";
 import PrivacyPolicy from "../views/PrivacyPolicy.vue";
+
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -15,6 +17,10 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/povijest",
     component: Changelog,
+  },
+  {
+    path: "/autor",
+    component: Author,
   },
   {
     path: "/deinstalacija",

@@ -5,13 +5,18 @@
         Tvoja trenutno instalirana verzija proširenja: {{ $lastVersion }}
       </strong>
       <template v-else>
-        Više od <strong>50,000</strong> učenika koristi e-Dnevnik Plus svaki tjedan!
+        Više od <strong>80,000</strong> učenika i
+        <strong>30,000</strong> nastavnika koristi e-Dnevnik Plus svaki tjedan!
         <!-- Nova verzija za učenike i roditelje je stigla!
         <strong
           >Postojeći korisnici trebaju potvrditi nova dopuštenja kako bi
           proširenje nastavilo raditi.</strong
         > -->
       </template>
+      <div id="urls">
+        <router-link to="/povijest">Verzije</router-link
+        ><router-link to="/autor">Autor</router-link>
+      </div>
     </div>
     <div id="background">
       <div
@@ -29,22 +34,28 @@
       <div id="subtitle">Proširenje za školski e-Dnevnik</div>
     </div>
     <router-view class="router-view"> </router-view>
-    <div id="footer" :class="{ default: $route.path != '/' }">
-      <div style="color: gray">
-        Ovo proširenje nije službena CARNET-ova aplikacija.
+    <transition name="opacity">
+      <div
+        v-show="$route.path != '/' || scrollTop == 0 || $isMobile"
+        id="footer"
+        :class="{ default: $route.path != '/' }"
+      >
+        <div style="color: gray">
+          Ovo proširenje nije službena CARNET-ova aplikacija.
+        </div>
+        2019.-{{ new Date().getFullYear() }}. |
+        <a
+          class="plus"
+          href="mailto:kristijan.ros@gmail.com?subject=e-Dnevnik Plus — Kontakt"
+        >
+          kristijan.ros@gmail.com</a
+        >
+        |
+        <router-link to="politika-privatnosti" class="plus">
+          politika privatnosti</router-link
+        >
       </div>
-      2019.-{{ new Date().getFullYear() }}. |
-      <a
-        class="plus"
-        href="mailto:kristijan.ros@gmail.com?subject=e-Dnevnik Plus — Kontakt"
-      >
-        kristijan.ros@gmail.com</a
-      >
-      |
-      <router-link to="politika-privatnosti" class="plus">
-        politika privatnosti</router-link
-      >
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -55,13 +66,17 @@ export default defineComponent({
   name: "Wrapper",
   data() {
     return {
-      isHomepage: false,
       rectangles: [] as CSSProperties[],
       speed: 20000,
+      scrollTop: 0,
     };
   },
   mounted() {
     for (let i = 0; i < 10; i++) this.updateRect(i, true);
+    document.body.addEventListener(
+      "scroll",
+      () => (this.scrollTop = document.body.scrollTop),
+    );
   },
   methods: {
     updateRect(i: number, init?: boolean) {
@@ -109,6 +124,18 @@ export default defineComponent({
   text-align: center;
   padding: 18px;
   z-index: 1;
+
+  #urls {
+    position: absolute;
+    right: 18px;
+    top: 18px;
+  }
+
+  a:first-of-type {
+    padding-right: 10px;
+    margin-right: 10px;
+    border-right: 1px solid white;
+  }
 }
 
 #background {
@@ -211,6 +238,11 @@ export default defineComponent({
     position: relative;
     padding: 20px;
     text-align: center;
+  }
+
+  #urls {
+    padding-top: 10px;
+    position: static !important;
   }
 }
 </style>

@@ -80,9 +80,7 @@
     <div id="browser">
       <img src="~@/assets/img/browser.png" />
     </div>
-    <router-link to="/povijest" id="changelog">
-      <img src="~@/assets/img/history-icon.png" />
-    </router-link>
+
   </div>
 </template>
 
@@ -130,12 +128,12 @@ em {
 
 .download-item {
   display: flex;
+  gap: 10px;
 
   .card {
     display: flex;
     align-items: center;
     transition: background-color 150ms;
-    margin-right: 10px;
     cursor: pointer;
 
     &:first-child {
@@ -174,14 +172,6 @@ em {
     border: 1px solid rgba(119, 119, 119, 0.507);
     box-shadow: 3px 2px 13px 4px rgba(204, 204, 204, 0.5);
   }
-}
-
-#changelog {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 2;
-  filter: invert(1);
 }
 
 @media only screen and (max-width: 768px) {

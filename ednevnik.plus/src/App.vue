@@ -11,41 +11,51 @@ import Previews from "./components/Previews.vue";
 export default defineComponent({
   name: "App",
   components: { Wrapper, Previews },
+  data() {
+    return {
+      scrolling: false
+    };
+  },
   mounted() {
     const path = localStorage.getItem("path");
     if (path) {
       localStorage.removeItem("path");
       this.$router.replace(path);
     }
-    let prevent = false;
-    let scrollTop = document.body.scrollTop;
-    document.body.addEventListener("scroll", (e) => {
-      if (prevent) e.preventDefault();
-      if (this.$route.path != "/") return;
-      if (scrollTop == 0) {
+    document.body.addEventListener("wheel", (e) => {
+      if (this.$route.path != "/" || this.scrolling) return;
+      if (document.body.scrollTop == 0 && e.deltaY > 0) {
         this.scroll(
-          document.body.scrollTop +
-            document.querySelector("#tour")!.getBoundingClientRect().top,
-          500,
+          document.querySelector("#tour")!.getBoundingClientRect().top,
+          250,
         );
+      } else if (e.deltaY < 0) {
+        this.scroll(-document.body.scrollTop, 250);
       }
-      scrollTop = document.body.scrollTop;
     });
   },
   methods: {
-    scroll(elementY: number, duration: number) {
-      var startingY = document.body.scrollTop;
-      var diff = elementY - startingY;
-      var start = 0;
-      window.requestAnimationFrame(function step(timestamp) {
-        if (!start) start = timestamp;
-        var time = timestamp - start;
-        var percent = Math.min(time / duration, 1);
-        document.body.scrollTo(0, startingY + diff * percent);
-        if (time < duration) {
-          window.requestAnimationFrame(step);
-        }
-      });
+    /* https://stackoverflow.com/a/44484186/10264782 */
+    scroll(distance: number, duration: number) {
+      var initialY = document.body.scrollTop;
+      var y = initialY + distance;
+      var baseY = (initialY + y) * 0.5;
+      var difference = initialY - baseY;
+      var startTime = performance.now();
+      this.scrolling = true;
+      const stop = () => this.scrolling = false;
+
+      function step() {
+        var normalizedTime = (performance.now() - startTime) / duration;
+        if (normalizedTime > 1) normalizedTime = 1;
+        document.body.scrollTo(
+          0,
+          baseY + difference * Math.cos(normalizedTime * Math.PI),
+        );
+        if (normalizedTime < 1) window.requestAnimationFrame(step);
+        else stop();
+      }
+      window.requestAnimationFrame(step);
     },
   },
 });

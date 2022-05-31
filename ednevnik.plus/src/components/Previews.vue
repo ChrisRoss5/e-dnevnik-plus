@@ -20,9 +20,9 @@
           :class="{ plus: mode == 'double' }"
           >Dupli prikaz</a
         >
-        <a class="card" @click="changeSpeed" :class="{ plus: fast }">{{
-          fast ? "x2" : "x1"
-        }}</a>
+        <a class="card" @click="changeSpeed" :class="{ plus: fast }"
+          >Brzina {{ fast ? "x2" : "x1" }}</a
+        >
       </div>
     </div>
     <div id="videos" class="flex-center" :class="{ double: mode == 'double' }">
@@ -145,9 +145,28 @@ video {
   transform: translate(-50%, -50%);
   max-height: 70vh;
   outline: none;
-  transition: transform 250ms;
 }
 
 @media only screen and (max-width: 768px) {
+  #tour {
+    padding-top: 20px;
+  }
+
+  #types {
+    width: 100%;
+    gap: 0;
+  }
+
+  video {
+    width: 100% !important;
+  }
+
+  #videos {
+    flex-direction: column;
+    &.double video {
+      transform: none !important;
+      position: static !important;
+    }
+  }
 }
 </style>
