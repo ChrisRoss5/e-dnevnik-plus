@@ -16,9 +16,9 @@
       <ul>
         <li>e-Dnevnik Plus <span class="plus">App</span>:</li>
         <ul>
-          <li>
+          <!-- <li>
             Ispravljena greška: zbroj novih ocjena i bilješki uvijek je bio 3.
-          </li>
+          </li> -->
           <li>
             Opcija "Prikaži boje ocjena" podjeljena je na dvije nove opcije:
             <ul>
