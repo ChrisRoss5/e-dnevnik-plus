@@ -1,5 +1,64 @@
 [
   {
+    "startingDate": "5.9.2022",
+    "endingDate": "21.6.2023",
+    "edgeDays": {
+      "5.9.2022": "Počinje prvo polugodište",
+      "23.12.2022": "Završava prvo polugodište",
+      "9.1.2023": "Počinje drugo polugodište",
+      "26.5.2023": "Završava drugo polugodište za maturante",
+      "21.6.2023": "Završava drugo polugodište"
+    },
+    "holidays": {
+      "1.11.2022": "Svi sveti",
+      "18.11.2022": "Dan sjećanja na žrtve Domovinskog rata",
+      "25.12.2022": "Božić",
+      "26.12.2022": "Sveti Stjepan",
+      "1.1.2023": "Nova godina",
+      "6.1.2023": "Sveta tri kralja",
+      "9.4.2023": "Uskrs",
+      "10.4.2023": "Uskrsni ponedjeljak",
+      "1.5.2023": "Međunarodni praznik rada",
+      "30.5.2023": "Dan državnosti",
+      "8.6.2023": "Tijelovo",
+      "22.6.2023": "Dan antifašističke borbe",
+      "5.8.2023": "Dan pobjede i domovinske zahvalnosti i Dan hrvatskih branitelja",
+      "15.8.2023": "Velika Gospa"
+    },
+    "vacationRanges": [
+      {
+        "start": "1.9.2022",
+        "end": "4.9.2022",
+        "label": "Ljetni praznici"
+      },
+      {
+        "start": "31.10.2022",
+        "end": "1.11.2022",
+        "label": "Jesenski praznici"
+      },
+      {
+        "start": "24.12.2022",
+        "end": "8.1.2023",
+        "label": "Prvi dio zimskih praznika"
+      },
+      {
+        "start": "20.2.2023",
+        "end": "26.2.2023",
+        "label": "Drugi dio zimskih praznika"
+      },
+      {
+        "start": "6.4.2023",
+        "end": "16.4.2023",
+        "label": "Proljetni praznici"
+      },
+      {
+        "start": "23.6.2023",
+        "end": "31.8.2023",
+        "label": "Ljetni praznici"
+      }
+    ]
+  },
+  {
     "startingDate": "6.9.2021",
     "endingDate": "21.6.2022",
     "edgeDays": {
