@@ -1,7 +1,8 @@
 <template>
   <div class="card content-card">
+    <h2>Povijest razvoja</h2>
     Ovako je e-Dnevnik Plus izgledao krajem 2018. godine:
-    <img src="~@/assets/img/history/python.png" />300 linija Python koda
+    <img src="~@/assets/img/history/python2.png" />300 linija Python koda
     (ispušta i zvukove :P). Zapravo, tada aplikacija još nije niti imala naziv.
     Bilo je moguće navigirati razredima, predmetima, uređivati ocjene i
     pregledavati razrednu statistiku ocjena. Naziv sam osmislio nakon što sam
@@ -83,15 +84,15 @@
       ovdje</a
     >. Za pregled drugih aplikacija i proširenja, vidi moj Developer Portfolio
     na
-    <a class="plus" href="https://kristijanros.dev" target="_blank">
-      kristijanros.dev</a
-    > (dolazi uskoro).
+    <a class="plus" href="https://kristijan.pages.dev/" target="_blank">
+      kristijan.pages.dev</a
+    >.
     <br />
     <br />
     <br />
     <br />
     <div style="color: gray; font-style: italic; text-align: right">
-      — Kristijan Rosandić, Visoko učilište Algebra
+      — Kristijan Rosandić, student Visokog učilišta Algebra
     </div>
   </div>
 </template>

@@ -5,8 +5,8 @@
         Tvoja trenutno instalirana verzija proširenja: {{ $lastVersion }}
       </strong>
       <template v-else>
-        Više od <strong>80,000</strong> učenika i
-        <strong>30,000</strong> nastavnika koristi e-Dnevnik Plus svaki tjedan!
+        Više od <strong>100,000</strong> učenika i
+        <strong>40,000</strong> nastavnika aktivno koristi e-Dnevnik Plus!
         <!-- Nova verzija za učenike i roditelje je stigla!
         <strong
           >Postojeći korisnici trebaju potvrditi nova dopuštenja kako bi
