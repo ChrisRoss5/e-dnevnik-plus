@@ -6,7 +6,7 @@
       </strong>
       <template v-else>
         Više od <strong>100,000</strong> učenika i
-        <strong>40,000</strong> nastavnika aktivno koristi e-Dnevnik Plus!
+        <strong>40,000</strong> nastavnika koristi e-Dnevnik Plus!
         <!-- Nova verzija za učenike i roditelje je stigla!
         <strong
           >Postojeći korisnici trebaju potvrditi nova dopuštenja kako bi
@@ -50,6 +50,8 @@
         >
           kristijan.ros@gmail.com</a
         >
+        |
+        <a class="plus" href="https://k1k1.dev/" target="_blank">k1k1.dev</a>
         |
         <router-link to="politika-privatnosti" class="plus">
           politika privatnosti</router-link

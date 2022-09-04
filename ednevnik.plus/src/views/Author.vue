@@ -83,16 +83,13 @@
     <a class="plus" href="https://ednevnik.plus/donacije" target="_blank">
       ovdje</a
     >. Za pregled drugih aplikacija i proširenja, vidi moj Developer Portfolio
-    na
-    <a class="plus" href="https://kristijan.pages.dev/" target="_blank">
-      kristijan.pages.dev</a
-    >.
+    na <a class="plus" href="https://k1k1.dev/" target="_blank"> k1k1.dev</a>.
     <br />
     <br />
     <br />
     <br />
     <div style="color: gray; font-style: italic; text-align: right">
-      — Kristijan Rosandić, student Visokog učilišta Algebra
+      — Kristijan Rosandić
     </div>
   </div>
 </template>

@@ -22,7 +22,7 @@ export default defineComponent({
       localStorage.removeItem("path");
       this.$router.replace(path);
     }
-    document.body.addEventListener("wheel", (e) => {
+    /* document.body.addEventListener("wheel", (e) => {
       if (this.$route.path != "/" || this.scrolling) return;
       if (document.body.scrollTop == 0 && e.deltaY > 0) {
         this.scroll(
@@ -32,7 +32,7 @@ export default defineComponent({
       } else if (e.deltaY < 0) {
         this.scroll(-document.body.scrollTop, 250);
       }
-    });
+    }); */
   },
   methods: {
     /* https://stackoverflow.com/a/44484186/10264782 */
