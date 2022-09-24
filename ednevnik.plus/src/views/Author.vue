@@ -6,8 +6,8 @@
     (ispušta i zvukove :P). Zapravo, tada aplikacija još nije niti imala naziv.
     Bilo je moguće navigirati razredima, predmetima, uređivati ocjene i
     pregledavati razrednu statistiku ocjena. Naziv sam osmislio nakon što sam
-    završio prvu verziju proširenja za Chrome Web Trgovinu. To mi je bila prva
-    web aplikacija, a imao sam 16 godina u 2. razredu srednje škole TŠSB.<br /><br />Ovako
+    završio prvu verziju proširenja za Chrome Web Trgovinu. To mi je prva web
+    aplikacija, sa 16 godina u 2. razredu srednje škole TŠSB.<br /><br />Ovako
     je e-Dnevnik Plus izgledao početkom 2019. godine:
     <img src="~@/assets/img/history/v1.png" />
     Nakon podjele na Redditu i prvih 500 korisnika, Srednja.hr objavljuje
@@ -80,10 +80,9 @@
     e-Dnevnik Plus 5.0 je Open Source, izrađen u Vue Frameworku s Typescriptom.
     Razvoj je trajao 5 mjeseci bez razmaka, što je otprilike 1000 sati rada. Za
     donacije, klikni
-    <a class="plus" href="https://ednevnik.plus/donacije" target="_blank">
-      ovdje</a
-    >. Za pregled drugih aplikacija i proširenja, vidi moj Developer Portfolio
-    na <a class="plus" href="https://k1k1.dev/" target="_blank"> k1k1.dev</a>.
+    <router-link class="plus" to="/donacije">ovdje</router-link>. Za pregled
+    drugih aplikacija i proširenja, vidi moj Developer Portfolio na
+    <a class="plus" href="https://k1k1.dev/" target="_blank"> k1k1.dev</a>.
     <br />
     <br />
     <br />

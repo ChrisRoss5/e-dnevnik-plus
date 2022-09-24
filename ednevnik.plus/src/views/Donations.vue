@@ -1,7 +1,7 @@
 <template>
   <div id="donations-content" class="card content-card">
     <div class="thanks">
-      Hvala na donaciji! Vaša donacija pojavit će se ispod vrlo uskoro.
+      Hvala na donaciji! Vaša donacija pojavit će se ispod uskoro.
     </div>
     <div class="two-boxes">
       <div class="box donationBox" style="order: 1">
@@ -292,7 +292,7 @@ export default defineComponent({
         let queryStringParams = {
           image_url: "https://ednevnik.plus/assets/images/paypal-logo.png",
           cmd: "_xclick",
-          business: "kristijan.ros@gmail.com",
+          business: "kristijan.ros1@gmail.com",
           amount: parseFloat(total.textContent) / 6.6,
           currency_code: "USD",
           item_name: "Broj kava: " + quantity,
