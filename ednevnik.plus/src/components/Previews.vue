@@ -117,6 +117,7 @@ export default defineComponent({
   display: flex;
   padding-top: 20px;
   gap: 20px;
+  justify-content: center;
 
   a {
     background: white;
@@ -144,6 +145,7 @@ video {
   left: 50%;
   transform: translate(-50%, -50%);
   max-height: 70vh;
+  max-width: 100vw;
   outline: none;
 }
 

@@ -68,21 +68,19 @@
     >
       INOVA</a
     >. Ipak, godinu dana kasnije (ljeto 2021. nakon mature) odlučujem opet
-    izbrisati sve i započeti iznova, ali ovaj put na pravi način. Krpanje
-    početničkog koda sa starim tehnologijama nije bilo zabavno. Stoga, danas
-    postoji moja moderna verzija e-Dnevnika - Plus App, ali i jednostavna i
-    sigurna Classic verzija koja se ugrađuje u e-Dnevnik kao što je bilo i
-    prije.
+    izbrisati sve i započeti iznova, ali ovaj put s boljim tehnologijama. Stoga, danas
+    postoji moja moderna verzija e-Dnevnika - Plus App, ali i jednostavna Classic
+    verzija koja se ugrađuje u e-Dnevnik kao što je bilo i prije.
     <br />
     <br />
     <hr />
     <br />
     e-Dnevnik Plus 5.0 je Open Source, izrađen u Vue Frameworku s Typescriptom.
-    Razvoj je trajao 5 mjeseci bez razmaka, što je otprilike 1000 sati rada. Za
-    donacije, klikni
-    <router-link class="plus" to="/donacije">ovdje</router-link>. Za pregled
-    drugih aplikacija i proširenja, vidi moj Developer Portfolio na
-    <a class="plus" href="https://k1k1.dev/" target="_blank"> k1k1.dev</a>.
+    Za donacije, klikni
+    <a class="plus" href="https://ednevnik.plus/donacije" target="_blank">
+      ovdje</a
+    >. Za pregled drugih aplikacija i proširenja, vidi moj Developer Portfolio
+    na <a class="plus" href="https://k1k1.dev/" target="_blank"> k1k1.dev</a>.
     <br />
     <br />
     <br />

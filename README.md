@@ -20,6 +20,3 @@ Preuzmi [verziju iz trgovine](https://chrome.google.com/webstore/detail/e-dnevni
   * [/service-worker.ts](extension_scripts/service_worker.ts) zamijenio je "background.js" iz manifesta v2
   * [/content-script.ts](extension_scripts/content-script.ts) je cijeli e-Dnevnik Plus Classic
 * Ostali dokumenti sastav su Vue projekta koji tvore e-Dnevnik Plus App u [/dist/app](dist/app)
-
-
-Više informacija uskoro...

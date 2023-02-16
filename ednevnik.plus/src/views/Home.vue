@@ -118,6 +118,7 @@ em {
 #main {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   margin: auto;
   padding-bottom: 40px;
 

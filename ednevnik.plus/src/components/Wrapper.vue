@@ -5,14 +5,15 @@
         Tvoja trenutno instalirana verzija proširenja: {{ $lastVersion }}
       </strong>
       <template v-else>
-        Više od <strong>100,000</strong> učenika i
-        <strong>40,000</strong> nastavnika koristi e-Dnevnik Plus!
-        <!-- Nova verzija za učenike i roditelje je stigla!
-        <strong
-          >Postojeći korisnici trebaju potvrditi nova dopuštenja kako bi
-          proširenje nastavilo raditi.</strong
-        > -->
+        <transition name="opacity"
+          ><span v-if="message" v-html="message"></span></transition
+        >&nbsp;
       </template>
+      <!-- Nova verzija za učenike i roditelje je stigla!
+      <strong
+        >Postojeći korisnici trebaju potvrditi nova dopuštenja kako bi
+        proširenje nastavilo raditi.</strong
+      > -->
       <div id="urls">
         <router-link to="/povijest">Verzije</router-link
         ><router-link to="/autor">Autor</router-link>
@@ -71,6 +72,7 @@ export default defineComponent({
       rectangles: [] as CSSProperties[],
       speed: 20000,
       scrollTop: 0,
+      message: "",
     };
   },
   mounted() {
@@ -79,6 +81,9 @@ export default defineComponent({
       "scroll",
       () => (this.scrollTop = document.body.scrollTop),
     );
+    fetch("https://ednevnik.plus/users.html")
+      .then((response) => response.text())
+      .then((html) => (this.message = html));
   },
   methods: {
     updateRect(i: number, init?: boolean) {
