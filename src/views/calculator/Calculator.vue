@@ -73,13 +73,10 @@
         :key="key"
         class="button choice-button"
         :class="{
-          active:
-            parseInt(key) ==
-            (lockedDuration ? lockedDuration : selectedDuration),
-          'disabled-button':
-            parseInt(key) != lockedDuration && settings.selectedProgram,
+          active: key == (lockedDuration ? lockedDuration : selectedDuration),
+          'disabled-button': key != lockedDuration && settings.selectedProgram,
         }"
-        @click="selectedDuration = parseInt(key)"
+        @click="selectedDuration = key"
       >
         {{ duration }}
       </div>
@@ -100,7 +97,7 @@
                 <div
                   v-if="!i || j > 2"
                   contenteditable="true"
-                  @input="numberInputted($event, i, j - (i ? 3 : 1))"
+                  @input="numberInputted($event as InputEvent, i, j - (i ? 3 : 1))"
                   @blur="editingInput = -1"
                 >
                   {{ getInputNumber(i, j - (i ? 3 : 1)) }}

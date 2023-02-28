@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import highSchoolPoints from "@/assets/high-school-points/2021-2022/2021-2022.js";
+import highSchoolPoints from "@/assets/high-school-points/2022-2023/2022-2023.js";
 import { formatNum, getSum } from "@/scripts/utils";
 import { CalculatorSettings } from "@/store/state";
 import { defineComponent, PropType } from "vue";
@@ -103,8 +103,9 @@ export default defineComponent({
       const { selectedSchool, selectedProgram } = this.settings;
       if (!(selectedSchool && selectedProgram))
         return { min: 0, max: 0, average: 0 };
-      const [min, max, average] =
-        highSchoolPoints[selectedSchool][selectedProgram];
+      const [min, max, average] = highSchoolPoints[selectedSchool][
+        selectedProgram
+      ];
       return { min, max, average };
     },
     percentages(): Percentages {
