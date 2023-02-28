@@ -76,6 +76,10 @@ const routes: Array<RouteRecordRaw> = [
         path: "osobni-podaci",
         component: ClassSectionFrame,
       },
+      {
+        path: "potvrde",
+        component: ClassSectionFrame,
+      },
     ],
   },
   {

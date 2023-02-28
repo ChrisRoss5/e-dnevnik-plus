@@ -15,7 +15,7 @@ module.exports = {
       interpolationAsNonHTML: true,
     },
   },
-  ignorePatterns: ["gtag.js", "gtag2.js", "*.d.ts"],
+  ignorePatterns: ["gtag.js", "gtag2.js", "*.d.ts", "potvrde.ts"],
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",

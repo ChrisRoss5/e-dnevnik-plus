@@ -47,7 +47,7 @@ export const defaultUserSettings: Settings = {
       name: "Školska stranica",
       urls: [],
     },
-    {
+/*     {
       name: "Školski e-Rudnik",
       urls: [
         {
@@ -82,7 +82,7 @@ export const defaultUserSettings: Settings = {
     {
       name: "Srednja.hr",
       urls: [{ name: "Srednja.hr", url: "https://www.srednja.hr/" }],
-    },
+    }, */
   ],
 };
 
@@ -92,5 +92,6 @@ export default function newUser(initData: InitData): User {
     signedIn: true,
     settings: defaultUserSettings,
     classNews: [],
+    adsShown: [],
   };
 }

@@ -1,11 +1,11 @@
 import { store } from "@/store";
 import { MutationTypes } from "@/store/mutations";
-import { User } from "@/store/state";
+import { User, UserType } from "@/store/state";
 import { TYPE, useToast } from "vue-toastification";
 import { ToastOptions } from "vue-toastification/dist/types/types";
 import newUser from "../new-user";
 import * as UTILS from "../utils";
-import { getClassesList, updateClassesList } from "./scrapers";
+import { getAds, getClassesList, updateClassesList } from "./scrapers";
 
 const toast = useToast();
 const URLS = {
@@ -64,10 +64,19 @@ async function login(
   //
   // Old or new user
   const user = store.state.users.find((u) => u.email == email);
+  const userYear = parseInt(classesList[0].name);
+  const userType: UserType = classesList[0].school?.includes("osnovna")
+    ? "osnovnoškolac"
+    : "srednjoškolac";
   window.gtag("event", "request", {
     event_category: "user auth 5.0.1",
     event_label: (user ? "" : "NEW ") + "user signed in",
     value: classesList.length,
+  });
+  window.gtag("event", "request", {
+    event_category: "user auth type",
+    event_label: userType,
+    value: userYear,
   });
   if (user) {
     user.password = password;
@@ -87,6 +96,7 @@ async function login(
     toast("Dobro došli u novi e-Dnevnik Plus!");
   }
   await updateClassesList();
+  getAds(userType, userYear);
   return true;
 }
 
@@ -111,7 +121,7 @@ async function authFetch(url: string): Promise<undefined | Document> {
       return;
     }
     if (!(await login(user.email, user.password, fetch1))) {
-      const error = `Greška u prijavi: Promijenili ste lozinku za ${user.email}!`;
+      const error = `Greška u prijavi: Promijenili ste lozinku!`;
       toastError(error, { timeout: false });
       store.commit(MutationTypes.UPDATE_USER_STATUS, { user, status: false });
       return;
@@ -133,4 +143,3 @@ function toastError(
 }
 
 export { URLS, login, logout, authFetch, toastError };
-

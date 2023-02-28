@@ -21,6 +21,7 @@ export interface User {
   classesList: ClassInfo[];
   lastLoadedClassUrl?: string;
   classNews: ClassNews[];
+  adsShown: string[];
 }
 
 export interface Settings {
@@ -36,8 +37,8 @@ export interface SubjectsSettings {
   margin: number;
   zoom: number;
   expandTablesOnHover: boolean;
-  subjectLineColors: boolean,
-  subjectColumnColors: boolean,
+  subjectLineColors: boolean;
+  subjectColumnColors: boolean;
   countAvgs: boolean;
   sortByDragging: boolean;
   subjectsOrder: Record<string, string[] | undefined>;
@@ -120,6 +121,22 @@ export interface ClassNews {
 }
 
 export interface SubjectNews {
-  grade: number | null,
-  note: string
+  grade: number | null;
+  note: string;
 }
+
+export interface Ad {
+  id: string;
+  goal: number;
+  goalComplete: boolean;
+  targetUserTypes: UserType[];
+  targetClassYears: number[];
+  images: {
+    popup: string;
+    banner: string;
+    logo: string;
+  };
+  url: string;
+}
+
+export type UserType = "srednjoškolac" | "osnovnoškolac";

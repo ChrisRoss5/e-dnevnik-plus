@@ -233,10 +233,9 @@ export default defineComponent({
       if (id == this.visibleDropdown) this.visibleDropdown = "";
     },
     getDropdownList(filterBy?: "headTeacher" | "school"): DropdownItem[] {
-      return (
-        filterBy
-          ? this.classesList.filter((c) => c[filterBy] == this[filterBy])
-          : this.classesList
+      return (filterBy
+        ? this.classesList.filter((c) => c[filterBy] == this[filterBy])
+        : this.classesList
       ).map((classInfo) => ({
         name: filterBy ? this[filterBy] : classInfo.year,
         alignRight: classInfo.name,
@@ -311,7 +310,12 @@ export default defineComponent({
       this.$nextTick(() => this.positionSelectedLine(true));
       const toName = this.getSectionName(to.path);
       const fromName = this.getSectionName(from.path);
-      if (toName == "osobni-podaci" || fromName == "osobni-podaci") {
+      if (
+        toName == "osobni-podaci" ||
+        fromName == "osobni-podaci" ||
+        toName == "potvrde" ||
+        fromName == "potvrde"
+      ) {
         this.sectionTransition = "opacity";
         this.triggerTransition += 1;
         return;

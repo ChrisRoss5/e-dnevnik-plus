@@ -6,14 +6,19 @@
   <transition name="opacity">
     <User></User>
   </transition>
+  <transition name="opacity">
+    <PopupAd v-if="showPopup" :ad="ad" @close="showPopup = false"></PopupAd>
+  </transition>
 </template>
 
 <script lang="ts">
 import Main from "@/components/Main.vue";
 import Navbar from "@/components/Navbar.vue";
+import PopupAd from "@/components/PopupAd.vue";
 import User from "@/components/User.vue";
 import { ActionTypes } from "@/store/actions";
 import { defineComponent } from "vue";
+import { Ad } from "./store/state";
 
 export default defineComponent({
   name: "App",
@@ -21,10 +26,13 @@ export default defineComponent({
     Navbar,
     Main,
     User,
+    PopupAd,
   },
   data() {
     return {
       isAppInitiated: false,
+      showPopup: false,
+      ad: {} as Ad,
     };
   },
   created() {
@@ -39,6 +47,10 @@ export default defineComponent({
       this.toggleTransitions(this.$store.state.settings.transitions);
       this.isAppInitiated = window.isAppInitiated = true;
       document.body.style.opacity = "1";
+    });
+    this.$emitter.on("show-popup", (ad: Ad) => {
+      this.ad = ad;
+      setTimeout(() => (this.showPopup = true), 0);
     });
   },
   mounted() {

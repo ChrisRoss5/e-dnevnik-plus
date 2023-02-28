@@ -80,3 +80,5 @@ app
   .use(VCalendar)
   .mixin(GlobalMixin)
   .mount("#app");
+
+export default app.config.globalProperties.$emitter;

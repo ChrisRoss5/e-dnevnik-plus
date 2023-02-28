@@ -37,7 +37,9 @@
           :order="2"
           :navCollapsed="navCollapsed"
         ></NavbarList>
-        <span id="more-horiz" class="material-icons"> more_horiz </span>
+        <!-- <span id="more-horiz" class="material-icons flex-center">
+          more_horiz
+        </span> -->
         <NavbarList
           :list="websites"
           rootLink="/stranica/"
@@ -52,6 +54,7 @@
     <div id="nav-bottom">
       <transition name="navbar">
         <div v-if="!isLoginPage">
+          <NavbarAds :ads="ads" :navCollapsed="navCollapsed"></NavbarAds>
           <NavbarList
             :list="linksBottom.slice(0, -1)"
             rootLink="/"
@@ -74,10 +77,12 @@
   </div>
 </template>
 
-<script lang="ts" scoped>
+<script lang="ts">
 import { MutationTypes } from "@/store/mutations";
+import { Ad } from "@/store/state";
 import { defineComponent } from "vue";
 import { useToast } from "vue-toastification";
+import NavbarAds from "./NavbarAds.vue";
 import NavbarList from "./NavbarList.vue";
 
 const toast = useToast();
@@ -90,7 +95,7 @@ export interface NavbarLink {
 
 export default defineComponent({
   name: "Navbar",
-  components: { NavbarList },
+  components: { NavbarList, NavbarAds },
   data() {
     return {
       navMidOverflowing: false,
@@ -123,7 +128,13 @@ export default defineComponent({
           icon: "help_outline",
         },
       ] as NavbarLink[],
+      ads: [] as Ad[],
     };
+  },
+  created() {
+    this.$emitter.on("show-banner", (ad: Ad) => {
+      this.ads.push(ad);
+    });
   },
   mounted() {
     // If navbar is expanded, always show a "welcome" message for a second
@@ -172,7 +183,7 @@ export default defineComponent({
       get(): boolean {
         return this.$store.state.settings.navbarCollapsed;
       },
-      set(value) {
+      set(value: boolean) {
         this.$store.commit(MutationTypes.UPDATE_GLOBAL_SETTING, {
           name: "navbarCollapsed",
           value,
@@ -262,16 +273,14 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   }
 }
 
-#nav-top,
-#collapse {
+#nav-top {
   height: 104px !important;
   user-select: none;
 }
 
 #more-horiz {
   width: 100%;
-  padding: 20px 0;
-  text-align: center;
+  height: 25px;
   box-shadow: $nav-shadow-bottom;
 
   @include themed() {

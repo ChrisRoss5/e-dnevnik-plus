@@ -1,13 +1,19 @@
 import { MutationTree } from "vuex";
 import {
-  ClassInfo, ClassNews, GlobalSettings,
-  Settings, State, SubjectCache, User
+  ClassInfo,
+  ClassNews,
+  GlobalSettings,
+  Settings,
+  State,
+  SubjectCache,
+  User,
 } from "./state";
 
 export enum MutationTypes {
   INIT = "INIT",
   ADD_USER = "ADD_USER",
   UPDATE_USER_STATUS = "UPDATE_USER_STATUS",
+  UPDATE_USER_ADS = "UPDATE_USER_ADS",
   UPDATE_LAST_LOADED_CLASS_URL = "UPDATE_LAST_LOADED_CLASS_URL",
   UPDATE_CLASS_NEWS = "UPDATE_CLASS_NEWS",
   UPDATE_CLASSES_LIST = "UPDATE_CLASSES_LIST",
@@ -23,6 +29,10 @@ export type Mutations<S = State> = {
   [MutationTypes.UPDATE_USER_STATUS](
     state: S,
     { user, status }: { user: User; status: boolean },
+  ): void;
+  [MutationTypes.UPDATE_USER_ADS](
+    state: S,
+    { user, adsShown }: { user: User; adsShown: string[] },
   ): void;
   [MutationTypes.UPDATE_LAST_LOADED_CLASS_URL](
     state: S,
@@ -71,6 +81,9 @@ export const mutations: MutationTree<State> & Mutations = {
   [MutationTypes.UPDATE_USER_STATUS](state, { user, status }) {
     if (!status) user.password = "";
     user.signedIn = status;
+  },
+  [MutationTypes.UPDATE_USER_ADS](state, { user, adsShown }) {
+    user.adsShown = adsShown;
   },
   [MutationTypes.UPDATE_LAST_LOADED_CLASS_URL](state, { user, url }) {
     user.lastLoadedClassUrl = url;

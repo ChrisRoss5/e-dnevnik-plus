@@ -59,6 +59,11 @@ export default defineComponent({
             "/razred/" + (this.$route.params.classId || "-") + "/osobni-podaci",
         },
         {
+          name: "Ispis potvrda",
+          icon: "picture_as_pdf",
+          link: "/razred/" + (this.$route.params.classId || "-") + "/potvrde",
+        },
+        {
           name: "Odjava",
           icon: "exit_to_app",
         },

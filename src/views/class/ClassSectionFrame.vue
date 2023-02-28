@@ -12,6 +12,7 @@
 
 <script lang="ts">
 import Spinner from "@/components/Spinner.vue";
+import initPotvrde from "@/scripts/potvrde";
 import { getOriginalSectionPage } from "@/scripts/scrapers/scrapers";
 import { defineComponent } from "vue";
 
@@ -32,6 +33,7 @@ export default defineComponent({
         vladanja: "https://ocjene.skole.hr/behavior",
         raspored: "https://ocjene.skole.hr/schedule",
         "osobni-podaci": "https://ocjene.skole.hr/personal_data",
+        potvrde: "https://ocjene.skole.hr/potvrde/home",
       } as Record<string, string>,
       errorMessage: "Greška pri učitavanju stranice e-Dnevnika.",
     };
@@ -41,21 +43,31 @@ export default defineComponent({
       this.loading = true;
       const { classId, subjectId } = this.$route.params;
       if ((this.isSubject && !subjectId) || classId == "-" || !classId) return;
-
       const iframe = this.$refs.iframe as HTMLIFrameElement;
       const doc = iframe.contentWindow!.document;
       const pathName = this.$route.path.match(/[^/]+$/)![0];
       const url = this.isSubject
         ? "https://ocjene.skole.hr/grade/" + subjectId
         : this.urls[pathName];
-      const page = await getOriginalSectionPage(classId as string, url);
+      const q = pathName == "potvrde" ? ".content-wrapper" : ".content";
+      const page = await getOriginalSectionPage(classId as string, url, q);
       await this.addStyleTag(doc, page ? page.styleURL : "", pathName);
-      if (!page) doc.body.className = "loading-error-plus";
       doc.body.innerHTML = "";
-      doc.body.append(page ? page.content : this.errorMessage);
+      if (!page) {
+        doc.body.className = "loading-error-plus";
+        doc.body.append(this.errorMessage);
+      } else {
+        if (pathName == "raspored")
+          page.content = this.addScheduleTitles(page.content);
+        const base = doc.createElement("base");
+        base.href = "https://ocjene.skole.hr";
+        doc.body.append(page.content, base);
+        if (pathName == "potvrde") initPotvrde(doc);
+      }
       iframe.style.height = "150px";
-      const contentEl = doc.body.firstElementChild;
+      const contentEl = doc.querySelector(".content");
       if (contentEl) iframe.style.height = contentEl.scrollHeight + "px";
+      if (pathName == "potvrde") iframe.style.height = "50vh";
       this.loading = false;
     },
     addStyleTag(doc: Document, href: string, pathName: string) {
@@ -74,7 +86,7 @@ export default defineComponent({
       const style = document.createElement("style");
       style.textContent =
         /* css */ `
-          * {
+          *:not(#certificate-submit) {
             background: transparent !important;
             transition: none !important;
           }
@@ -84,6 +96,9 @@ export default defineComponent({
           }
           .hide {
             display: ${showAll ? "flex" : "none"} !important;
+          }
+          .content-menu {
+            min-height: 3rem;
           }
       ` +
         (this.$store.state.settings.darkTheme
@@ -95,6 +110,18 @@ export default defineComponent({
           }`
           : "");
       return style;
+    },
+    addScheduleTitles(el: Element) {
+      const titleEl = document.createElement("h2");
+      titleEl.style.textAlign = "center";
+      titleEl.textContent = "Ujutro";
+      const titleEl2 = titleEl.cloneNode(true) as HTMLElement;
+      titleEl2.textContent = "Popodne";
+      const tables = el.querySelectorAll(".schedule-table");
+      for (let i = 0; i < tables.length; i++) {
+        tables[i].before(i == 0 ? titleEl : titleEl2);
+      }
+      return el;
     },
   },
   watch: {

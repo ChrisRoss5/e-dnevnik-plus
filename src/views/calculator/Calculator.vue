@@ -150,7 +150,7 @@
 </template>
 
 <script lang="ts">
-import highSchoolPoints from "@/assets/high-school-points/2021-2022/2021-2022.js";
+import highSchoolPoints from "@/assets/high-school-points/2022-2023/2022-2023.js";
 import Dropdown, { DropdownItem } from "@/components/Dropdown.vue";
 import Spinner from "@/components/Spinner.vue";
 import { defaultUserSettings } from "@/scripts/new-user";
@@ -197,7 +197,6 @@ export default defineComponent({
         "Prvo osvojeno mjesto u sportu kao član skupine (+3)",
         "Drugo osvojeno mjesto u sportu kao član skupine (+2)",
         "Treće osvojeno mjesto u sportu kao član skupine (+1)",
-        "Kandidat sa zdravstvenim teškoćama (+1)",
         "Kandidat živi u otežanim uvjetima (+1)",
         "Kandidat je pripadnik romske nacionalne manjine (+2)",
       ],
@@ -212,7 +211,8 @@ export default defineComponent({
         {
           name: "Upute",
           icon: "picture_as_pdf",
-          link: "https://www.upisi.hr/docs/Publikacija_redoviti.pdf",
+          link:
+            "https://srednjeadmin.e-upisi.hr/files/Publikacija_redoviti.pdf",
         },
         {
           name: "Tablica bodova",
@@ -312,7 +312,10 @@ export default defineComponent({
       const value = this.settings.userValues[i][j];
       if (!value) return "";
       if (i || this.editingInput == j) return value;
-      const str = value.toString().slice(0, 4).replace(".", ",");
+      const str = value
+        .toString()
+        .slice(0, 4)
+        .replace(".", ",");
       if (str.length == 4) return str;
       return str + (str.length == 1 ? ",00" : "0");
     },

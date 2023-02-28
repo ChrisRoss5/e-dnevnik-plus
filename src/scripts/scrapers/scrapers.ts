@@ -1,8 +1,17 @@
+import $emitter from "@/main";
 import { store } from "@/store";
 import { MutationTypes } from "@/store/mutations";
-import { ClassInfo, ClassNews, SubjectCache, User } from "@/store/state";
+import {
+  Ad,
+  ClassInfo,
+  ClassNews,
+  SubjectCache,
+  User,
+  UserType,
+} from "@/store/state";
 import { CalendarExam, CalendarYear } from "@/views/calendar/interface";
 import * as UTILS from "../utils";
+import { shuffleArray } from "../utils";
 import { authFetch, toastError, URLS } from "./auth";
 
 async function updateClassesList(): Promise<void> {
@@ -211,6 +220,7 @@ async function findSchoolUrl(
 async function getOriginalSectionPage(
   classId: string,
   sectionUrl: string,
+  elQuery = ".content",
 ): Promise<{ content: Element; styleURL: string } | false> {
   if (window.devTestMode || (await switchClassIfNeeded(classId))) return false;
   const doc = await authFetch(sectionUrl);
@@ -220,7 +230,7 @@ async function getOriginalSectionPage(
   }
   const link = doc.querySelector("link[rel='stylesheet']");
   return {
-    content: doc.querySelector(".content")!,
+    content: doc.querySelector(elQuery)!,
     styleURL: (link as HTMLLinkElement).href,
   };
 }
@@ -259,6 +269,36 @@ async function getAboutPage(): Promise<string | false> {
   }
   return response.text();
 }
+
+async function getAds(userType: UserType, userYear: number): Promise<void> {
+  const url = "https://e-dnevnik-plus.firebaseio.com/ads.json";
+  const ads = (await fetch(url).then((response) => response.json())) as Ad[];
+  const user = store.getters.user as User;
+  if (!user.adsShown) user.adsShown = [];
+  let popupShown = false;
+  for (const ad of shuffleArray(ads)) {
+    if (ad.goalComplete) continue;
+    if (!ad.targetUserTypes.includes(userType)) continue;
+    if (!ad.targetClassYears.includes(userYear)) continue;
+    $emitter.emit("show-banner", ad);
+    window.gtag("event", "ad shown", {
+      event_category: "banner",
+      event_label: ad.id,
+    });
+    if (user.adsShown.includes(ad.id) || popupShown) continue;
+    $emitter.emit("show-popup", ad);
+    popupShown = true;
+    store.commit(MutationTypes.UPDATE_USER_ADS, {
+      user,
+      adsShown: [...user.adsShown, ad.id],
+    });
+    window.gtag("event", "ad shown", {
+      event_category: "popup",
+      event_label: ad.id,
+    });
+  }
+}
+getAds("srednjoškolac", 4); // todo
 
 async function switchClassIfNeeded(classId: string): Promise<true | undefined> {
   const user = store.getters.user as User;
@@ -308,5 +348,5 @@ export {
   getExams,
   getCalendarDates,
   getAboutPage,
+  getAds,
 };
-

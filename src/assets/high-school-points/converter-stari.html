@@ -11,9 +11,9 @@
 </style>
 
 <body>
-  <!-- PDF from https://www.upisi.hr converted with https://xodo.com/convert-pdf-to-html -->
+  <!-- PDF from https://www.upisi.hr converted with https://pdfstuff.com/pdf-to-html/ -->
 
-  <iframe src="2022-2023/2022-2023.html" onload="load()"></iframe>
+  <iframe src="2021-2022.html" onload="load()"></iframe>
 </body>
 
 <script>
@@ -25,21 +25,21 @@
       let values = [];
       row.querySelectorAll("td").forEach((cell) => {
         const value = [...cell.querySelectorAll(".s3")]
-          .map((n) => n.textContent.trim().replace(/\s\s+/g, " "))
+          .map((n) => n.textContent.trim())
           .join(" ");
         if (value) values.push(value);
       });
 
-      if (values.length < 6) return;
-      if (values.length > 6)
-        values = values.filter((_, i) => ![4, 6, 8].includes(i));
+      if (values.length < 5) return;
+      if (values.length > 5)
+        values = values.filter((_, i) => ![3, 5, 7].includes(i));
 
-      const school = values[1];
-      const program = values[2];
+      const school = values[0];
+      const program = values[1];
 
       if (!/\d g\./.test(program)) console.log(row);
 
-      const points = [values[3], values[4], values[5]].map((n) =>
+      const points = [values[2], values[3], values[4]].map((n) =>
         parseFloat(n.replace(",", ".")),
       );
 
