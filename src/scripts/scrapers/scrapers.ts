@@ -270,35 +270,62 @@ async function getAboutPage(): Promise<string | false> {
   return response.text();
 }
 
-async function getAds(userType: UserType, userYear: number): Promise<void> {
+async function getAds(): Promise<void> {
   const url = "https://e-dnevnik-plus.firebaseio.com/ads.json";
-  const ads = (await fetch(url).then((response) => response.json())) as Ad[];
   const user = store.getters.user as User;
-  if (!user.adsShown) user.adsShown = [];
-  let popupShown = false;
-  for (const ad of shuffleArray(ads)) {
-    if (ad.goalComplete) continue;
-    if (!ad.targetUserTypes.includes(userType)) continue;
-    if (!ad.targetClassYears.includes(userYear)) continue;
-    $emitter.emit("show-banner", ad);
-    window.gtag("event", "ad shown", {
+  const userYear = parseInt(user.classesList[0].name);
+  const userType: UserType = user.classesList[0].school
+    ?.toLowerCase()
+    .includes("osnovna")
+    ? "osnovnoškolac"
+    : "srednjoškolac";
+  const userFinalGradeLastClass =
+    user.classesList.length >= 2
+      ? parseFloat(user.classesList[1].finalGrade?.replace(",", ".") || "9")
+      : 9;
+  window.gtag("event", "request", {
+    event_category: "user auth type",
+    event_label: userType,
+    value: userYear,
+  });
+  const ads = (((await fetch(url).then((res) => res.json())) ||
+    []) as Ad[]).filter(
+    (ad) =>
+      !ad.goalComplete &&
+      ad.targetUserTypes.includes(userType) &&
+      ad.targetClassYears.includes(userYear) &&
+      ad.targetMinGradeLastClass <= userFinalGradeLastClass,
+  );
+  if (ads.length == 0) {
+    $emitter.emit("show-banners", []);
+    chrome.storage.sync.remove("ads");
+    return;
+  }
+  $emitter.emit("show-banners", ads);
+  chrome.storage.sync.set({ ads });
+  for (const ad of ads) {
+    window.gtag("event", "ad", {
       event_category: "banner",
       event_label: ad.id,
+      value: "saved",
     });
-    if (user.adsShown.includes(ad.id) || popupShown) continue;
+  }
+  if (!user.adsShown) user.adsShown = [];
+  for (const ad of shuffleArray(ads)) {
+    if (user.adsShown.includes(ad.id)) continue;
     $emitter.emit("show-popup", ad);
-    popupShown = true;
     store.commit(MutationTypes.UPDATE_USER_ADS, {
       user,
       adsShown: [...user.adsShown, ad.id],
     });
-    window.gtag("event", "ad shown", {
+    window.gtag("event", "ad", {
       event_category: "popup",
       event_label: ad.id,
+      value: "displayed",
     });
+    break;
   }
 }
-getAds("srednjoškolac", 4); // todo
 
 async function switchClassIfNeeded(classId: string): Promise<true | undefined> {
   const user = store.getters.user as User;

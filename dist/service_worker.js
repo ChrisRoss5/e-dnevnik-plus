@@ -8,43 +8,64 @@ tsc -w
 chrome.runtime.onInstalled.addListener(onInstalled);
 chrome.runtime.setUninstallURL("https://ednevnik.plus/deinstalacija");
 chrome.runtime.onMessage.addListener(onMessage);
-function onInstalled(details) {
+async function onInstalled(details) {
     if (details.reason == "install") {
         chrome.storage.sync.clear();
         chrome.storage.local.clear();
         chrome.tabs.create({ url: "https://ednevnik.plus/#instaliran" });
+        return;
     }
-    else if (details.reason == "update") {
+    if (details.reason == "update") {
         const previousVersion = details.previousVersion;
         // const newVersion: string = chrome.runtime.getManifest().version;
         if (cmpVersions(previousVersion, "5.0") < 0) {
             chrome.storage.sync.clear();
             chrome.storage.local.clear();
             chrome.tabs.create({ url: "https://ednevnik.plus/#azuriran" });
+            return;
         }
-        else if (previousVersion == "5.0")
-            update501();
+        if (previousVersion == "5.0")
+            await update501();
+        update502();
+        chrome.storage.sync.get("appEnabled", (state) => {
+            if (state.appEnabled || state.appEnabled == undefined)
+                return;
+            chrome.declarativeNetRequest.updateEnabledRulesets({
+                disableRulesetIds: ["ruleset"],
+            });
+        });
     }
 }
-function update501() {
+async function update501() {
+    chrome.storage.sync.set({ newUpdates: true, updateNotif: true });
+    return new Promise((resolve) => {
+        chrome.storage.local.get(null, (state) => {
+            if (!state || !state.users)
+                return;
+            state.users.forEach((user) => {
+                const subjectsSettings = user.settings.subjectsSettings;
+                const showColors = subjectsSettings.subjectColors;
+                delete subjectsSettings.subjectColors;
+                user.settings.subjectsSettings = {
+                    ...subjectsSettings,
+                    subjectLineColors: showColors,
+                    subjectColumnColors: showColors,
+                };
+            });
+            chrome.storage.local.set(state, resolve);
+        });
+    });
+}
+function update502() {
+    chrome.storage.sync.set({ newUpdates: true, updateNotif: true });
     chrome.storage.local.get(null, (state) => {
         if (!state || !state.users)
             return;
         state.users.forEach((user) => {
-            const subjectsSettings = user.settings.subjectsSettings;
-            const showColors = subjectsSettings.subjectColors;
-            delete subjectsSettings.subjectColors;
-            user.settings.subjectsSettings = {
-                ...subjectsSettings,
-                ...{
-                    subjectLineColors: showColors,
-                    subjectColumnColors: showColors,
-                },
-            };
+            user.settings.websitesSettings = user.settings.websitesSettings.filter((website) => !["Srednja.hr", "Školski e-Rudnik"].includes(website.name));
         });
         chrome.storage.local.set(state);
     });
-    chrome.storage.sync.set({ "newUpdates": true, "updateNotif": true });
 }
 function onMessage(request, sender, sendResponse) {
     if (request == "GET_ACTIVE_RULES") {

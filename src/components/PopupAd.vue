@@ -4,7 +4,7 @@
       <div class="close flex-center" @click="$emit('close')">
         <img src="@/assets/img/close.svg" />
       </div>
-      <a :href="ad.url" target="_blank">
+      <a :href="ad.url" target="_blank" @click="adClicked">
         <img class="ad" :src="ad.images.popup" alt="Oglas" />
       </a>
     </div>
@@ -30,6 +30,15 @@ export default defineComponent({
       (e) => e.key == "Escape" && this.$emit("close"),
     );
   },
+  methods: {
+    adClicked() {
+      window.gtag("event", "ad", {
+        event_category: "popup",
+        event_label: this.ad.id,
+        value: "clicked",
+      });
+    },
+  },
 });
 </script>
 
@@ -54,7 +63,7 @@ export default defineComponent({
   right: 0;
   width: 50px;
   height: 50px;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.75);
   img {
     height: 20px;
     transition: transform 150ms;

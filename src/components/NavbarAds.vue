@@ -5,6 +5,7 @@
     target="_blank"
     class="ad-banner"
     :key="ad.id"
+    @click="adClicked(ad)"
   >
     <img :src="ad.images.banner" alt="Oglas" />
     <transition name="opacity">
@@ -32,6 +33,15 @@ export default defineComponent({
     navCollapsed: {
       type: Boolean,
       required: true,
+    },
+  },
+  methods: {
+    adClicked(ad: Ad) {
+      window.gtag("event", "ad", {
+        event_category: "banner",
+        event_label: ad.id,
+        value: "clicked",
+      });
     },
   },
 });

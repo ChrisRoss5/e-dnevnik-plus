@@ -78,7 +78,6 @@
 </template>
 
 <script lang="ts">
-import { MutationTypes } from "@/store/mutations";
 import { Ad } from "@/store/state";
 import { defineComponent } from "vue";
 import { useToast } from "vue-toastification";
@@ -129,24 +128,31 @@ export default defineComponent({
         },
       ] as NavbarLink[],
       ads: [] as Ad[],
+      navCollapsed: false,
     };
   },
   created() {
-    this.$emitter.on("show-banner", (ad: Ad) => {
-      this.ads.push(ad);
+    this.$emitter.on("show-banners", (ads: Ad[]) => {
+      this.ads = ads;
     });
   },
   mounted() {
     // If navbar is expanded, always show a "welcome" message for a second
     setTimeout(() => (this.mounted = true), this.navCollapsed ? 100 : 1000);
     if (!chrome.storage) return;
-    chrome.storage.sync.get(["newUpdates", "updateNotif"], (data) => {
+    chrome.storage.sync.get(["newUpdates", "updateNotif", "ads"], (data) => {
       this.linksBottom[1].blinking = data.newUpdates;
-      if (data.updateNotif)
-        toast.success("Proširenje je ažurirano! Nova verzija: 5.0.1", {
-          timeout: 10000,
-        });
-      chrome.storage.sync.remove("updateNotif");
+      if (data.updateNotif) {
+        toast.success(
+          "Proširenje je ažurirano! Nova verzija: " +
+            chrome.runtime.getManifest().version,
+          {
+            timeout: 10000,
+          },
+        );
+        chrome.storage.sync.remove("updateNotif");
+      }
+      this.ads = data.ads || [];
     });
   },
   methods: {
@@ -179,6 +185,8 @@ export default defineComponent({
             .map(({ name }) => ({ name, icon: icons[name] || "web" }))
         : [];
     },
+    /*
+    // removed due to ads
     navCollapsed: {
       get(): boolean {
         return this.$store.state.settings.navbarCollapsed;
@@ -189,7 +197,7 @@ export default defineComponent({
           value,
         });
       },
-    },
+    }, */
   },
 });
 </script>

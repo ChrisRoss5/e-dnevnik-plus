@@ -3,7 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 
 const app = createApp(App);
-app.config.globalProperties.$lastVersion = "5.0.1";
+app.config.globalProperties.$lastVersion = "5.0.2";
 app.config.globalProperties.$isMobile =
   window.matchMedia("(max-width: 768px)").matches;
 app.config.globalProperties.$inApp = inIframe();

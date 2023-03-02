@@ -1,6 +1,7 @@
 declare global {
   interface Window {
     dataLayer: any;
+    googleAnalyticsId: string;
     isAppInitiated: boolean;
     devTestMode: boolean;
     devPause: (t: number) => Promise<void>;
@@ -9,14 +10,14 @@ declare global {
 }
 
 // TODO!: devTestMode
-window.devTestMode = true;
+window.devTestMode = false;
 window.devPause = (t) => new Promise((res) => setTimeout(res, t));
 window.devClearLocalStorage = () => chrome.storage.local.clear();
+window.googleAnalyticsId = "G-MPMHVT6WTW";
 
 /* https://v3.vuejs.org/guide */
 /* Google Analytics
-https://www.googletagmanager.com/gtag/js?id=G-MPMHVT6WTW [current]
-https://www.googletagmanager.com/gtag/js?id=G-2E1XXCCWPP
+https://www.googletagmanager.com/gtag/js?id=G-MPMHVT6WTW
 Removed "http:"!=c&&"https:"!=c&&(Rg(29),a.abort()),
 because the actual protocol is "chrome-extension:"
 https://issuetracker.google.com/issues/174954288 */
@@ -66,7 +67,8 @@ window.gtag = function() {
   window.dataLayer.push(arguments);
 };
 window.gtag("js", new Date());
-if (window.devTestMode) (window as any)["ga-disable-G-MPMHVT6WTW"] = true;
+if (window.devTestMode)
+  (window as any)["ga-disable-" + window.googleAnalyticsId] = true;
 
 const app = createApp(App);
 app.config.globalProperties.$emitter = mitt();

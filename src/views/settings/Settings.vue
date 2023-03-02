@@ -60,12 +60,13 @@ export default defineComponent({
     resetSettings() {
       if (!this.user) return;
       const settings = jsonClone(defaultUserSettings);
-      settings.websitesSettings[0].urls = this.user.classesList.flatMap(
-        ({ school, schoolUrl }) =>
+      settings.websitesSettings[0].urls = this.user.classesList
+        .flatMap(({ school, schoolUrl }) =>
           school && schoolUrl && schoolUrl != "/"
             ? [{ url: schoolUrl, name: school }]
             : [],
-      );
+        )
+        .filter((v, i, a) => a.findIndex((v2) => v2.url == v.url) == i);
       const commit = { user: this.user, settings };
       this.$store.commit(MutationTypes.UPDATE_USER_SETTINGS, commit);
       this.websitesKey += 1;

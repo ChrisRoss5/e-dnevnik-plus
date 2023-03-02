@@ -14,18 +14,25 @@ async function onInstalled(details: any) {
     chrome.storage.sync.clear();
     chrome.storage.local.clear();
     chrome.tabs.create({ url: "https://ednevnik.plus/#instaliran" });
-  } else if (details.reason == "update") {
+    return;
+  }
+  if (details.reason == "update") {
     const previousVersion: string = details.previousVersion;
     // const newVersion: string = chrome.runtime.getManifest().version;
-
     if (cmpVersions(previousVersion, "5.0") < 0) {
       chrome.storage.sync.clear();
       chrome.storage.local.clear();
       chrome.tabs.create({ url: "https://ednevnik.plus/#azuriran" });
-    } else {
-      if (previousVersion == "5.0") await update501();
-      update502();
+      return;
     }
+    if (previousVersion == "5.0") await update501();
+    update502();
+    chrome.storage.sync.get("appEnabled", (state) => {
+      if (state.appEnabled || state.appEnabled == undefined) return;
+      chrome.declarativeNetRequest.updateEnabledRulesets({
+        disableRulesetIds: ["ruleset"],
+      });
+    });
   }
 }
 
@@ -55,7 +62,8 @@ function update502() {
     if (!state || !state.users) return;
     state.users.forEach((user: any) => {
       user.settings.websitesSettings = user.settings.websitesSettings.filter(
-        (website: any) => !["Srednja.hr", "Školski e-Rudnik"].includes(website.name),
+        (website: any) =>
+          !["Srednja.hr", "Školski e-Rudnik"].includes(website.name),
       );
     });
     chrome.storage.local.set(state);

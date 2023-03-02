@@ -131,6 +131,7 @@ export interface Ad {
   goalComplete: boolean;
   targetUserTypes: UserType[];
   targetClassYears: number[];
+  targetMinGradeLastClass: number;
   images: {
     popup: string;
     banner: string;

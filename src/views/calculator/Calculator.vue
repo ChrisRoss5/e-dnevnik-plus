@@ -214,7 +214,7 @@ export default defineComponent({
         {
           name: "Tablica bodova",
           icon: "table_rows",
-          link: "https://www.upisi.hr/docs/Broj_bodova_potrebnih_za_upis.pdf",
+          link: "https://srednjeadmin.e-upisi.hr/files/Broj%20bodova%20potrebnih%20za%20upis%202022.pdf",
         },
       ] as DropdownItem[],
       showUrls: false,

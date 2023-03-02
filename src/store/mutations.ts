@@ -79,7 +79,10 @@ export const mutations: MutationTree<State> & Mutations = {
     state.users.push(user);
   },
   [MutationTypes.UPDATE_USER_STATUS](state, { user, status }) {
-    if (!status) user.password = "";
+    if (!status) {
+      user.password = "";
+      chrome.storage.sync.remove("ads");
+    }
     user.signedIn = status;
   },
   [MutationTypes.UPDATE_USER_ADS](state, { user, adsShown }) {

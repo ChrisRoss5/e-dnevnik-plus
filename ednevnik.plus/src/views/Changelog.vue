@@ -12,7 +12,21 @@
       </div>
     </h2>
     <template v-if="!selectedApp">
-      <h3>Verzija {{ $lastVersion }}<span>(22.11.2021.)</span></h3>
+      <h3>Verzija {{ $lastVersion }}<span>(2.3.2023.)</span></h3>
+      <ul>
+        <li>e-Dnevnik Plus <span class="plus">App</span>:</li>
+        <ul>
+          <li>Dodana opcija "Ispis potvrda" klikom na korisnika</li>
+          <li>
+            Ažuriran kalkulator za upis u srednje škole
+            <ul>
+              <li>Ažurirani dodatni bodovi</li>
+              <li>Ažurirani bodovi potrebni za upis</li>
+            </ul>
+          </li>
+        </ul>
+      </ul>
+      <h3>Verzija 5.0.1<span>(22.11.2021.)</span></h3>
       <ul>
         <li>e-Dnevnik Plus <span class="plus">App</span>:</li>
         <ul>

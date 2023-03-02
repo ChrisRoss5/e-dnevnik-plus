@@ -64,19 +64,10 @@ async function login(
   //
   // Old or new user
   const user = store.state.users.find((u) => u.email == email);
-  const userYear = parseInt(classesList[0].name);
-  const userType: UserType = classesList[0].school?.includes("osnovna")
-    ? "osnovnoškolac"
-    : "srednjoškolac";
   window.gtag("event", "request", {
     event_category: "user auth 5.0.1",
     event_label: (user ? "" : "NEW ") + "user signed in",
     value: classesList.length,
-  });
-  window.gtag("event", "request", {
-    event_category: "user auth type",
-    event_label: userType,
-    value: userYear,
   });
   if (user) {
     user.password = password;
@@ -96,7 +87,7 @@ async function login(
     toast("Dobro došli u novi e-Dnevnik Plus!");
   }
   await updateClassesList();
-  getAds(userType, userYear);
+  getAds();
   return true;
 }
 
