@@ -18,6 +18,7 @@ import PopupAd from "@/components/PopupAd.vue";
 import User from "@/components/User.vue";
 import { ActionTypes } from "@/store/actions";
 import { defineComponent } from "vue";
+import getAds from "./scripts/ads";
 import { Ad } from "./store/state";
 
 export default defineComponent({
@@ -47,6 +48,7 @@ export default defineComponent({
       this.toggleTransitions(this.$store.state.settings.transitions);
       this.isAppInitiated = window.isAppInitiated = true;
       document.body.style.opacity = "1";
+      getAds(); // todo!
     });
     this.$emitter.on("show-popup", (ad: Ad) => {
       this.ad = ad;

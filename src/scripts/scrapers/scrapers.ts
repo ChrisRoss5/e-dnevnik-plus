@@ -1,17 +1,8 @@
-import $emitter from "@/main";
 import { store } from "@/store";
 import { MutationTypes } from "@/store/mutations";
-import {
-  Ad,
-  ClassInfo,
-  ClassNews,
-  SubjectCache,
-  User,
-  UserType,
-} from "@/store/state";
+import { ClassInfo, ClassNews, SubjectCache, User } from "@/store/state";
 import { CalendarExam, CalendarYear } from "@/views/calendar/interface";
 import * as UTILS from "../utils";
-import { shuffleArray } from "../utils";
 import { authFetch, toastError, URLS } from "./auth";
 
 async function updateClassesList(): Promise<void> {
@@ -270,63 +261,6 @@ async function getAboutPage(): Promise<string | false> {
   return response.text();
 }
 
-async function getAds(): Promise<void> {
-  const url = "https://e-dnevnik-plus.firebaseio.com/ads.json";
-  const user = store.getters.user as User;
-  const userYear = parseInt(user.classesList[0].name);
-  const userType: UserType = user.classesList[0].school
-    ?.toLowerCase()
-    .includes("osnovna")
-    ? "osnovnoškolac"
-    : "srednjoškolac";
-  const userFinalGradeLastClass =
-    user.classesList.length >= 2
-      ? parseFloat(user.classesList[1].finalGrade?.replace(",", ".") || "9")
-      : 9;
-  window.gtag("event", "request", {
-    event_category: "user auth type",
-    event_label: userType,
-    value: userYear,
-  });
-  const ads = (((await fetch(url).then((res) => res.json())) ||
-    []) as Ad[]).filter(
-    (ad) =>
-      !ad.goalComplete &&
-      ad.targetUserTypes.includes(userType) &&
-      ad.targetClassYears.includes(userYear) &&
-      ad.targetMinGradeLastClass <= userFinalGradeLastClass,
-  );
-  if (ads.length == 0) {
-    $emitter.emit("show-banners", []);
-    chrome.storage.sync.remove("ads");
-    return;
-  }
-  $emitter.emit("show-banners", ads);
-  chrome.storage.sync.set({ ads });
-  for (const ad of ads) {
-    window.gtag("event", "ad", {
-      event_category: "banner",
-      event_label: ad.id,
-      value: "saved",
-    });
-  }
-  if (!user.adsShown) user.adsShown = [];
-  for (const ad of shuffleArray(ads)) {
-    if (user.adsShown.includes(ad.id)) continue;
-    $emitter.emit("show-popup", ad);
-    store.commit(MutationTypes.UPDATE_USER_ADS, {
-      user,
-      adsShown: [...user.adsShown, ad.id],
-    });
-    window.gtag("event", "ad", {
-      event_category: "popup",
-      event_label: ad.id,
-      value: "displayed",
-    });
-    break;
-  }
-}
-
 async function switchClassIfNeeded(classId: string): Promise<true | undefined> {
   const user = store.getters.user as User;
   const classUrl = store.getters.classInfo(classId).url as string;
@@ -375,5 +309,4 @@ export {
   getExams,
   getCalendarDates,
   getAboutPage,
-  getAds,
 };

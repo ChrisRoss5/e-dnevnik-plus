@@ -129,14 +129,18 @@ export interface Ad {
   id: string;
   goal: number;
   goalComplete: boolean;
-  targetUserTypes: UserType[];
-  targetClassYears: number[];
-  targetMinGradeLastClass: number;
+  targetUserTypes?: UserType[];
+  targetClassYears?: number[];
+  targetSchoolNames?: string[];
+  targetSchoolPrograms?: string[];
+  targetMinGradeLastClass?: number;
+  targetMaxGradeLastClass?: number;
   images: {
-    popup: string;
+    popup?: string;
     banner: string;
     logo: string;
   };
+  showPopup: boolean;
   url: string;
 }
 

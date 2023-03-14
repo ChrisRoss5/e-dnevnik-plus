@@ -1,11 +1,12 @@
 import { store } from "@/store";
 import { MutationTypes } from "@/store/mutations";
-import { User, UserType } from "@/store/state";
+import { User } from "@/store/state";
 import { TYPE, useToast } from "vue-toastification";
 import { ToastOptions } from "vue-toastification/dist/types/types";
+import getAds from "../ads";
 import newUser from "../new-user";
 import * as UTILS from "../utils";
-import { getAds, getClassesList, updateClassesList } from "./scrapers";
+import { getClassesList, updateClassesList } from "./scrapers";
 
 const toast = useToast();
 const URLS = {
