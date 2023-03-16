@@ -10,7 +10,7 @@ declare global {
 }
 
 // TODO!: devTestMode
-window.devTestMode = true;
+window.devTestMode = false;
 window.devPause = (t) => new Promise((res) => setTimeout(res, t));
 window.devClearLocalStorage = () => chrome.storage.local.clear();
 window.googleAnalyticsId = "G-MPMHVT6WTW";

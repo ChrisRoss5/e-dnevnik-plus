@@ -26,7 +26,7 @@ async function onInstalled(details: any) {
       return;
     }
     if (previousVersion == "5.0") await update501();
-    update502();
+    if (["5.0", "5.0.1"].includes(previousVersion)) update502();
     chrome.storage.sync.get("appEnabled", (state) => {
       if (state.appEnabled || state.appEnabled == undefined) return;
       chrome.declarativeNetRequest.updateEnabledRulesets({

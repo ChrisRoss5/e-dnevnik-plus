@@ -133,8 +133,15 @@ export interface Ad {
   targetClassYears?: number[];
   targetSchoolNames?: string[];
   targetSchoolPrograms?: string[];
-  targetMinGradeLastClass?: number;
-  targetMaxGradeLastClass?: number;
+  targetMinGradeCurrClass?: number;
+  targetMaxGradeCurrClass?: number;
+  targetMinGradePrevClass?: number;
+  targetMaxGradePrevClass?: number;
+  targetSubjectGrades?: {
+    name: string;
+    minGrade?: number;
+    maxGrade?: number;
+  };
   images: {
     popup?: string;
     banner: string;

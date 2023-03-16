@@ -1,0 +1,34 @@
+{
+  "id": "TEST 3",
+  "goal": 10000,
+  "goalComplete": false,
+  "targetUserTypes": [
+    "srednjoškolac"
+  ],
+  "targetClassYears": [
+    4,
+    5
+  ],
+  "targetSchoolNames": [
+    "elektrotehnička škola"
+  ],
+  "targetSchoolPrograms": [
+    "tehničar za računalstvo"
+  ],
+  "targetMinGradeCurrClass": 0,
+  "targetMaxGradeCurrClass": 0,
+  "targetMinGradePrevClass": 0,
+  "targetMaxGradePrevClass": 0,
+  "targetSubjectGrades": {
+    "name": "hrvatski",
+    "minGrade": 0,
+    "maxGrade": 3
+  },
+  "images": {
+    "popup": "https://storage.googleapis.com/e-dnevnik-plus.appspot.com/ads/template/popup.png",
+    "banner": "https://storage.googleapis.com/e-dnevnik-plus.appspot.com/ads/template/banner.png",
+    "logo": "https://storage.googleapis.com/e-dnevnik-plus.appspot.com/ads/template/logo.png"
+  },
+  "showPopup": false,
+  "url": "https://www.algebra.hr/visoko-uciliste/studij/prediplomski-studij/programsko-inzenjerstvo/nastavni-plan/"
+}
