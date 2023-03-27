@@ -49,23 +49,21 @@ export default defineComponent({
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.75);
   z-index: 9999999;
 }
 .container {
   position: relative;
-  width: 900px;
-  height: 600px;
-  max-height: 100vh;
+  height: 65vh;
 }
 .close {
   position: absolute;
   right: 0;
-  width: 50px;
-  height: 50px;
+  width: 8%;
+  height: 12%;
   background-color: rgba(0, 0, 0, 0.75);
   img {
-    height: 20px;
+    height: 30%;
     transition: transform 150ms;
   }
   &:hover {
@@ -76,6 +74,6 @@ export default defineComponent({
   }
 }
 .ad {
-  width: 100%;
+  height: 100%;
 }
 </style>

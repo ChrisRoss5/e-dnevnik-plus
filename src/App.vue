@@ -48,11 +48,13 @@ export default defineComponent({
       this.toggleTransitions(this.$store.state.settings.transitions);
       this.isAppInitiated = window.isAppInitiated = true;
       document.body.style.opacity = "1";
-      getAds(); // todo!
+      // getAds(); // todo!
     });
     this.$emitter.on("show-popup", (ad: Ad) => {
       this.ad = ad;
-      setTimeout(() => (this.showPopup = true), 0);
+      const img = new Image();
+      img.src = ad.images.popup!;
+      img.onload = () => this.showPopup = true;
     });
   },
   mounted() {

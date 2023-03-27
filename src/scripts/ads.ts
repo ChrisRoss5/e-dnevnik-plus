@@ -1,49 +1,53 @@
 import $emitter from "@/main";
 import { store } from "@/store";
 import { MutationTypes } from "@/store/mutations";
-import {
-  Ad,
-  GradesByCategory,
-  SubjectCache,
-  User,
-  UserType,
-} from "@/store/state";
+import { Ad, SubjectCache, User, UserType } from "@/store/state";
 import { authFetch } from "./scrapers/auth";
 import { shuffleArray } from "./utils";
 
 export default async function getAds(): Promise<void> {
-  const adsFile = window.devTestMode ? "ads-test.json" : "ads.json";
-  const url = "https://e-dnevnik-plus.firebaseio.com/" + "ads-test.json"; // todo!
+  const adsFile = window.devTestMode ? "ads-test.json" : "ads5021.json"; // todo!
+  const url = "https://e-dnevnik-plus.firebaseio.com/" + adsFile;
   const user = store.getters.user as User;
   const latestClass = user.classesList[0];
   const schoolName = latestClass.school?.toLowerCase() || "-";
-  const classYear = parseInt(latestClass.name);
+  const classYear = parseInt(latestClass.name) || -1;
   const userType: UserType = schoolName.includes("osnovna")
     ? "osnovnoškolac"
     : "srednjoškolac";
-  const finalGradeLastClass =
+  const finalGradePrevClass =
     user.classesList.length >= 2
-      ? parseFloat(user.classesList[1].finalGrade?.replace(",", ".") || "0")
-      : 0;
-
-  /* const subjects = latestClass.cachedSubjects!;
-  console.log(latestClass);
-  subjects.forEach((subject) =>
-    console.log(subject.name + ": " + getSubjectAvg(subject.gradesByCategory!)),
-  );
-  console.log(getFinalAvg(subjects)); */
-
-  window.gtag("event", "request", {
+      ? parseFloat(user.classesList[1].finalGrade?.replace(",", ".") || "-1")
+      : -1;
+  const cachedSubjects = latestClass.cachedSubjects || [];
+  const finalGradeCurrClass = getFinalAvg(cachedSubjects) || -1;
+  const subjectAvgs = {} as Record<string, number>;
+  const subjectNames = [
+    "matematika",
+    "hrvatski",
+    "engleski",
+    "fizika",
+    "kemija",
+    "biologija",
+    "informatika",
+  ];
+  for (const subjectName of subjectNames) {
+    const subject = findSubject(cachedSubjects, subjectName);
+    subjectAvgs[subjectName] = subject ? getSubjectAvg(subject) : -1;
+  }
+  const event = {
     event_category: "user auth type",
     event_label: userType,
     value: classYear,
     schoolName,
-  });
+    finalGradeCurrClass,
+    finalGradePrevClass,
+    ...subjectAvgs,
+  };
+  window.gtag("event", "request", event);
   let ads = ((await fetch(url).then((res) => res.json())) || []) as Ad[];
-
-  console.log("userType: " + userType + ", classYear: " + classYear);
-  console.log("finalGradeLastClass: " + finalGradeLastClass);
-  console.log("schoolName: " + schoolName);
+  if ((ads as any).fallback)
+    ads = await fetch((ads as any).fallback).then((res) => res.json() || []);
   ads = ads.filter((ad) => {
     if (
       ad.goalComplete ||
@@ -52,29 +56,25 @@ export default async function getAds(): Promise<void> {
       (ad.targetSchoolNames &&
         !ad.targetSchoolNames.some((name) => schoolName.includes(name))) ||
       ((ad.targetMinGradePrevClass || ad.targetMaxGradePrevClass) &&
-        (!finalGradeLastClass ||
-          (ad.targetMinGradePrevClass || 0) > finalGradeLastClass ||
-          (ad.targetMaxGradePrevClass || 5) < finalGradeLastClass))
+        (finalGradePrevClass == -1 ||
+          (ad.targetMinGradePrevClass || 0) > finalGradePrevClass ||
+          (ad.targetMaxGradePrevClass || 5) < finalGradePrevClass)) ||
+      ((ad.targetMinGradeCurrClass || ad.targetMaxGradeCurrClass) &&
+        (finalGradeCurrClass == -1 ||
+          (ad.targetMinGradeCurrClass || 0) > finalGradeCurrClass ||
+          (ad.targetMaxGradeCurrClass || 5) < finalGradeCurrClass))
     )
       return false;
-    if (ad.targetMinGradeCurrClass || ad.targetMaxGradeCurrClass) {
-      if (!latestClass.cachedSubjects) return false;
-      const avg = getFinalAvg(latestClass.cachedSubjects);
-      console.log("final avg", avg);
-      if (
-        (ad.targetMinGradeCurrClass || 0) > avg ||
-        (ad.targetMaxGradeCurrClass || 5) < avg
-      )
-        return false;
-    }
     if (ad.targetSubjectGrades) {
-      const targetedSubject = latestClass.cachedSubjects?.find((subject) =>
-        subject.name.toLowerCase().includes(ad.targetSubjectGrades!.name),
-      );
-      if (!targetedSubject?.gradesByCategory) return false;
-      const avg = getSubjectAvg(targetedSubject.gradesByCategory);
-      console.log("subject avg", avg);
+      const subjectName = ad.targetSubjectGrades.name;
+      let avg = subjectAvgs[subjectName];
+      if (avg == -1) return false;
+      if (!avg) {
+        const subject = findSubject(cachedSubjects, subjectName);
+        avg = subject ? getSubjectAvg(subject) : -1;
+      }
       if (
+        avg == -1 ||
         (ad.targetSubjectGrades?.minGrade || 0) > avg ||
         (ad.targetSubjectGrades?.maxGrade || 5) < avg
       )
@@ -84,7 +84,6 @@ export default async function getAds(): Promise<void> {
   });
   if (ads.some((ad) => ad.targetSchoolPrograms)) {
     const schoolProgram = await getSchoolProgram();
-    console.log("school program", schoolProgram);
     ads = ads.filter(
       (ad) =>
         !ad.targetSchoolPrograms ||
@@ -93,10 +92,22 @@ export default async function getAds(): Promise<void> {
         ),
     );
   }
-  ads.splice(2); // just in case
+  ads = spreadAds(shuffleArray(ads));
   ads.length ? showAds(user, ads) : removeAds();
 }
-
+function spreadAds(ads: Ad[]) {
+  for (let i = ads.length - 1; i > -1; i--) {
+    for (const key in ads[i])
+      if (key.startsWith("target")) delete ads[i][key as keyof Ad];
+    const banners = ads[i].images.banner as string | string[];
+    if (typeof banners == "string") continue;
+    const _ads = banners.map((banner) => {
+      return { ...ads[i], images: { ...ads[i].images, banner } };
+    });
+    ads.splice(i, 1, ..._ads);
+  }
+  return ads;
+}
 async function getSchoolProgram(): Promise<string> {
   const url = "https://ocjene.skole.hr/personal_data";
   const doc = await authFetch(url);
@@ -109,7 +120,6 @@ async function getSchoolProgram(): Promise<string> {
   if (!program) return adError("school program label empty");
   return program.toLowerCase() || "";
 }
-
 function showAds(user: User, ads: Ad[]) {
   $emitter.emit("show-banners", ads);
   if (!window.devTestMode) chrome.storage.sync.set({ ads });
@@ -121,7 +131,7 @@ function showAds(user: User, ads: Ad[]) {
     });
   }
   if (!user.adsShown) user.adsShown = [];
-  for (const ad of shuffleArray(ads)) {
+  for (const ad of ads) {
     if (user.adsShown.includes(ad.id) || !ad.showPopup) continue;
     $emitter.emit("show-popup", ad);
     store.commit(MutationTypes.UPDATE_USER_ADS, {
@@ -130,42 +140,50 @@ function showAds(user: User, ads: Ad[]) {
     });
     window.gtag("event", "ad", {
       event_category: "popup",
+      event_label: ad.id,
       value: "displayed",
     });
     break;
   }
 }
-
 function removeAds() {
   $emitter.emit("show-banners", []);
-  chrome.storage.sync.remove("ads");
+  if (!window.devTestMode) chrome.storage.sync.remove("ads");
 }
-
-function getSubjectGradesCount(g?: GradesByCategory[]) {
-  return (g || []).reduce((a, row) => a + row.grades.flat().length, 0);
-}
-
-function getSubjectAvg(g: GradesByCategory[]) {
-  return (
-    g.reduce(
-      (a, row) => a + row.grades.flat().reduce((b, grade) => b + grade, 0),
-      0,
-    ) / getSubjectGradesCount(g)
+function findSubject(subjects: SubjectCache[], subjectName: string) {
+  subjects = subjects.filter((subject) =>
+    subject.name.toLowerCase().includes(subjectName),
   );
+  return subjects.length
+    ? subjects.reduce((a, b) => (a.name.length <= b.name.length ? a : b))
+    : null;
 }
-
 function getFinalAvg(subjects: SubjectCache[]) {
   const subjectsWithGrades = subjects.filter(
-    (subject) => getSubjectGradesCount(subject.gradesByCategory) > 0,
+    (subject) => getSubjectGradesCount(subject) > 0,
   );
   return (
     subjectsWithGrades.reduce((a, subject) => {
-      const avg = getSubjectAvg(subject.gradesByCategory!);
+      const avg = getSubjectAvg(subject);
       return a + (subject.finalGrade || Math.round(avg));
     }, 0) / subjectsWithGrades.length
   );
 }
-
+function getSubjectAvg(subject: SubjectCache) {
+  if (!subject.gradesByCategory) return -1;
+  return (
+    subject.gradesByCategory.reduce(
+      (a, row) => a + row.grades.flat().reduce((b, grade) => b + grade, 0),
+      0,
+    ) / getSubjectGradesCount(subject)
+  );
+}
+function getSubjectGradesCount(subject: SubjectCache) {
+  return (subject.gradesByCategory || []).reduce(
+    (a, row) => a + row.grades.flat().length,
+    0,
+  );
+}
 function adError(label: string) {
   window.gtag("event", "error", {
     event_category: "ads",

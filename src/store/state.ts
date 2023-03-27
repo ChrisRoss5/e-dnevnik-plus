@@ -127,8 +127,8 @@ export interface SubjectNews {
 
 export interface Ad {
   id: string;
-  goal: number;
-  goalComplete: boolean;
+  goal?: number;
+  goalComplete?: boolean;
   targetUserTypes?: UserType[];
   targetClassYears?: number[];
   targetSchoolNames?: string[];
@@ -147,7 +147,7 @@ export interface Ad {
     banner: string;
     logo: string;
   };
-  showPopup: boolean;
+  showPopup?: boolean;
   url: string;
 }
 
