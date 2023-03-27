@@ -6,7 +6,7 @@ import { authFetch } from "./scrapers/auth";
 import { shuffleArray } from "./utils";
 
 export default async function getAds(): Promise<void> {
-  const adsFile = window.devTestMode ? "ads-test.json" : "ads5021.json"; // todo!
+  const adsFile = window.devTestMode ? "ads-test.json" : "ads5022.json"; // todo!
   const url = "https://e-dnevnik-plus.firebaseio.com/" + adsFile;
   const user = store.getters.user as User;
   const latestClass = user.classesList[0];
@@ -85,7 +85,7 @@ export default async function getAds(): Promise<void> {
     }
     return true;
   });
-  if (ads.some((ad) => ad.targetSchoolPrograms)) {
+  if (ads.some((ad) => ad.targetSchoolPrograms) && !window.devTestMode) {
     const schoolProgram = await getSchoolProgram();
     ads = ads.filter(
       (ad) =>
@@ -102,8 +102,8 @@ function spreadAds(ads: Ad[]) {
   for (let i = ads.length - 1; i > -1; i--) {
     for (const key in ads[i])
       if (key.startsWith("target")) delete ads[i][key as keyof Ad];
-    const banners = ads[i].images.banner as string | string[];
-    if (typeof banners == "string") continue;
+    const banners = ads[i].images.banner as string | string[] | undefined;
+    if (!banners || typeof banners == "string") continue;
     const _ads = banners.map((banner) => {
       return { ...ads[i], images: { ...ads[i].images, banner } };
     });
@@ -124,9 +124,10 @@ async function getSchoolProgram(): Promise<string> {
   return program.toLowerCase() || "";
 }
 function showAds(user: User, ads: Ad[]) {
-  $emitter.emit("show-banners", ads);
-  if (!window.devTestMode) chrome.storage.sync.set({ ads });
-  for (const ad of ads) {
+  const withBanner = ads.filter((ad) => ad.images.banner);
+  $emitter.emit("show-banners", withBanner);
+  if (!window.devTestMode) chrome.storage.sync.set({ ads: withBanner });
+  for (const ad of withBanner) {
     window.gtag("event", "ad", {
       event_category: "banner",
       event_label: ad.id,

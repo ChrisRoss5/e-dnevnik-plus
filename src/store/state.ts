@@ -144,8 +144,8 @@ export interface Ad {
   };
   images: {
     popup?: string;
-    banner: string;
-    logo: string;
+    banner?: string;
+    logo?: string;
   };
   showPopup?: boolean;
   url: string;
