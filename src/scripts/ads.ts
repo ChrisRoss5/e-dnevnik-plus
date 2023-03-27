@@ -10,7 +10,10 @@ export default async function getAds(): Promise<void> {
   const url = "https://e-dnevnik-plus.firebaseio.com/" + adsFile;
   const user = store.getters.user as User;
   const latestClass = user.classesList[0];
-  const schoolName = latestClass.school?.toLowerCase() || "-";
+  const schoolName = (latestClass.school || "-")
+    .trim()
+    .replaceAll(";", ",")
+    .toLowerCase();
   const classYear = parseInt(latestClass.name) || -1;
   const userType: UserType = schoolName.includes("osnovna")
     ? "osnovnoškolac"

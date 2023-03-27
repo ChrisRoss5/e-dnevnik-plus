@@ -57,8 +57,8 @@ export default defineComponent({
       this.intervalId = setInterval(this.autoSlide, 15000);
     },
     autoSlide() {
-      if (!(this.$refs.carousel as HTMLElement).matches(":hover"))
-        this.slide("right");
+      const carousel = this.$refs.carousel as HTMLElement | undefined;
+      if (carousel && !carousel.matches(":hover")) this.slide("right");
     },
     slide(direction: string) {
       if ((this.$refs.banner as HTMLElement).className != "banner") return;
@@ -76,7 +76,7 @@ export default defineComponent({
         value: "clicked",
       });
     },
-},
+  },
   computed: {
     ad(): Ad | undefined {
       return this.ads[this.adIdx];

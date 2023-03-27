@@ -29,6 +29,7 @@
 import { defaultUserSettings } from "@/scripts/new-user";
 import { jsonClone } from "@/scripts/utils";
 import { MutationTypes } from "@/store/mutations";
+import chromeLocalStorage from "@/store/storage";
 import { defineComponent } from "vue";
 import { useToast } from "vue-toastification";
 import Option from "./Option.vue";
@@ -76,10 +77,11 @@ export default defineComponent({
     deleteUserData() {
       const msg = "Svi korisnički podaci bit će trajno obrisani.";
       if (!confirm(msg)) return;
-      const state = jsonClone(this.$store.state);
-      const thisUser = state.users.findIndex((u) => u == this.user);
-      state.users.splice(thisUser, 1);
-      this.$store.commit(MutationTypes.INIT, state);
+      const thisUser = this.$store.state.users.findIndex(
+        (u) => u.email == this.user!.email,
+      );
+      this.$store.state.users.splice(thisUser, 1);
+      chromeLocalStorage(this.$store.state);
       toast.success("Korisnički račun sada je trajno obrisan.");
       this.sendAnalyticsButtonClick("deleteUserData");
     },
