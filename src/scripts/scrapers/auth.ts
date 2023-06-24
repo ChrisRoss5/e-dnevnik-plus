@@ -74,6 +74,7 @@ async function login(
     user.password = password;
     store.commit(MutationTypes.UPDATE_CLASSES_LIST, { user, classesList });
   } else {
+    window.isNewUser = true;
     const fullName = UTILS.getElText(nextDoc.querySelector(".user-name"));
     store.commit(
       MutationTypes.ADD_USER,

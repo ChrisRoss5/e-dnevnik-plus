@@ -2,6 +2,7 @@ import { store } from "@/store";
 import { MutationTypes } from "@/store/mutations";
 import { ClassInfo, ClassNews, SubjectCache, User } from "@/store/state";
 import { CalendarExam, CalendarYear } from "@/views/calendar/interface";
+import getAds from "../ads";
 import * as UTILS from "../utils";
 import { authFetch, toastError, URLS } from "./auth";
 
@@ -146,6 +147,10 @@ async function updateSubjects(
         promises.push(updateSubject(subject).then(saveSubject));
 
   await Promise.allSettled(promises);
+  if (window.isNewUser) {
+    window.isNewUser = false;
+    getAds();
+  }
   return true;
 }
 

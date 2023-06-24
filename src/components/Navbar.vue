@@ -132,9 +132,7 @@ export default defineComponent({
     };
   },
   created() {
-    this.$emitter.on("show-banners", (ads: Ad[]) => {
-      this.ads = ads;
-    });
+    this.$emitter.on("show-banners", (ads: Ad[]) => (this.ads = ads));
   },
   mounted() {
     // If navbar is expanded, always show a "welcome" message for a second
@@ -226,6 +224,7 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
   max-width: $navbar-max-width;
   transition: max-width $collapse-duration, box-shadow $views-transition;
   z-index: 1;
+  user-select: none;
 
   &.shadow {
     box-shadow: 0 0 10px black;
@@ -283,7 +282,6 @@ $nav-shadow-bottom: 0 -1px 0 #ffffff1a inset;
 
 #nav-top {
   height: 104px !important;
-  user-select: none;
 }
 
 #more-horiz {

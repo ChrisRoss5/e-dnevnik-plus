@@ -99,14 +99,16 @@ export default defineComponent({
           }
           .content-menu {
             min-height: 3rem;
-          }
-      ` +
+          }` +
         (this.$store.state.settings.darkTheme
           ? /* css */ `
-          body, * {
+          body, *:not(select, option) {
             color: white;
             border-color: #2d2d2d !important;
             box-shadow: none !important;
+          }
+          a, label {
+            color: white !important;
           }`
           : "");
       return style;

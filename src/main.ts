@@ -4,6 +4,7 @@ declare global {
     googleAnalyticsId: string;
     isAppInitiated: boolean;
     devTestMode: boolean;
+    isNewUser: boolean;
     devPause: (t: number) => Promise<void>;
     devClearLocalStorage: () => void;
   }
