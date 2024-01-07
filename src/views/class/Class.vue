@@ -159,7 +159,6 @@ export default defineComponent({
         { name: "Biljeske", realName: "Bilješke", icon: "edit" },
         { name: "Ispiti", icon: "event_note" },
         { name: "Izostanci", icon: "timer_off" },
-        { name: "Vladanja", icon: "error" },
         { name: "Raspored", icon: "date_range" },
         { name: "Statistika", icon: "equalizer" },
       ],

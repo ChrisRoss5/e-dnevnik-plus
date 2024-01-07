@@ -1,5 +1,8 @@
 <template>
   <div id="wrapper">
+    <div id="important" class="very-important" v-if="importantMessage">
+      <span v-html="importantMessage"></span>
+    </div>
     <div id="important">
       <strong v-if="$inApp">
         Tvoja trenutno instalirana verzija proširenja: {{ $lastVersion }}
@@ -64,6 +67,7 @@ export default defineComponent({
     return {
       scrollTop: 0,
       message: "",
+      importantMessage: "",
     };
   },
   mounted() {
@@ -74,6 +78,11 @@ export default defineComponent({
     fetch("https://ednevnik.plus/users.html")
       .then((response) => response.text())
       .then((html) => (this.message = html));
+    fetch("https://ednevnik.plus/important.html")
+      .then((response) => response.text())
+      .then((html) => {
+        if (!html.startsWith("<script>")) this.importantMessage = html;
+      });
   },
 });
 </script>
@@ -91,6 +100,11 @@ export default defineComponent({
   text-align: center;
   padding: 18px;
   z-index: 1;
+
+  &.very-important {
+    font-weight: bold;
+    background-color: #ff5a5a;
+  }
 
   #urls {
     position: absolute;

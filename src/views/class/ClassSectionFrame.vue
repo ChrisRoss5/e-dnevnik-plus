@@ -30,7 +30,6 @@ export default defineComponent({
         biljeske: "https://ocjene.skole.hr/notes",
         ispiti: "https://ocjene.skole.hr/exam",
         izostanci: "https://ocjene.skole.hr/absent",
-        vladanja: "https://ocjene.skole.hr/behavior",
         raspored: "https://ocjene.skole.hr/schedule",
         "osobni-podaci": "https://ocjene.skole.hr/personal_data",
         potvrde: "https://ocjene.skole.hr/potvrde/home",
@@ -86,7 +85,7 @@ export default defineComponent({
       const style = document.createElement("style");
       style.textContent =
         /* css */ `
-          *:not(#certificate-submit) {
+          *:not(#certificate-submit,.number-of-absents,.round-absent) {
             background: transparent !important;
             transition: none !important;
           }

@@ -1,4 +1,4 @@
-export function getElText(el: Element | null): string {
+export function getElText(el: Element | null | undefined): string {
   return el ? (el.textContent as string).trim() : "";
 }
 

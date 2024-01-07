@@ -1,0 +1,66 @@
+:root {
+  --plus-color: #2296da;
+}
+
+/* Subject list */
+
+.editable-avg {
+  position: relative;
+  color: #fff;
+  border-radius: 10px;
+  height: 40px;
+  align-self: center;
+  transition: background-color 300ms;
+  padding-right: 1rem;
+}
+.editable-avg:hover {
+  background-color: var(--plus-color) !important;
+  cursor: default;
+}
+.editable-avg::before,
+.editable-avg::after {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.editable-avg.edited::before {
+  color: #000;
+  content: "(" attr(data-original-value) ")";
+  right: calc(100% + 1rem);
+}
+.dark-mode .editable-avg.edited::before {
+  color: inherit;
+}
+.editable-avg::after {
+  content: "✏️";
+  transform: translateY(-58%);
+  right: 5px;
+}
+.editable-avg.invalid::after {
+  content: "❌";
+}
+.final-avg:not(.edited)::after {
+  content: "";
+}
+.final-avg.edited {
+  padding-right: 2rem;
+}
+
+/* Subject */
+
+.dark-mode .grades-table .cell.grade {
+  color: #fff;
+}
+.cell.grade.edited {
+  outline: 1px solid var(--plus-color);
+}
+.cell.grade.invalid {
+  outline: 1px solid #ff0000;
+}
+.numbered-average.edited:hover {
+  cursor: default;
+  color: var(--plus-color);
+}
+.numbered-average.edited::before {
+  content: "(" attr(data-original-value) ") ";
+}

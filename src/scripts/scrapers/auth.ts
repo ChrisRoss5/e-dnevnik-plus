@@ -89,7 +89,7 @@ async function login(
     toast("Dobro došli u novi e-Dnevnik Plus!");
   }
   await updateClassesList();
-  getAds();
+  //getAds();
   return true;
 }
 

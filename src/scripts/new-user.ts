@@ -16,7 +16,6 @@ export const defaultUserSettings: Settings = {
     "Biljeske",
     "Ispiti",
     "Izostanci",
-    "Vladanja",
     "Raspored",
     "Statistika",
   ],

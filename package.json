@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "serve": "npx  -p node@16  vue-cli-service serve",
+    "build": "npx  -p node@16  vue-cli-service build",
     "lint": "vue-cli-service lint",
     "dev": "vue-cli-service build --no-clean"
   },

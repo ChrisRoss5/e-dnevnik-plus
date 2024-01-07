@@ -147,7 +147,7 @@
 </template>
 
 <script lang="ts">
-import highSchoolPoints from "@/assets/high-school-points/2022-2023/2022-2023.js";
+import highSchoolPoints from "@/assets/high-school-points/2023-2024/2023-2024.js";
 import Dropdown, { DropdownItem } from "@/components/Dropdown.vue";
 import Spinner from "@/components/Spinner.vue";
 import { defaultUserSettings } from "@/scripts/new-user";
@@ -214,7 +214,7 @@ export default defineComponent({
         {
           name: "Tablica bodova",
           icon: "table_rows",
-          link: "https://srednjeadmin.e-upisi.hr/files/Broj%20bodova%20potrebnih%20za%20upis%202022.pdf",
+          link: "https://srednjeadmin.e-upisi.hr/files/Broj%20bodova%20potrebnih%20za%20upis%202023.pdf",
         },
       ] as DropdownItem[],
       showUrls: false,

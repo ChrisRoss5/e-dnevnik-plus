@@ -12,16 +12,50 @@
       </div>
     </h2>
     <template v-if="!selectedApp">
+      <h3>Verzija 5.1<span>(7.1.2024.)</span></h3>
+      <ul>
+        <li>
+          Proširenje je prilagođeno novoj verziji e-Dnevnika. Nakon 5 godina,
+          vraćeni su prosjeci.
+        </li>
+        <li>e-Dnevnik Plus <span class="plus">Classic</span>:</li>
+        <ul>
+          <li>Nakon instalacije, ovo je zadana verzija proširenja.</li>
+          <li>
+            Na stranici odabira predmeta, prosjek svakog predmeta moguće je
+            mijenjati.
+            <ul>
+              <li>
+                Skrolanjem iznad predmetnog prosjeka povećava se ili smanjuje
+                vrijednost.
+              </li>
+              <li>Desnim klikom na predmetni prosjek poništava se izmjena.</li>
+              <li>Klikom na završni prosjek poništavaju se sve izmjene.</li>
+            </ul>
+          </li>
+          <li>
+            Na stranici predmeta moguće je ručno unositi ocjene.
+            <ul>
+              <li>Klikom na prosjek poništavaju se sve izmjene.</li>
+            </ul>
+          </li>
+        </ul>
+        <li>e-Dnevnik Plus <span class="plus">App</span>:</li>
+        <ul>
+          <li>Riješeni problemi kompatibilnosti s novim e-Dnevnikom.</li>
+          <li>Ažurirani bodovi u kalkulatoru za upis u srednje škole.</li>
+        </ul>
+      </ul>
       <h3>Verzija {{ $lastVersion }}<span>(2.3.2023.)</span></h3>
       <ul>
         <li>e-Dnevnik Plus <span class="plus">App</span>:</li>
         <ul>
-          <li>Dodana opcija "Ispis potvrda" klikom na korisnika</li>
+          <li>Dodana opcija "Ispis potvrda" klikom na korisnika.</li>
           <li>
-            Ažuriran kalkulator za upis u srednje škole
+            Ažuriran kalkulator za upis u srednje škole.
             <ul>
-              <li>Ažurirani dodatni bodovi</li>
-              <li>Ažurirani bodovi potrebni za upis</li>
+              <li>Ažurirani dodatni bodovi.</li>
+              <li>Ažurirani bodovi potrebni za upis.</li>
             </ul>
           </li>
         </ul>

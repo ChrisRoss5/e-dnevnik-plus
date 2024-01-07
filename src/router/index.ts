@@ -61,10 +61,6 @@ const routes: Array<RouteRecordRaw> = [
         component: ClassSectionFrame,
       },
       {
-        path: "vladanja",
-        component: ClassSectionFrame,
-      },
-      {
         path: "raspored",
         component: ClassSectionFrame,
       },

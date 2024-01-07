@@ -29,10 +29,10 @@ async function onInstalled(details) {
         if (["5.0", "5.0.1"].includes(previousVersion))
             update502();
         chrome.storage.sync.get("appEnabled", (state) => {
-            if (state.appEnabled || state.appEnabled == undefined)
+            if (!state.appEnabled)
                 return;
             chrome.declarativeNetRequest.updateEnabledRulesets({
-                disableRulesetIds: ["ruleset"],
+                enableRulesetIds: ["ruleset"],
             });
         });
     }

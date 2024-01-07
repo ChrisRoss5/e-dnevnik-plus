@@ -14,8 +14,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const { href } = window.location;
   if (href.includes("/login")) return autoLogin();
-  if (href.includes("/grade")) return addAverageBelowGradesTable();
-  if (href.includes("/course")) addAverageOnClass();
+  if (href.includes("/grade")) return customizeSubject();
+  if (href.includes("/course")) customizeSubjectList();
 });
 
 let logoutCleared = false;
@@ -79,76 +79,152 @@ function autoLogin() {
   };
 }
 
-function addAverageBelowGradesTable() {
-  const table = document.querySelector(".grades-table");
-  if (!table) return;
-  const avgEl = document.createElement("div");
-  avgEl.style.color = plusColor;
-  avgEl.style.float = "right";
-  avgEl.textContent = "Prosjek ocjena: " + getSubjectAverage(document);
-  table.parentNode!.insertBefore(avgEl, table.nextSibling);
-}
+function customizeSubject() {
+  if (document.querySelector(".multiple-grades"))
+    return console.error(
+      "e-Dnevnik Plus ne podržava uređivanje ocjena na mobilnim uređajima.",
+    );
 
-function addAverageOnClass() {
-  const menu = document.querySelector(".export-menu");
-  if (!menu) return;
-  const newItemContainer = document.createElement("div");
-  const newItem = document.createElement("a");
-  newItem.href = "javascript:void(0);";
-  newItem.style.color = plusColor;
-  newItem.textContent = "prosjeci";
-  menu.appendChild(newItemContainer);
-  newItemContainer.appendChild(newItem).onclick = () => {
-    const parser = new DOMParser();
-    const loaderEl = document.createElement("img");
-    loaderEl.src = chrome.runtime.getURL("assets/img/spinner.svg");
-    loaderEl.style.transform = "scale(1.5)";
-    newItem.replaceWith(loaderEl);
-    Promise.all(
-      [...document.querySelectorAll(".content > .list a[href^='/grade/']")].map(
-        (subjectEl) =>
-          fetch((subjectEl as HTMLAnchorElement).href)
-            .then((response) => response.text())
-            .then((html) => {
-              const doc = parser.parseFromString(html, "text/html");
-              const finalGrade = getSubjectFinalGrade(doc);
-              const average = getSubjectAverage(doc);
-              const rounded = Math.round(parseFloat(average.replace(",", ".")));
-              subjectEl.innerHTML += average;
-              (subjectEl as HTMLAnchorElement).style.paddingRight = "17px";
-              return finalGrade || (average == "—" ? 0 : rounded);
-            }),
-      ),
-    ).then((result) => {
-      const finalAverageEl = document.createElement("a");
-      finalAverageEl.title =
-        "Prosjek svih zaključnih ocjena (završni uspjeh).\n" +
-        "Ako ocjena iz predmeta nije zaključena, zaokružuje se prosjek.\n" +
-        "Ako predmet nema ocjena, ne uračunava se u ovaj prosjek.";
-      finalAverageEl.innerHTML =
-        getAverageFromArray(result.filter((i) => i)) +
-        "<sup style='position: absolute; padding-left: 2px'>?</sup>";
-      loaderEl.replaceWith(finalAverageEl);
+  const cellsNL = document.querySelectorAll(".grade.cell");
+  const cells = [...cellsNL] as HTMLElement[];
+  const avgEl = document.querySelector(".numbered-average") as HTMLElement;
+  avgEl.dataset.originalValue = avgEl.textContent!;
+  avgEl.addEventListener("click", resetAll);
+
+  for (const cell of cells) {
+    cell.contentEditable = "true";
+    cell.dataset.originalValue = getValues(cell).join(", ");
+    cell.addEventListener("input", () => handleInputUpdate(cell));
+    cell.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      cell.textContent = cell.dataset.originalValue!;
+      handleInputUpdate(cell);
     });
-  };
+  }
+
+  function updateAverage() {
+    const grades = cells.flatMap((cell) =>
+      cell.classList.contains("invalid") ? [] : getValues(cell),
+    );
+    const avg = getAverageFromArray(grades);
+    avgEl.textContent = avg;
+    addClass(avgEl, "edited", avg != avgEl.dataset.originalValue);
+  }
+
+  function handleInputUpdate(cell: HTMLElement) {
+    const values = getValues(cell);
+    const isInvalid = values.some((v) => !v || v < 1 || v > 5);
+    addClass(cell, "invalid", isInvalid);
+    addClass(cell, "edited", values.join(", ") != cell.dataset.originalValue!);
+    updateAverage();
+  }
+
+  function getValues(cell: HTMLElement) {
+    const split = cell.textContent!.split(",").map((s) => s.trim());
+    return split.filter(Boolean).map(Number);
+  }
+
+  function resetAll() {
+    for (const cell of cells) {
+      cell.textContent = cell.dataset.originalValue!;
+      cell.classList.remove("edited", "invalid");
+    }
+    updateAverage();
+  }
 }
 
-function getSubjectFinalGrade(doc: Document): number {
-  const finalGradeEl = doc.querySelector(".final-grade > div:last-child");
-  if (!finalGradeEl) return 0;
-  const finalGrade = finalGradeEl.textContent!.match(/\d/);
-  return finalGrade ? parseInt(finalGrade[0]) : 0;
+function customizeSubjectList() {
+  const menu = document.querySelector(".grades-menu")!;
+  const avgElsNL = document.querySelectorAll(".list-average-grade");
+  const avgEls = [...avgElsNL] as HTMLElement[];
+
+  const finalAverageEl = document.createElement("div");
+  finalAverageEl.classList.add("button", "editable-avg", "final-avg");
+  finalAverageEl.addEventListener("click", resetAll);
+
+  const finalAverageValueEl = document.createElement("span");
+  finalAverageValueEl.style.paddingLeft = "0.5rem";
+  finalAverageValueEl.style.cursor = "help";
+  const helpEl = document.createElement("sup");
+  helpEl.style.paddingBottom = "0.5rem";
+  helpEl.textContent = "?";
+  finalAverageEl.append("Završna ocjena:", finalAverageValueEl, helpEl);
+  finalAverageEl.title =
+    "Prosjek zaokruženih prosjeka. Neispravno uneseni prosjeci ne ulaze u izračun. \n" +
+    "Tip: Klik ovdje za poništavanje svih izmjena.\n" +
+    "Tip: Skrolaj iznad predmetnog prosjeka za povećanje/smanjenje vrijednosti.\n" +
+    "Tip: Desni klik na predmetni prosjek za poništavanje izmjene.";
+
+  menu.prepend(finalAverageEl);
+
+  for (const el of avgEls) {
+    el.closest("a")!.draggable = false;
+    el.classList.add("editable-avg");
+    const child = el.firstElementChild as HTMLElement;
+    el.style.backgroundColor = getComputedStyle(child).backgroundColor;
+    el.innerHTML = el.textContent?.replace(",", ".") ?? "";
+    el.contentEditable = "true";
+    el.dataset.originalValue = el.textContent ? getValue(el) + "" : "";
+    el.addEventListener("click", (e) => e.preventDefault());
+    el.addEventListener("input", (e) => {
+      el.textContent = (e as InputEvent).data;
+      handleInputUpdate(el);
+    });
+    el.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const value = Math.round(getValue(el));
+      const newValue = e.deltaY < 0 ? value + 1 : value - 1;
+      el.textContent = Math.max(1, Math.min(newValue, 5)) + "";
+      handleInputUpdate(el);
+    });
+    el.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      el.textContent = el.dataset.originalValue!;
+      handleInputUpdate(el);
+    });
+  }
+
+  updateFinalAverage();
+
+  function updateFinalAverage() {
+    const avgs = avgEls.flatMap((el) =>
+      el.classList.contains("invalid") ? [] : Math.round(getValue(el)),
+    );
+    const finalAvg = getAverageFromArray(avgs);
+    finalAverageValueEl.textContent = finalAvg;
+    const { originalValue } = finalAverageEl.dataset;
+    if (originalValue === undefined)
+      finalAverageEl.dataset.originalValue = finalAvg;
+    else addClass(finalAverageEl, "edited", finalAvg != originalValue);
+  }
+
+  function resetAll() {
+    for (const el of avgEls) {
+      el.textContent = el.dataset.originalValue!;
+      el.classList.remove("edited", "invalid");
+    }
+    updateFinalAverage();
+  }
+
+  function handleInputUpdate(el: HTMLElement) {
+    const value = getValue(el);
+    addClass(el, "invalid", !value || value < 1 || value > 5);
+    addClass(el, "edited", value != parseFloat(el.dataset.originalValue!));
+    updateFinalAverage();
+  }
+
+  function getValue(el: HTMLElement) {
+    return parseFloat(el.textContent!.replace(",", "."));
+  }
 }
 
-function getSubjectAverage(doc: Document): string {
-  return getAverageFromArray(
-    [...doc.querySelectorAll(".grades-table .grade")].flatMap((cell) =>
-      (cell.textContent!.match(/\d/g) || []).map(Number),
-    ),
-  );
-}
+// UTILS
 
 function getAverageFromArray(arr: number[]): string {
   const avg = arr.reduce((a, b) => a + b, 0) / arr.length;
-  return avg ? avg.toFixed(2).replace(".", ",") : "—";
+  return avg ? avg.toFixed(2) : "—";
+}
+
+function addClass(el: HTMLElement, className: string, condition: boolean) {
+  condition ? el.classList.add(className) : el.classList.remove(className);
 }

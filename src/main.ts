@@ -81,7 +81,7 @@ app
   .use(VWave)
   .use(VTooltip)
   .use(VCalendar)
-  .mixin(GlobalMixin)
+  .mixin(GlobalMixin as any)
   .mount("#app");
 
 export default app.config.globalProperties.$emitter;

@@ -4,7 +4,7 @@ import { ClassInfo, ClassNews, SubjectCache, User } from "@/store/state";
 import { CalendarExam, CalendarYear } from "@/views/calendar/interface";
 import getAds from "../ads";
 import * as UTILS from "../utils";
-import { authFetch, toastError, URLS } from "./auth";
+import { URLS, authFetch, toastError } from "./auth";
 
 async function updateClassesList(): Promise<void> {
   const user = store.getters.user as User;
@@ -25,7 +25,7 @@ async function updateClassesList(): Promise<void> {
     //
     // Find class head teacher
     if (!headTeacher) {
-      const headTeacherEl = classDoc.querySelector(".schoolyear .black");
+      const headTeacherEl = classDoc.querySelector(".classmaster")?.lastElementChild;
       store.commit(MutationTypes.UPDATE_CLASS_PROPERTY, {
         classInfo,
         property: "headTeacher",
@@ -37,7 +37,7 @@ async function updateClassesList(): Promise<void> {
     let _school = "";
     if (!school) {
       const schoolEl = classDoc.querySelector(".school-name");
-      _school = schoolEl ? UTILS.getElText(schoolEl.firstElementChild) : "/";
+      _school = schoolEl ? UTILS.getElText(schoolEl) : "/";
       store.commit(MutationTypes.UPDATE_CLASS_PROPERTY, {
         classInfo,
         property: "school",
@@ -73,10 +73,10 @@ async function getClassesList(
   if (!classesDoc) return;
   const date = new Date();
   const [currentYear, currentMonth] = [date.getFullYear(), date.getMonth() + 1];
-  const classMenus = classesDoc.getElementsByClassName("class-menu-vertical");
+  const classMenus = classesDoc.querySelectorAll(".class-menu-vertical");
   const classesList = [] as ClassInfo[];
   for (const menu of classMenus) {
-    const url = (menu.querySelector(".school") as HTMLAnchorElement).href;
+    const url = (menu.querySelector(".school-data") as HTMLAnchorElement).href;
     const year = UTILS.getElText(menu.querySelector(".class-schoolyear"));
     const [start, end] = year.split("/").map((y) => parseInt("20" + y));
     const finalGrade = UTILS.getElText(
@@ -136,8 +136,12 @@ async function updateSubjects(
       promises.push(
         updateSubject({
           url: (anchor as HTMLAnchorElement).href,
-          name: UTILS.getElText(anchor.children[0]),
-          teachers: UTILS.getElText(anchor.children[1]),
+          name: UTILS.getElText(
+            anchor.querySelector(".course-info")?.firstElementChild,
+          ),
+          teachers: UTILS.getElText(
+            anchor.querySelector(".course-info")?.lastElementChild,
+          ),
         }).then(saveSubject),
       ),
     );
@@ -163,23 +167,27 @@ async function updateSubject(
     return false;
   }
   subject.gradesByCategory = [];
-  subjectDoc.querySelectorAll(".grades-table > .row").forEach((rowEl) => {
-    if (rowEl.classList.contains("final-grade")) {
-      const finalGrade = UTILS.getElText(rowEl.lastElementChild).match(/\d/);
-      if (finalGrade) subject.finalGrade = parseInt(finalGrade[0]);
-      return;
-    }
-    subject.gradesByCategory!.push({
-      name: UTILS.capitalize(UTILS.getElText(rowEl.firstElementChild)),
-      grades: [...rowEl.children]
-        .slice(1)
-        .map((cell) => (UTILS.getElText(cell).match(/\d/g) || []).map(Number)),
+  subjectDoc
+    .querySelectorAll(".grades-table > .row:not(.header)")
+    .forEach((rowEl) => {
+      if (rowEl.classList.contains("final-grade")) {
+        const finalGrade = UTILS.getElText(rowEl.lastElementChild).match(/\d/);
+        if (finalGrade) subject.finalGrade = parseInt(finalGrade[0]);
+        return;
+      }
+      subject.gradesByCategory!.push({
+        name: UTILS.capitalize(UTILS.getElText(rowEl.firstElementChild)),
+        grades: [...rowEl.querySelectorAll(".grade")].map((cell) =>
+          (UTILS.getElText(cell).match(/\d/g) || []).map(Number),
+        ),
+      });
     });
-  });
-  const lastNoteEl = subjectDoc.querySelector(".notes-table > .row");
+  const lastNoteEl = subjectDoc.querySelector(
+    ".notes-table > .row:not(.header)",
+  );
   if (lastNoteEl) {
-    const info = [...lastNoteEl.children].map(UTILS.getElText);
-    subject.lastNote = { note: info[0], date: info[1], grade: info[2] };
+    const info = [...lastNoteEl.querySelectorAll(".cell")].map(UTILS.getElText);
+    subject.lastNote = { note: info[2], date: info[0], grade: info[1] };
   }
   return subject;
 }
@@ -201,7 +209,7 @@ async function findSchoolUrl(
     (r) =>
       UTILS.getElText(r)
         .toLowerCase()
-        .replaceAll(";", ",") == _school,
+        .replaceAll(";", ",").startsWith(_school),
   ) as HTMLAnchorElement | undefined;
   if (!(row && row.href) || row.href.includes("/skole.hr/")) return;
   return row.href;
@@ -234,12 +242,16 @@ async function getExams(classId: string): Promise<false | CalendarExam[]> {
   }
   const classInfo: ClassInfo = store.getters.classInfo(classId);
   const [startYear, endYear] = classInfo.year.split("./").map(Number);
-  return [...doc.querySelectorAll(".flex-table.row")].map((row) => {
-    const [subject, note, _date] = [...row.children].map(UTILS.getElText);
-    const date =
-      _date + (parseInt(_date.split(".")[1]) > 8 ? startYear : endYear);
-    return { subject, note, date };
-  });
+  return [...doc.querySelectorAll(".exam-table .row:not(.header)")].map(
+    (row) => {
+      const [_date, subject, note] = [...row.querySelectorAll(".cell")].map(
+        UTILS.getElText,
+      );
+      const date =
+        _date + (parseInt(_date.split(".")[1]) > 8 ? startYear : endYear);
+      return { subject, note, date };
+    },
+  );
 }
 
 async function getCalendarDates(): Promise<CalendarYear[] | false> {
@@ -283,29 +295,35 @@ async function updateClassNews(): Promise<void | false> {
     toastError("Greška pri dobavljanju novih razrednih zapisa!");
     return false;
   }
-  const subjects = [...doc.querySelectorAll(".new-grades-table")];
-  const classNews: ClassNews[] = subjects.map((subject) => {
-    const rows = [...subject.querySelectorAll(".flex-table.row")];
-    return {
-      subjectName: UTILS.getElText(subject.firstElementChild),
-      subjectNews: rows.map((row) => {
-        const { children } = row;
-        const date = "[" + UTILS.getElText(children[0]) + "] ";
-        const note = date + UTILS.getElText(children[1]);
-        const grade = UTILS.getElText(children[children.length - 1]);
-        return { note, grade: grade ? parseInt(grade) : null };
-      }),
-    };
-  });
-  store.commit(MutationTypes.UPDATE_CLASS_NEWS, { user, classNews });
+  try {
+    // Todo!: check
+    const subjects = [...doc.querySelectorAll(".new-grades-table")];
+    const classNews: ClassNews[] = subjects.map((subject) => {
+      const rows = [...subject.querySelectorAll(".flex-table.row")];
+      return {
+        subjectName: UTILS.getElText(subject.firstElementChild),
+        subjectNews: rows.map((row) => {
+          const { children } = row;
+          const date = "[" + UTILS.getElText(children[0]) + "] ";
+          const note = date + UTILS.getElText(children[1]);
+          const grade = UTILS.getElText(children[children.length - 1]);
+          return { note, grade: grade ? parseInt(grade) : null };
+        }),
+      };
+    });
+    store.commit(MutationTypes.UPDATE_CLASS_NEWS, { user, classNews });
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
 }
 
 export {
-  updateClassesList,
-  getClassesList,
-  updateSubjects,
-  getOriginalSectionPage,
-  getExams,
-  getCalendarDates,
   getAboutPage,
+  getCalendarDates,
+  getClassesList,
+  getExams,
+  getOriginalSectionPage,
+  updateClassesList,
+  updateSubjects,
 };
