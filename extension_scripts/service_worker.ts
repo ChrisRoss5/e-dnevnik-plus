@@ -26,7 +26,8 @@ async function onInstalled(details: any) {
       return;
     }
     if (previousVersion == "5.0") await update501();
-    if (["5.0", "5.0.1"].includes(previousVersion)) update502();
+    if (["5.0", "5.0.1"].includes(previousVersion)) await update502();
+    update51();
     chrome.storage.sync.get("appEnabled", (state) => {
       if (!state.appEnabled) return;
       chrome.declarativeNetRequest.updateEnabledRulesets({
@@ -40,7 +41,7 @@ async function update501() {
   chrome.storage.sync.set({ newUpdates: true, updateNotif: true });
   return new Promise<void>((resolve) => {
     chrome.storage.local.get(null, (state) => {
-      if (!state || !state.users) return;
+      if (!state || !state.users) return resolve();
       state.users.forEach((user: any) => {
         const subjectsSettings = user.settings.subjectsSettings;
         const showColors: boolean = subjectsSettings.subjectColors;
@@ -58,13 +59,26 @@ async function update501() {
 
 function update502() {
   chrome.storage.sync.set({ newUpdates: true, updateNotif: true });
+  return new Promise<void>((resolve) => {
+    chrome.storage.local.get(null, (state) => {
+      if (!state || !state.users) return resolve();
+      state.users.forEach((user: any) => {
+        user.settings.websitesSettings = user.settings.websitesSettings.filter(
+          (website: any) =>
+            !["Srednja.hr", "Školski e-Rudnik"].includes(website.name),
+        );
+      });
+      chrome.storage.local.set(state, resolve);
+    });
+  });
+}
+
+function update51() {
   chrome.storage.local.get(null, (state) => {
     if (!state || !state.users) return;
     state.users.forEach((user: any) => {
-      user.settings.websitesSettings = user.settings.websitesSettings.filter(
-        (website: any) =>
-          !["Srednja.hr", "Školski e-Rudnik"].includes(website.name),
-      );
+      user.settings.classTabsOrder = (user.settings
+        .classTabsOrder as string[]).filter((t) => t != "Vladanja");
     });
     chrome.storage.local.set(state);
   });

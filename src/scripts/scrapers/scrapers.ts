@@ -153,7 +153,7 @@ async function updateSubjects(
   await Promise.allSettled(promises);
   if (window.isNewUser) {
     window.isNewUser = false;
-    getAds();
+    // getAds(); todo!
   }
   return true;
 }

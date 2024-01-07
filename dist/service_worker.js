@@ -27,7 +27,8 @@ async function onInstalled(details) {
         if (previousVersion == "5.0")
             await update501();
         if (["5.0", "5.0.1"].includes(previousVersion))
-            update502();
+            await update502();
+        update51();
         chrome.storage.sync.get("appEnabled", (state) => {
             if (!state.appEnabled)
                 return;
@@ -42,7 +43,7 @@ async function update501() {
     return new Promise((resolve) => {
         chrome.storage.local.get(null, (state) => {
             if (!state || !state.users)
-                return;
+                return resolve();
             state.users.forEach((user) => {
                 const subjectsSettings = user.settings.subjectsSettings;
                 const showColors = subjectsSettings.subjectColors;
@@ -59,11 +60,24 @@ async function update501() {
 }
 function update502() {
     chrome.storage.sync.set({ newUpdates: true, updateNotif: true });
+    return new Promise((resolve) => {
+        chrome.storage.local.get(null, (state) => {
+            if (!state || !state.users)
+                return resolve();
+            state.users.forEach((user) => {
+                user.settings.websitesSettings = user.settings.websitesSettings.filter((website) => !["Srednja.hr", "Školski e-Rudnik"].includes(website.name));
+            });
+            chrome.storage.local.set(state, resolve);
+        });
+    });
+}
+function update51() {
     chrome.storage.local.get(null, (state) => {
         if (!state || !state.users)
             return;
         state.users.forEach((user) => {
-            user.settings.websitesSettings = user.settings.websitesSettings.filter((website) => !["Srednja.hr", "Školski e-Rudnik"].includes(website.name));
+            user.settings.classTabsOrder = user.settings
+                .classTabsOrder.filter((t) => t != "Vladanja");
         });
         chrome.storage.local.set(state);
     });
