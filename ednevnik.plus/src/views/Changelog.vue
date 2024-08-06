@@ -123,8 +123,8 @@
       <h3>Verzija &lt;= 4.8<span>(21.3.2019.)</span></h3>
       <a
         class="plus"
-        href="https://chrisross5.github.io/e-Dnevnik-Plus-WEB-stari/"
-        >https://chrisross5.github.io/e-Dnevnik-Plus-WEB-stari/</a
+        href="https://chrisross5.github.io/e-dnevnik-plus-homepage-old/"
+        >https://chrisross5.github.io/e-dnevnik-plus-homepage-old/</a
       >
     </template>
     <template v-else>Nema novosti.</template>

@@ -25,7 +25,7 @@
     sam e-Dnevnik Plus za nastavnike i
     <a
       class="plus"
-      href="https://chrisross5.github.io/e-Dnevnik-Plus-WEB-stari/skole/"
+      href="https://chrisross5.github.io/e-dnevnik-plus-homepage-old/skole/"
       target="_blank"
       >e-Dnevnik Plus za škole</a
     >
@@ -45,7 +45,7 @@
     stranica (s verzijama &lt; 5.0) nalazi se
     <a
       class="plus"
-      href="https://chrisross5.github.io/e-Dnevnik-Plus-WEB-stari/"
+      href="https://chrisross5.github.io/e-dnevnik-plus-homepage-old/"
       target="_blank"
     >
       ovdje</a
@@ -68,9 +68,9 @@
     >
       INOVA</a
     >. Ipak, godinu dana kasnije (ljeto 2021. nakon mature) odlučujem opet
-    izbrisati sve i započeti iznova, ali ovaj put s boljim tehnologijama. Stoga, danas
-    postoji moja moderna verzija e-Dnevnika - Plus App, ali i jednostavna Classic
-    verzija koja se ugrađuje u e-Dnevnik kao što je bilo i prije.
+    izbrisati sve i započeti iznova, ali ovaj put s boljim tehnologijama. Stoga,
+    danas postoji moja moderna verzija e-Dnevnika - Plus App, ali i jednostavna
+    Classic verzija koja se ugrađuje u e-Dnevnik kao što je bilo i prije.
     <br />
     <br />
     <hr />

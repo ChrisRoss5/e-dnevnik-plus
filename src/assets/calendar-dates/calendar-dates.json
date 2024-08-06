@@ -1,5 +1,59 @@
 [
   {
+    "startingDate": "9.9.2024",
+    "endingDate": "13.6.2025",
+    "edgeDays": {
+      "9.9.2024": "Počinje prvo polugodište",
+      "20.12.2024": "Završava prvo polugodište",
+      "7.1.2025": "Počinje drugo polugodište",
+      "23.5.2025": "Završava drugo polugodište za maturante",
+      "13.6.2025": "Završava drugo polugodište"
+    },
+    "holidays": {
+      "1.11.2024": "Svi sveti",
+      "18.11.2024": "Dan sjećanja na žrtve Domovinskog rata",
+      "25.12.2024": "Božić",
+      "26.12.2024": "Sveti Stjepan",
+      "1.1.2025": "Nova godina",
+      "6.1.2025": "Sveta tri kralja",
+      "20.4.2025": "Uskrs",
+      "21.4.2025": "Uskrsni ponedjeljak",
+      "1.5.2025": "Međunarodni praznik rada",
+      "30.5.2025": "Dan državnosti",
+      "19.6.2025": "Tijelovo",
+      "22.6.2025": "Dan antifašističke borbe",
+      "5.8.2025": "Dan pobjede i domovinske zahvalnosti i Dan hrvatskih branitelja",
+      "15.8.2025": "Velika Gospa"
+    },
+    "vacationRanges": [
+      {
+        "start": "1.9.2024",
+        "end": "8.9.2024",
+        "label": "Ljetni praznici"
+      },
+      {
+        "start": "23.12.2024",
+        "end": "6.1.2025",
+        "label": "Prvi dio zimskih praznika"
+      },
+      {
+        "start": "24.2.2025",
+        "end": "28.2.2025",
+        "label": "Drugi dio zimskih praznika"
+      },
+      {
+        "start": "17.4.2025",
+        "end": "21.4.2025",
+        "label": "Proljetni praznici"
+      },
+      {
+        "start": "16.6.2025",
+        "end": "31.8.2025",
+        "label": "Ljetni praznici"
+      }
+    ]
+  },
+  {
     "startingDate": "4.9.2023",
     "endingDate": "21.6.2024",
     "edgeDays": {
