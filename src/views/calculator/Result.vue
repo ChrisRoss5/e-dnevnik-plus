@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import highSchoolPoints from "@/assets/high-school-points/2023-2024/2023-2024.js";
+import highSchoolPoints from "@/assets/high-school-points/2024-2025/2024-2025.js";
 import { formatNum, getSum } from "@/scripts/utils";
 import { CalculatorSettings } from "@/store/state";
 import { defineComponent, PropType } from "vue";

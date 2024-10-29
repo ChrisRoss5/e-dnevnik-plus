@@ -13,7 +13,7 @@
 <body>
   <!-- PDF from https://www.upisi.hr converted with https://xodo.com/convert-pdf-to-html -->
 
-  <iframe src="2023-2024/2023-2024.html" onload="load()"></iframe>
+  <iframe src="2024-2025/2024-2025.html" onload="load()"></iframe>
 </body>
 
 <script>
@@ -24,7 +24,7 @@
     doc.querySelectorAll("tr").forEach((row) => {
       let values = [];
       row.querySelectorAll("td").forEach((cell) => {
-        const value = [...cell.querySelectorAll(".s3")]
+        const value = [...cell.querySelectorAll(".s2")]
           .map((n) => n.textContent.trim().replace(/\s\s+/g, " "))
           .join(" ");
         if (value) values.push(value);

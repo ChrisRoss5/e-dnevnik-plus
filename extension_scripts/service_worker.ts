@@ -19,6 +19,7 @@ async function onInstalled(details: any) {
   if (details.reason == "update") {
     const previousVersion: string = details.previousVersion;
     // const newVersion: string = chrome.runtime.getManifest().version;
+
     if (cmpVersions(previousVersion, "5.0") < 0) {
       chrome.storage.sync.clear();
       chrome.storage.local.clear();
@@ -27,13 +28,15 @@ async function onInstalled(details: any) {
     }
     if (previousVersion == "5.0") await update501();
     if (["5.0", "5.0.1"].includes(previousVersion)) await update502();
-    update51();
-    chrome.storage.sync.get("appEnabled", (state) => {
-      if (!state.appEnabled) return;
-      chrome.declarativeNetRequest.updateEnabledRulesets({
-        enableRulesetIds: ["ruleset"],
+    if (cmpVersions(previousVersion, "5.1") < 0) {
+      await update51();
+      chrome.storage.sync.get("appEnabled", (state) => {
+        if (!state.appEnabled) return;
+        chrome.declarativeNetRequest.updateEnabledRulesets({
+          enableRulesetIds: ["ruleset"],
+        });
       });
-    });
+    }
   }
 }
 
@@ -74,13 +77,15 @@ function update502() {
 }
 
 function update51() {
-  chrome.storage.local.get(null, (state) => {
-    if (!state || !state.users) return;
-    state.users.forEach((user: any) => {
-      user.settings.classTabsOrder = (user.settings
-        .classTabsOrder as string[]).filter((t) => t != "Vladanja");
+  return new Promise<void>((resolve) => {
+    chrome.storage.local.get(null, (state) => {
+      if (!state || !state.users) return;
+      state.users.forEach((user: any) => {
+        user.settings.classTabsOrder = (user.settings
+          .classTabsOrder as string[]).filter((t) => t != "Vladanja");
+      });
+      chrome.storage.local.set(state, resolve);
     });
-    chrome.storage.local.set(state);
   });
 }
 
