@@ -143,9 +143,8 @@ export default defineComponent({
     SubjectCardHead,
     SubjectCardBody,
   },
-  props: { classId: { type: String, required: true } },
-  /* emits: ["sectionLoading", "sectionLoaded"], */ // TODO: FIX TS ERROR
-  created() {
+  props: { classId: { type: String, required: true } }, // TODO?: FIX TS ERROR
+  /* emits: ["sectionLoading", "sectionLoaded"], */ created() {
     this.updateSubjects();
   },
   data() {
@@ -263,10 +262,13 @@ export default defineComponent({
       optionName: string,
       value?: boolean | number | string,
     ) {
-      window.gtag("event", "button click", {
-        event_category: "subjects option",
-        event_label: optionName,
-        value: value == undefined ? "--" : value,
+      chrome.runtime.sendMessage({
+        name: "SEND_ANALYTICS_EVENT",
+        params: {
+          name: "click_button",
+          id: "subjects",
+          [optionName]: value == undefined ? "--" : value,
+        },
       });
     },
     sortOptionClicked(optionName: string) {

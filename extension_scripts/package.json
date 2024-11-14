@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "build-content-script:watch": "tsc -w -p content-script/tsconfig.json --outFile ../dist/content-script.js",
+    "build-service-worker:watch": "tsc -w -p service-worker/tsconfig.json --outFile ../dist/service-worker.js"
+  },
+  "dependencies": {
+    "typescript": "^5.6.3"
+  }
+}

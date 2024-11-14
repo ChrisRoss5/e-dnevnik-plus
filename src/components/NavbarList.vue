@@ -22,7 +22,7 @@ import { convertToPath } from "@/scripts/utils";
 import { defineComponent, PropType } from "vue";
 import { NavbarLink } from "./Navbar.vue";
 
-// TODO: fix v-tooltip empty divs generating in <body>
+// TODO?: fix v-tooltip empty divs generating in <body>
 
 export default defineComponent({
   name: "NavbarList",

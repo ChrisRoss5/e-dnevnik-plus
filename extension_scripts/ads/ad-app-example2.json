@@ -1,0 +1,34 @@
+[
+  {
+    "id": "algebra-pripreme-popup",
+    "images": {
+      "popup": "https://storage.googleapis.com/e-dnevnik-plus.appspot.com/ads/algebra/popup-pripreme.jpg"
+    },
+    "showPopup": true,
+    "targetClassYears": [
+      4
+    ],
+    "targetMinGradeCurrClass": 3.5,
+    "targetUserTypes": [
+      "srednjoškolac"
+    ],
+    "url": "https://hubs.li/Q01Jd0b80"
+  },
+  {
+    "id": "algebra-pripreme-banner",
+    "images": {
+      "banner": [
+        "https://storage.googleapis.com/e-dnevnik-plus.appspot.com/ads/algebra/pripreme.jpg"
+      ],
+      "logo": "https://storage.googleapis.com/e-dnevnik-plus.appspot.com/ads/algebra/logo.png"
+    },
+    "targetClassYears": [
+      4
+    ],
+    "targetMinGradeCurrClass": 3.5,
+    "targetUserTypes": [
+      "srednjoškolac"
+    ],
+    "url": "https://hubs.li/Q01Jd0dY0"
+  }
+]

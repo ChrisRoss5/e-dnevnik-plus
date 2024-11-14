@@ -32,10 +32,13 @@ export default defineComponent({
   },
   methods: {
     adClicked() {
-      window.gtag("event", "ad", {
-        event_category: "popup",
-        event_label: this.ad.id,
-        value: "clicked",
+      chrome.runtime.sendMessage({
+        name: "SEND_ANALYTICS_EVENT",
+        params: {
+          name: "click_ad",
+          id: "ad-popup",
+          ad_id: this.ad.id,
+        },
       });
     },
   },

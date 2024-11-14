@@ -86,9 +86,13 @@ export default defineComponent({
       this.sendAnalyticsButtonClick("deleteUserData");
     },
     sendAnalyticsButtonClick(optionName: string) {
-      window.gtag("event", "button click", {
-        event_category: "settings option",
-        event_label: optionName,
+      chrome.runtime.sendMessage({
+        name: "SEND_ANALYTICS_EVENT",
+        params: {
+          name: "click_button",
+          id: "settings",
+          option: optionName,
+        },
       });
     },
   },

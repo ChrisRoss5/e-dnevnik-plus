@@ -96,10 +96,13 @@ export default defineComponent({
         name: this.newWebsiteName,
         urls: [{ name: "", url: "" }],
       });
-      window.gtag("event", "button click", {
-        event_category: "settings option",
-        event_label: "addWebsite",
-        value: this.newWebsiteName,
+      chrome.runtime.sendMessage({
+        name: "SEND_ANALYTICS_EVENT",
+        params: {
+          name: "click_button",
+          id: "websites",
+          website: this.newWebsiteName,
+        },
       });
       this.newWebsiteName = "";
     },

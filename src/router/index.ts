@@ -116,11 +116,24 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   if (!to.path.includes("/-/")) {
     const matched = to.matched[to.matched.length - 1];
-    window.gtag("config", window.googleAnalyticsId, {
+    if (window.analyticsInfo?.schoolName) {
+      chrome.runtime.sendMessage({
+        name: "SEND_ANALYTICS_EVENT",
+        params: {
+          name: "page_view",
+          page_url: matched ? matched.path : "--",
+          school_name: window.analyticsInfo.schoolName,
+          class_year_full: window.analyticsInfo.classYearFull,
+          class_year: window.analyticsInfo.classYear,
+          user_type: window.analyticsInfo.userType,
+        },
+      });
+    }
+    /* window.gtag("config", window.googleAnalyticsId, {
       page_title: matched ? matched.components.default.name : "--",
       page_location: matched ? matched.path : "--",
       page_path: to.path,
-    });
+    }); */
   }
   if (!window.isAppInitiated) return next();
   const isAuthenticated = !!store.getters.user;

@@ -8,7 +8,7 @@ declare module "@vue/runtime-core" {
     $emitter: Emitter;
     $reactive: { userOffsetWidth: string };
 
-    // TODO: fix global mixin types @GlobalMixin.ts
+    // TODO?: fix global mixin types @GlobalMixin.ts
     user: User | undefined;
     updateUserSettings: <T extends keyof Settings>(
       settingsKey: T,

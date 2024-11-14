@@ -6,12 +6,11 @@ import { authFetch } from "./scrapers/auth";
 import { shuffleArray } from "./utils";
 
 export default async function getAds(): Promise<void> {
-  const adsFile = window.devTestMode ? "ads-test.json" : "ads5022.json"; // todo!
+  const adsFile = window.devTestMode ? "ads-app-test.json" : "ads-app.json";
   const url = "https://e-dnevnik-plus.firebaseio.com/" + adsFile;
   const user = store.getters.user as User;
   const latestClass = user.classesList[0];
   const schoolName = (latestClass.school || "-")
-    .trim()
     .replaceAll(";", ",")
     .toLowerCase();
   const classYear = parseInt(latestClass.name) || -1;
@@ -38,16 +37,14 @@ export default async function getAds(): Promise<void> {
     const subject = findSubject(cachedSubjects, subjectName);
     subjectAvgs[subjectName] = subject ? getSubjectAvg(subject) : -1;
   }
-  const event = {
-    event_category: "user auth type",
-    event_label: userType,
-    value: classYear,
-    schoolName,
-    finalGradeCurrClass,
-    finalGradePrevClass,
-    ...subjectAvgs,
+
+  window.analyticsInfo = {
+    schoolName: latestClass.school || "-",
+    classYearFull: latestClass.name,
+    classYear,
+    userType,
   };
-  window.gtag("event", "request", event);
+
   let ads = ((await fetch(url).then((res) => res.json())) || []) as Ad[];
   if ((ads as any).fallback)
     ads = await fetch((ads as any).fallback).then((res) => res.json() || []);
@@ -127,13 +124,6 @@ function showAds(user: User, ads: Ad[]) {
   const withBanner = ads.filter((ad) => ad.images.banner);
   $emitter.emit("show-banners", withBanner);
   if (!window.devTestMode) chrome.storage.sync.set({ ads: withBanner });
-  for (const ad of withBanner) {
-    window.gtag("event", "ad", {
-      event_category: "banner",
-      event_label: ad.id,
-      value: "saved",
-    });
-  }
   if (!user.adsShown) user.adsShown = [];
   for (const ad of ads) {
     if (user.adsShown.includes(ad.id) || !ad.showPopup) continue;
@@ -142,10 +132,13 @@ function showAds(user: User, ads: Ad[]) {
       user,
       adsShown: [...user.adsShown, ad.id],
     });
-    window.gtag("event", "ad", {
-      event_category: "popup",
-      event_label: ad.id,
-      value: "displayed",
+    chrome.runtime.sendMessage({
+      name: "SEND_ANALYTICS_EVENT",
+      params: {
+        name: "view_ad",
+        id: "ad-popup",
+        ad_id: ad.id,
+      },
     });
     break;
   }
@@ -189,9 +182,6 @@ function getSubjectGradesCount(subject: SubjectCache) {
   );
 }
 function adError(label: string) {
-  window.gtag("event", "error", {
-    event_category: "ads",
-    event_label: label,
-  });
+  // removed gtag
   return "";
 }

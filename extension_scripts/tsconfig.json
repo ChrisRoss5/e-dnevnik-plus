@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "outDir": "../dist/",
-    "skipLibCheck": true,
+    "target": "ES2023",
+    "module": "None",
     "strict": true,
-  }
+    "types": ["chrome-types"],
+    "skipLibCheck": true,
+  },
 }

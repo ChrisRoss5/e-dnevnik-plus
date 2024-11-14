@@ -227,10 +227,13 @@ export default defineComponent({
       optionName: string,
       value: boolean | number | string,
     ) {
-      window.gtag("event", "button click", {
-        event_category: "calendar option",
-        event_label: optionName,
-        value,
+      chrome.runtime.sendMessage({
+        name: "SEND_ANALYTICS_EVENT",
+        params: {
+          name: "click_button",
+          id: "calendar",
+          [optionName]: value,
+        },
       });
     },
     toggleCalendarView() {

@@ -1,0 +1,17 @@
+[
+  {
+    "id": "",
+    "url": "",
+    "imgListUrl": "",
+    "imgFloaterUrl": "",
+    "backgroundColor": "",
+    "showFloaterOnce": true,
+    "showFloaterUntilClosed": true,
+    "targetUserTypes": [
+      "srednjoškolac",
+      "osnovnoškolac"
+    ],
+    "targetClassYears": [],
+    "info": ""
+  }
+]

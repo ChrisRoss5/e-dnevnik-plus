@@ -1,0 +1,17 @@
+[
+  {
+    "id": "TEST 1",
+    "url": "https://gradivo.hr",
+    "imgListUrl": "https://storage.googleapis.com/e-dnevnik-plus.appspot.com/ads/gradivo.hr/logo.svg",
+    "imgFloaterUrl": "https://storage.googleapis.com/e-dnevnik-plus.appspot.com/ads/gradivo.hr/banner-1.png",
+    "backgroundColor": "rgb(250, 255, 206)",
+    "showFloaterOnce": true,
+    "showFloaterUntilClosed": true,
+    "targetUserTypes": [
+      "srednjoškolac",
+      "osnovnoškolac"
+    ],
+    "targetClassYears": [],
+    "info": "Oglas prikazuje instalirano proširenje e-Dnevnik Plus."
+  }
+]

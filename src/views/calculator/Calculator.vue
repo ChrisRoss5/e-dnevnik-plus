@@ -317,10 +317,13 @@ export default defineComponent({
       return str + (str.length == 1 ? ",00" : "0");
     },
     sendAnalyticsButtonClick(optionName: string, value: string) {
-      window.gtag("event", "button click", {
-        event_category: "calculator option",
-        event_label: optionName,
-        value,
+      chrome.runtime.sendMessage({
+        name: "SEND_ANALYTICS_EVENT",
+        params: {
+          name: "click_button",
+          id: "calculator",
+          [optionName]: value,
+        },
       });
     },
   },

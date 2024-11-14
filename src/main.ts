@@ -7,22 +7,38 @@ declare global {
     isNewUser: boolean;
     devPause: (t: number) => Promise<void>;
     devClearLocalStorage: () => void;
+    analyticsInfo?: {
+      schoolName: string;
+      classYearFull: string;
+      classYear: number;
+      userType: UserType;
+    };
   }
 }
 
-// TODO!: devTestMode
-window.devTestMode = true;
+// TODO before publishing: set devTestMode to false
+window.devTestMode = false;
 window.devPause = (t) => new Promise((res) => setTimeout(res, t));
 window.devClearLocalStorage = () => chrome.storage.local.clear();
 window.googleAnalyticsId = "G-MPMHVT6WTW";
 
-/* https://v3.vuejs.org/guide */
+if (window.devTestMode) {
+  if (!window.chrome) (window as any).chrome = {};
+  if (!window.chrome.runtime) (window as any).chrome.runtime = {};
+  (window as any).chrome.runtime.sendMessage = function(...args: any[]) {
+    console.log("chrome.runtime.sendMessage called with:");
+    console.log(args);
+  };
+}
+
 /* Google Analytics
 https://www.googletagmanager.com/gtag/js?id=G-MPMHVT6WTW
 Removed "http:"!=c&&"https:"!=c&&(Rg(29),a.abort()),
 because the actual protocol is "chrome-extension:"
 https://issuetracker.google.com/issues/174954288 */
-import "@/scripts/gtag.js";
+/* import "@/scripts/gtag.js"; */
+
+/* https://v3.vuejs.org/guide */
 /* https://www.chartjs.org/ */
 /* https://www.chartjs.org/chartjs-plugin-annotation/ */
 import { Chart } from "chart.js";
@@ -50,6 +66,7 @@ import GlobalMixin from "./components/GlobalMixin";
 import router from "./router";
 /* https://next.vuex.vuejs.org/ */
 import { store } from "./store";
+import { UserType } from "./store/state";
 
 /* https://v-tooltip.netlify.app/guide/config.html#default-values */
 VTooltip.options.offset = [0, 10];
@@ -63,17 +80,49 @@ Chart.defaults.interaction.mode = "index";
 Chart.defaults.plugins.tooltip.footerMarginTop = 10;
 Chart.defaults.plugins.tooltip.footerAlign = "right";
 
-window.dataLayer = window.dataLayer || [];
+/* window.dataLayer = window.dataLayer || [];
 window.gtag = function() {
   window.dataLayer.push(arguments);
 };
 window.gtag("js", new Date());
 if (window.devTestMode)
-  (window as any)["ga-disable-" + window.googleAnalyticsId] = true;
+  (window as any)["ga-disable-" + window.googleAnalyticsId] = true; */
 
 const app = createApp(App);
 app.config.globalProperties.$emitter = mitt();
 app.config.globalProperties.$reactive = reactive({ userOffsetWidth: "0px" });
+
+app.config.errorHandler = (err: any, vm: any, info: string) => {
+  const error = err?.stack || info;
+  console.log(error);
+  chrome.runtime.sendMessage({
+    name: "SEND_ANALYTICS_EVENT",
+    params: {
+      name: "error",
+      error: error
+        .replaceAll(/ +/g, " ")
+        .trim()
+        .substring(0, 99),
+    },
+  });
+};
+
+window.addEventListener("error", (event) => {
+  const error = event.error || event.message;
+  console.log(error);
+  if (event.message.includes("ResizeObserver")) return;
+  chrome.runtime.sendMessage({
+    name: "SEND_ANALYTICS_EVENT",
+    params: {
+      name: "error",
+      error: error
+        .replaceAll(/ +/g, " ")
+        .trim()
+        .substring(0, 99),
+    },
+  });
+});
+
 app
   .use(store)
   .use(router)

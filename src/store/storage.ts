@@ -28,7 +28,7 @@ function chromeLocalStorage(data?: State): Promise<State | void> {
 
 export default chromeLocalStorage;
 
-// TODO!: delete testing state
+// TODO before publishing: delete testing state
 
 const testState: State = {
   settings: {

@@ -83,7 +83,6 @@ import { defineComponent } from "vue";
 import { useToast } from "vue-toastification";
 import NavbarAds from "./NavbarAds.vue";
 import NavbarList from "./NavbarList.vue";
-import { MutationTypes } from "@/store/mutations";
 
 const toast = useToast();
 
@@ -129,7 +128,7 @@ export default defineComponent({
         },
       ] as NavbarLink[],
       ads: [] as Ad[],
-      // navCollapsed: false,
+      navCollapsed: false,
     };
   },
   created() {
@@ -184,8 +183,8 @@ export default defineComponent({
             .map(({ name }) => ({ name, icon: icons[name] || "web" }))
         : [];
     },
-    // removed due to ads
-    navCollapsed: {
+    // TODO: removed due to ads
+    /* navCollapsed: {
       get(): boolean {
         return this.$store.state.settings.navbarCollapsed;
       },
@@ -195,7 +194,7 @@ export default defineComponent({
           value,
         });
       },
-    },
+    }, */
   },
 });
 </script>

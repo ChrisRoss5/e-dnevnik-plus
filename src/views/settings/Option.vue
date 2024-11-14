@@ -46,10 +46,13 @@ export default defineComponent({
       if (!this.user) return;
       commit = { user: this.user, settings: { [name]: value } };
       this.$store.commit(MutationTypes.UPDATE_USER_SETTINGS, commit);
-      window.gtag("event", "button click", {
-        event_category: "settings option",
-        event_label: name,
-        value,
+      chrome.runtime.sendMessage({
+        name: "SEND_ANALYTICS_EVENT",
+        params: {
+          name: "click_button",
+          id: "settings",
+          [name]: value,
+        },
       });
     },
   },

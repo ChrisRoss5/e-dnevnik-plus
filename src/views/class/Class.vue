@@ -257,7 +257,7 @@ export default defineComponent({
     },
   },
   computed: {
-    /* TODO: FIX mapGetters TYPES!!! */
+    /* TODO?: FIX mapGetters TYPES!!! */
     openedClassInfo(): ClassInfo | undefined {
       return this.$store.getters.classInfo(
         this.$route.params.classId as string,

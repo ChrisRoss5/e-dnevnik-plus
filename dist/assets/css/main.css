@@ -45,6 +45,50 @@
 .final-avg.edited {
   padding-right: 2rem;
 }
+.final-avg::before {
+  content: attr(data-title);
+  position: absolute;
+  top: calc(100% + 5px) !important;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+  border-radius: inherit;
+  color: white;
+  white-space: pre;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+  transform-origin: top right;
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+.final-avg:hover::before {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.final-avg.jumping {
+  animation: jumpTwice 2s infinite;
+}
+@keyframes jumpTwice {
+  0% {
+    transform: translateY(0);
+  }
+  10% {
+    transform: translateY(-10px);
+  }
+  20% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-10px);
+  }
+  40% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
 
 /* Subject */
 

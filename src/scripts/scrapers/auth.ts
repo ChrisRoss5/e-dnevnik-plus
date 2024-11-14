@@ -65,11 +65,6 @@ async function login(
   //
   // Old or new user
   const user = store.state.users.find((u) => u.email == email);
-  window.gtag("event", "request", {
-    event_category: "user auth 5.0.1",
-    event_label: (user ? "" : "NEW ") + "user signed in",
-    value: classesList.length,
-  });
   if (user) {
     user.password = password;
     store.commit(MutationTypes.UPDATE_CLASSES_LIST, { user, classesList });
@@ -89,17 +84,13 @@ async function login(
     toast("Dobro došli u novi e-Dnevnik Plus!");
   }
   await updateClassesList();
-  //getAds();
+  getAds(); // todo!
   return true;
 }
 
 async function logout(): Promise<boolean> {
   const success = (await fetch(URLS.logout)).url.includes("login");
   if (!success) toastError("Greška u odjavi! Pokušajte ponovo.");
-  window.gtag("event", "request", {
-    event_category: "user auth",
-    event_label: "user signed out",
-  });
   return success;
 }
 
@@ -129,10 +120,6 @@ function toastError(
   config?: ToastOptions & { type?: TYPE.ERROR },
 ): void {
   toast.error(reason, config);
-  window.gtag("event", "error", {
-    event_category: "scrapers",
-    event_label: reason,
-  });
 }
 
-export { URLS, login, logout, authFetch, toastError };
+export { authFetch, login, logout, toastError, URLS };

@@ -25,7 +25,8 @@ async function updateClassesList(): Promise<void> {
     //
     // Find class head teacher
     if (!headTeacher) {
-      const headTeacherEl = classDoc.querySelector(".classmaster")?.lastElementChild;
+      const headTeacherEl = classDoc.querySelector(".classmaster")
+        ?.lastElementChild;
       store.commit(MutationTypes.UPDATE_CLASS_PROPERTY, {
         classInfo,
         property: "headTeacher",
@@ -153,7 +154,7 @@ async function updateSubjects(
   await Promise.allSettled(promises);
   if (window.isNewUser) {
     window.isNewUser = false;
-    // getAds(); todo!
+    getAds(); // todo!
   }
   return true;
 }
@@ -205,11 +206,11 @@ async function findSchoolUrl(
     return;
   }
   const _school = school.toLowerCase().replaceAll(";", ",");
-  const row = [...schoolListDoc.querySelectorAll(".list a")].find(
-    (r) =>
-      UTILS.getElText(r)
-        .toLowerCase()
-        .replaceAll(";", ",").startsWith(_school),
+  const row = [...schoolListDoc.querySelectorAll(".list a")].find((r) =>
+    UTILS.getElText(r)
+      .toLowerCase()
+      .replaceAll(";", ",")
+      .startsWith(_school),
   ) as HTMLAnchorElement | undefined;
   if (!(row && row.href) || row.href.includes("/skole.hr/")) return;
   return row.href;
@@ -298,18 +299,19 @@ async function updateClassNews(): Promise<void | false> {
   try {
     // Todo!: check
     const subjects = [...doc.querySelectorAll(".new-grades-table")];
-    const classNews: ClassNews[] = subjects.map((subject) => {
-      const rows = [...subject.querySelectorAll(".flex-table.row")];
-      return {
-        subjectName: UTILS.getElText(subject.firstElementChild),
-        subjectNews: rows.map((row) => {
-          const { children } = row;
-          const date = "[" + UTILS.getElText(children[0]) + "] ";
-          const note = date + UTILS.getElText(children[1]);
-          const grade = UTILS.getElText(children[children.length - 1]);
-          return { note, grade: grade ? parseInt(grade) : null };
-        }),
-      };
+    const classNews: ClassNews[] = subjects.flatMap((subject) => {
+      const rows = [...subject.querySelectorAll(".row:not(.header)")];
+      const subjectName = UTILS.getElText(subject.firstElementChild);
+      const subjectNews = rows.flatMap((row) => {
+        const { children } = row;
+        if (children.length < 3) return [];
+        const date = "[" + UTILS.getElText(children[1]) + "] "; // now "element"?
+        const note = date + UTILS.getElText(children[0]);
+        const grade = UTILS.getElText(children[children.length - 1]);
+        return { note, grade: grade ? parseInt(grade) : null };
+      });
+      if (!subjectName || !subjectNews.length) return [];
+      return { subjectName, subjectNews };
     });
     store.commit(MutationTypes.UPDATE_CLASS_NEWS, { user, classNews });
   } catch (e) {

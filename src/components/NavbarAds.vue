@@ -70,10 +70,13 @@ export default defineComponent({
       this.transitionTo = direction;
     },
     adClicked(ad: Ad) {
-      window.gtag("event", "ad", {
-        event_category: "banner",
-        event_label: ad.id,
-        value: "clicked",
+      chrome.runtime.sendMessage({
+        name: "SEND_ANALYTICS_EVENT",
+        params: {
+          name: "click_ad",
+          id: "ad-navbar",
+          ad_id: ad.id,
+        },
       });
     },
   },
@@ -87,10 +90,13 @@ export default defineComponent({
       handler(newValue) {
         if (!newValue || this.viewedAds.includes(newValue.id)) return;
         this.viewedAds.push(newValue.id);
-        window.gtag("event", "ad", {
-          event_category: "banner",
-          event_label: newValue.id,
-          value: "viewed",
+        chrome.runtime.sendMessage({
+          name: "SEND_ANALYTICS_EVENT",
+          params: {
+            name: "view_ad",
+            id: "ad-navbar",
+            ad_id: newValue.id,
+          },
         });
       },
       immediate: true,

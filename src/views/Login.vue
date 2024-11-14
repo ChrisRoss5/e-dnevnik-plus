@@ -67,10 +67,10 @@
             >e-Građani</a
           >.
         </div>
-        <div style="color: gray; padding: 20px 0">
+        <!-- <div style="color: gray; padding: 20px 0">
           Iz pedagoških razloga, ocjene se prikazuju s vremenskim odmakom od 48
           sati.
-        </div>
+        </div> -->
         <div class="button" @click="loginParent" v-wave>Prijava</div>
       </div>
     </div>
