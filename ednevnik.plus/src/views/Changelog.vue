@@ -12,6 +12,18 @@
       </div>
     </h2>
     <template v-if="!selectedApp">
+      <h3>Verzija 5.2<span>(15.11.2024.)</span></h3>
+      <ul>
+        <li>Dodane preporuke/oglašavanje sadržaja.</li>
+        <li>e-Dnevnik Plus <span class="plus">Classic</span>:</li>
+        <ul>
+          <li>Unaprijeđeno sučelje i upute na popisu predmeta.</li>
+        </ul>
+        <li>e-Dnevnik Plus <span class="plus">App</span>:</li>
+        <ul>
+          <li>Ažurirani bodovi u kalkulatoru za upis u srednje škole.</li>
+        </ul>
+      </ul>
       <h3>Verzija 5.1<span>(7.1.2024.)</span></h3>
       <ul>
         <li>
