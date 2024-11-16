@@ -8,7 +8,8 @@ import { shuffleArray } from "./utils";
 export default async function getAds(): Promise<void> {
   const adsFile = window.devTestMode ? "ads-app-test.json" : "ads-app.json";
   const url = "https://e-dnevnik-plus.firebaseio.com/" + adsFile;
-  const user = store.getters.user as User;
+  const user = store.getters.user as User | undefined;
+  if (!user) return;
   const latestClass = user.classesList[0];
   const schoolName = (latestClass.school || "-")
     .replaceAll(";", ",")

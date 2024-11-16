@@ -32,7 +32,7 @@ function getUserFullName() {
     return fullNameEl?.textContent?.trim() || "";
 }
 const ADS_SOURCE_ENDPOINT = "https://e-dnevnik-plus.firebaseio.com/";
-const ADS_FILE = true ? "ads-test-classic.json" : "ogl-classic.json"; // TODO before publishing: Set to false
+const ADS_FILE = false ? "ads-test-classic.json" : "ogl-classic.json"; // TODO before publishing: Set to false
 const ADS_URL = `${ADS_SOURCE_ENDPOINT}${ADS_FILE}`;
 async function initAds() {
     const schoolNameEl = document.querySelector(".school-name");
@@ -172,7 +172,7 @@ function initAd(ad, showFloater) {
                     name: "view_ad",
                     id: "ogl-floater",
                     ad_id: ad.id,
-                    event: ad.showFloaterOnce ? "once" : "until_closed",
+                    event: ad.showFloaterUntilClosed ? "until_closed" : "once",
                 },
             });
         }

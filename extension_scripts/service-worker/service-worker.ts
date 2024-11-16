@@ -3,15 +3,20 @@ chrome.runtime.onInstalled.addListener(onInstalled);
 chrome.runtime.onMessage.addListener(onMessage);
 
 async function onInstalled(details: any) {
+  const newVersion: string = chrome.runtime.getManifest().version;
+
   if (details.reason == "install") {
     chrome.storage.sync.clear();
     chrome.storage.local.clear();
     chrome.tabs.create({ url: "https://ednevnik.plus/#instaliran" });
+    sendAnalyticsEvent(
+      { name: "extension_install", version: newVersion },
+      "service_worker",
+    );
     return;
   }
   if (details.reason == "update") {
     const previousVersion: string = details.previousVersion;
-    // const newVersion: string = chrome.runtime.getManifest().version;
 
     if (cmpVersions(previousVersion, "5.0") < 0) {
       chrome.storage.sync.clear();
@@ -31,7 +36,17 @@ async function onInstalled(details: any) {
       });
     });
 
-    update52();
+    if (cmpVersions(previousVersion, "5.2") < 0) await update52();
+
+    if (previousVersion != newVersion)
+      sendAnalyticsEvent(
+        {
+          name: "extension_update",
+          previous_version: previousVersion,
+          new_version: newVersion,
+        },
+        "service_worker",
+      );
   }
 }
 
@@ -45,17 +60,23 @@ function onMessage(
       chrome.declarativeNetRequest.getEnabledRulesets(sendResponse);
       return true; // Important to indicate that it will respond asynchronously
     case "SEND_ANALYTICS_EVENT":
-      message.params = message.params || {};
-      message.params.sender = sender.url.endsWith("popup.html")
-        ? "popup"
-        : sender.url.startsWith("http")
-        ? "classic"
-        : "app";
-      chrome.storage.sync.get("userId", (res) => {
-        const eventName = message.params.name;
-        delete message.params.name;
-        analytics.fireEvent(res.userId, eventName, message.params);
-      });
+      sendAnalyticsEvent(message.params, sender);
       break;
   }
+}
+
+function sendAnalyticsEvent(eventParams = {} as any, sender: any) {
+  eventParams.sender =
+    sender == "service_worker"
+      ? sender
+      : sender.url.endsWith("popup.html")
+      ? "popup"
+      : sender.url.startsWith("http")
+      ? "classic"
+      : "app";
+  chrome.storage.sync.get("userId", (res) => {
+    const eventName = eventParams.name.replaceAll("-", "_");
+    delete eventParams.name;
+    analytics.fireEvent(res.userId, eventName, eventParams);
+  });
 }

@@ -101,6 +101,7 @@ class Analytics {
           body: JSON.stringify({
             client_id: await this.getOrCreateClientId(),
             user_id: userId, // ADDED THIS LINE
+            user_data: {}, // https://www.weltpixel.com/blog/post/google-analytics-4-how-to-fix-events-not-being-tracked-when-using-measurement-protocol
             events: [
               {
                 name,

@@ -3,7 +3,7 @@
   "name": "e-Dnevnik Plus",
   "description": "Napredna verzija e-Dnevnika za učenike i roditelje.",
   "author": "Kristijan Rosandić",
-  "version": "5.2",
+  "version": "5.2.0.1",
   "permissions": [
     "storage",
     "declarativeNetRequest"

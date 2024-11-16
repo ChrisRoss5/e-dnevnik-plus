@@ -3,15 +3,16 @@ chrome.runtime.setUninstallURL("https://ednevnik.plus/deinstalacija");
 chrome.runtime.onInstalled.addListener(onInstalled);
 chrome.runtime.onMessage.addListener(onMessage);
 async function onInstalled(details) {
+    const newVersion = chrome.runtime.getManifest().version;
     if (details.reason == "install") {
         chrome.storage.sync.clear();
         chrome.storage.local.clear();
         chrome.tabs.create({ url: "https://ednevnik.plus/#instaliran" });
+        sendAnalyticsEvent({ name: "extension_install", version: newVersion }, "service_worker");
         return;
     }
     if (details.reason == "update") {
         const previousVersion = details.previousVersion;
-        // const newVersion: string = chrome.runtime.getManifest().version;
         if (cmpVersions(previousVersion, "5.0") < 0) {
             chrome.storage.sync.clear();
             chrome.storage.local.clear();
@@ -32,7 +33,14 @@ async function onInstalled(details) {
                 enableRulesetIds: ["ruleset"],
             });
         });
-        update52();
+        if (cmpVersions(previousVersion, "5.2") < 0)
+            await update52();
+        if (previousVersion != newVersion)
+            sendAnalyticsEvent({
+                name: "extension_update",
+                previous_version: previousVersion,
+                new_version: newVersion,
+            }, "service_worker");
     }
 }
 function onMessage(message, sender, sendResponse) {
@@ -41,19 +49,24 @@ function onMessage(message, sender, sendResponse) {
             chrome.declarativeNetRequest.getEnabledRulesets(sendResponse);
             return true; // Important to indicate that it will respond asynchronously
         case "SEND_ANALYTICS_EVENT":
-            message.params = message.params || {};
-            message.params.sender = sender.url.endsWith("popup.html")
+            sendAnalyticsEvent(message.params, sender);
+            break;
+    }
+}
+function sendAnalyticsEvent(eventParams = {}, sender) {
+    eventParams.sender =
+        sender == "service_worker"
+            ? sender
+            : sender.url.endsWith("popup.html")
                 ? "popup"
                 : sender.url.startsWith("http")
                     ? "classic"
                     : "app";
-            chrome.storage.sync.get("userId", (res) => {
-                const eventName = message.params.name;
-                delete message.params.name;
-                analytics.fireEvent(res.userId, eventName, message.params);
-            });
-            break;
-    }
+    chrome.storage.sync.get("userId", (res) => {
+        const eventName = eventParams.name.replaceAll("-", "_");
+        delete eventParams.name;
+        analytics.fireEvent(res.userId, eventName, eventParams);
+    });
 }
 /*
 OFFICIAL RECOMMENDATION:
@@ -146,6 +159,7 @@ class Analytics {
                 body: JSON.stringify({
                     client_id: await this.getOrCreateClientId(),
                     user_id: userId, // ADDED THIS LINE
+                    user_data: {}, // https://www.weltpixel.com/blog/post/google-analytics-4-how-to-fix-events-not-being-tracked-when-using-measurement-protocol
                     events: [
                         {
                             name,
@@ -211,12 +225,14 @@ function update51() {
     });
 }
 function update52() {
-    chrome.storage.sync.get("login", (state) => {
-        const username = state.login?.username?.trim();
-        if (!username)
-            return;
-        getSHA256Hash(username.replace(/@.*/, "")).then((userId) => {
-            chrome.storage.sync.set({ userId });
+    return new Promise((resolve) => {
+        chrome.storage.sync.get("login", (state) => {
+            const username = state.login?.username?.trim();
+            if (!username)
+                return;
+            getSHA256Hash(username.replace(/@.*/, "")).then((userId) => {
+                chrome.storage.sync.set({ userId }, resolve);
+            });
         });
     });
 }

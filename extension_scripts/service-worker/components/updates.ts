@@ -48,11 +48,13 @@ function update51() {
 }
 
 function update52() {
-  chrome.storage.sync.get("login", (state) => {
-    const username = state.login?.username?.trim();
-    if (!username) return;
-    getSHA256Hash(username.replace(/@.*/, "")).then((userId) => {
-      chrome.storage.sync.set({ userId });
+  return new Promise<void>((resolve) => {
+    chrome.storage.sync.get("login", (state) => {
+      const username = state.login?.username?.trim();
+      if (!username) return;
+      getSHA256Hash(username.replace(/@.*/, "")).then((userId) => {
+        chrome.storage.sync.set({ userId }, resolve);
+      });
     });
   });
 }

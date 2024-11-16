@@ -154,7 +154,7 @@ function initAd(ad: Ad, showFloater: boolean) {
           name: "view_ad",
           id: "ogl-floater",
           ad_id: ad.id,
-          event: ad.showFloaterOnce ? "once" : "until_closed",
+          event: ad.showFloaterUntilClosed ? "until_closed" : "once",
         },
       });
     }
