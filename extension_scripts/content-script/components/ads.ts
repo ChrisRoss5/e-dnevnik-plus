@@ -1,5 +1,5 @@
 const ADS_SOURCE_ENDPOINT = "https://e-dnevnik-plus.firebaseio.com/";
-const ADS_FILE = false ? "ads-test-classic.json" : "ogl-classic.json"; // TODO before publishing: Set to false
+const ADS_FILE = true ? "ads-classic-test.json" : "ogl-classic.json"; // TODO before publishing: Set to false
 const ADS_URL = `${ADS_SOURCE_ENDPOINT}${ADS_FILE}`;
 
 async function initAds() {

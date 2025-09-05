@@ -140,11 +140,11 @@ export interface Ad {
   targetSubjectGrades?: {
     name: string;
     minGrade?: number;
-    maxGrade?: number;
+    maxGrade?: number
   };
   images: {
     popup?: string;
-    banner?: string;
+    banner?: string | string[];
     logo?: string;
   };
   showPopup?: boolean;
