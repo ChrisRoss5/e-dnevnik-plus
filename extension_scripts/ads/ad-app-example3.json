@@ -1,0 +1,51 @@
+[
+  {
+    "id": "test.hr-matura-app-v1",
+    "images": {
+      "banner": "https://storage.googleapis.com/e-dnevnik-plus.appspot.com/ads/gradivo.hr/app-banner-285x150-sve.jpg",
+      "popup": "https://storage.googleapis.com/e-dnevnik-plus.appspot.com/ads/gradivo.hr/10-app-popup-900x600-matura.png"
+    },
+    "showPopup": true,
+    "targetClassYears": [
+      4
+    ],
+    "targetUserTypes": [
+      "srednjoškolac"
+    ],
+    "url": "https://gradivo.hr/online-pripreme-za-maturu/?utm_source=ednevnikplus&utm_medium=banner&utm_campaign=ednevnikplus-pripreme-24&discount=EDPLUS"
+  },
+  {
+    "id": "test.hr-instrukcije-app-v1",
+    "images": {
+      "banner": "https://storage.googleapis.com/e-dnevnik-plus.appspot.com/ads/gradivo.hr/app-banner-285x150-instrukcije.jpg",
+      "popup": "https://storage.googleapis.com/e-dnevnik-plus.appspot.com/ads/gradivo.hr/10-app-popup-900x600-instrukcije.png"
+    },
+    "showPopup": true,
+    "targetClassYears": [
+      1,
+      2,
+      3
+    ],
+    "targetUserTypes": [
+      "srednjoškolac"
+    ],
+    "url": "https://gradivo.hr/online-instrukcije/?utm_source=ednevnikplus&utm_medium=banner&utm_campaign=ednevnikplus-instrukcije-24&discount=EDPLUS"
+  },
+  {
+    "id": "test.hr-instrukcije-app-v2",
+    "images": {
+      "banner": "https://storage.googleapis.com/e-dnevnik-plus.appspot.com/ads/gradivo.hr/app-banner-285x150-instrukcije.jpg",
+      "popup": "https://storage.googleapis.com/e-dnevnik-plus.appspot.com/ads/gradivo.hr/10-app-popup-900x600-instrukcije.png"
+    },
+    "showPopup": true,
+    "targetClassYears": [
+      1,
+      2,
+      3
+    ],
+    "targetUserTypes": [
+      "srednjoškolac"
+    ],
+    "url": "https://gradivo.hr/online-instrukcije/?utm_source=ednevnikplus&utm_medium=banner&utm_campaign=ednevnikplus-instrukcije-24&discount=EDPLUS"
+  }
+]

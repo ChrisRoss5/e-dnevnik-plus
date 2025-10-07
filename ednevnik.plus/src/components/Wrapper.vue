@@ -19,7 +19,7 @@
       > -->
       <div id="urls">
         <router-link to="/povijest">Verzije</router-link
-        ><router-link to="/autor">Autor</router-link>
+        ><!-- <router-link to="/autor">Autor</router-link> -->
       </div>
     </div>
 
@@ -112,11 +112,11 @@ export default defineComponent({
     top: 18px;
   }
 
-  a:first-of-type {
-    padding-right: 10px;
-    margin-right: 10px;
-    border-right: 1px solid white;
-  }
+ //a:first-of-type {
+ //  padding-right: 10px;
+ //  margin-right: 10px;
+ //  border-right: 1px solid white;
+ //}
 }
 
 #heading {
