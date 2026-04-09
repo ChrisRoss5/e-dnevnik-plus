@@ -4,7 +4,7 @@
  */
 module.exports = {
   publicPath: '',
-  outputDir: 'dist/app',
+  outputDir: '../dist/app',
   css: {
     loaderOptions: {
       sass: {

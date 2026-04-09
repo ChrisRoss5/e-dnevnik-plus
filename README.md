@@ -1,23 +1,44 @@
 ## Download / Preuzimanje
 https://chrome.google.com/webstore/detail/e-dnevnik-plus/bcnccmamhmcabokipgjechdeealcmdbe
 
-###### V5.1.1
+###### V5.3
 
 ## EN: Project structure
-- [/ednevnik.plus](ednevnik.plus) is a project within the project. It contains all the data for the extension's website (https://ednevnik.plus).
-- [/docs](docs) is the directory from which the website is served (built from [/ednevnik.plus](ednevnik.plus)).
-  - According to Github Pages rules, it must remain named this way in the root directory of the master branch.
-- [/extension-scripts](extension_scripts) is a TS project that compiles into /dist.
-  - [/service-worker.ts](extension_scripts/service-worker.ts) has replaced `background.js` from manifest v2.
-  - [/content-script.ts](extension_scripts/content-script.ts) is the entire **e-Dnevnik Plus Classic**.
-- Other documents are part of the Vue project that form the **e-Dnevnik Plus App** in [/dist/app](dist/app).
+
+This Chrome extension (Manifest V3) transforms the national e-Class register "e-Dnevnik" into a modern app for students and parents. It ships two versions that share a single service worker:
+
+- **e-Dnevnik Plus App** — a complete standalone redesign built with Vue 3, replacing the original UI entirely.
+- **e-Dnevnik Plus Classic** — a content script injected into `ocjene.skole.hr` that enhances the original site with extra features.
+
+### Directories
+
+- [/app](app) — Vue 3 project that builds **e-Dnevnik Plus App** into [/dist/app](dist/app). Contains all source code, components, views, and app-level configs (`package.json`, `tsconfig.json`, `vue.config.js`, etc.).
+- [/classic](classic) — TypeScript project that compiles **e-Dnevnik Plus Classic** into [/dist](dist).
+  - [service-worker.ts](classic/service-worker/service-worker.ts) — the extension's service worker (replaces `background.js` from Manifest V2). Shared by both App and Classic.
+  - [content-script.ts](classic/content-script/content-script.ts) — the content script injected into the original e-Dnevnik site.
+- [/ednevnik.plus](ednevnik.plus) — a separate Vue 3 project for the extension's website ([ednevnik.plus](https://ednevnik.plus)).
+- [/docs](docs) — built output of the website, served via GitHub Pages. Must remain in the root directory per GitHub Pages rules.
+- [/dist](dist) — the final extension build output. This folder is zipped and uploaded to the Chrome Web Store.
+- [/cws](cws) — Chrome Web Store listing assets (screenshots, logos).
+- [/zips](zips) — archived extension builds from previous releases.
+
+---
 
 ## HR: Struktura projekta
 
-- [/ednevnik.plus](ednevnik.plus) projekt je unutar projekta. Sadrži sve podatke za web stranicu proširenja (https://ednevnik.plus).
-- [/docs](docs) je direktorij s kojeg se poslužuje web stranica (buildan [/ednevnik.plus](ednevnik.plus)).
-  - Prema pravilima Github Pagesa, mora ostati ovog naziva u root direktoriju mastera.
-- [/extension-scripts](extension_scripts) je TS projekt koji se kompajla u [/dist](dist).
-  - [/service-worker.ts](extension_scripts/service-worker.ts) zamijenio je `background.js` iz manifesta v2.
-  - [/content-script.ts](extension_scripts/content-script.ts) je cijeli **e-Dnevnik Plus Classic**.
-- Ostali dokumenti sastav su Vue projekta koji tvore **e-Dnevnik Plus App** u [/dist/app](dist/app).
+Ovo Chrome proširenje (Manifest V3) pretvara nacionalni e-Dnevnik u modernu aplikaciju za učenike i roditelje. Sadrži dvije verzije koje dijele isti service worker:
+
+- **e-Dnevnik Plus App** — potpuni redizajn izraden u Vue 3, zamjenjuje originalno sučelje.
+- **e-Dnevnik Plus Classic** — content script koji se injektira u `ocjene.skole.hr` i nadograduje originalni e-Dnevnik dodatnim funkcijama.
+
+### Direktoriji
+
+- [/app](app) — Vue 3 projekt koji builda **e-Dnevnik Plus App** u [/dist/app](dist/app). Sadrži sav izvorni kod, komponente, viewove i konfiguracije (`package.json`, `tsconfig.json`, `vue.config.js`, itd.).
+- [/classic](classic) — TypeScript projekt koji kompajla **e-Dnevnik Plus Classic** u [/dist](dist).
+  - [service-worker.ts](classic/service-worker/service-worker.ts) — service worker proširenja (zamijenio `background.js` iz Manifesta V2). Dijele ga App i Classic.
+  - [content-script.ts](classic/content-script/content-script.ts) — content script koji se injektira u originalni e-Dnevnik.
+- [/ednevnik.plus](ednevnik.plus) — zaseban Vue 3 projekt za web stranicu proširenja ([ednevnik.plus](https://ednevnik.plus)).
+- [/docs](docs) — buildana web stranica, poslužuje se preko GitHub Pagesa. Mora ostati u root direktoriju prema pravilima GitHub Pagesa.
+- [/dist](dist) — konačni build proširenja. Ovaj se direktorij zippa i uploada na Chrome Web Store.
+- [/cws](cws) — resursi za Chrome Web Store listing (screenshotovi, logotipi).
+- [/zips](zips) — arhivirani buildovi proširenja iz prethodnih verzija.
