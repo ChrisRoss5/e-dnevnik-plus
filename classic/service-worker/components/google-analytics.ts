@@ -21,6 +21,7 @@ const DEFAULT_ENGAGEMENT_TIME_MSEC = 100;
 
 // Duration of inactivity after which a new session is created
 const SESSION_EXPIRATION_IN_MIN = 30;
+let inMemorySessionData: { session_id: string; timestamp: number } | null = null;
 
 class Analytics {
   private readonly useDebugEndpoint: boolean;
@@ -47,9 +48,7 @@ class Analytics {
   // Returns the current session id, or creates a new one if one doesn't exist or
   // the previous one has expired.
   async getOrCreateSessionId() {
-    // Use storage.session because it is only in memory
-    // SESSION STORAGE IS NOT SUPPORTED IN CONTENT SCRIPTS
-    let { sessionData } = await chrome.storage.session.get("sessionData");
+    let sessionData = await getSessionData();
     const currentTimeInMs = Date.now();
     // Check if session exists and is still valid
     if (sessionData?.timestamp) {
@@ -62,16 +61,16 @@ class Analytics {
       } else {
         // Update timestamp to keep session alive
         sessionData.timestamp = currentTimeInMs;
-        await chrome.storage.session.set({ sessionData });
+        await setSessionData(sessionData);
       }
     }
     if (!sessionData) {
       // Create and store a new session
       sessionData = {
         session_id: currentTimeInMs.toString(),
-        timestamp: currentTimeInMs.toString(),
+        timestamp: currentTimeInMs,
       };
-      await chrome.storage.session.set({ sessionData });
+      await setSessionData(sessionData);
     }
     return sessionData.session_id;
   }
@@ -120,3 +119,22 @@ class Analytics {
 }
 
 const analytics = new Analytics(false, false); // TODO before publishing: Set all params to false
+
+async function getSessionData() {
+  const sessionStorage = (chrome.storage as any).session;
+  if (!sessionStorage) return inMemorySessionData;
+  const { sessionData } = await sessionStorage.get("sessionData");
+  return sessionData || null;
+}
+
+async function setSessionData(sessionData: {
+  session_id: string;
+  timestamp: number;
+}) {
+  const sessionStorage = (chrome.storage as any).session;
+  if (!sessionStorage) {
+    inMemorySessionData = sessionData;
+    return;
+  }
+  await sessionStorage.set({ sessionData });
+}
