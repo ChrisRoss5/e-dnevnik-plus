@@ -49,6 +49,7 @@ import VueTippy from "vue-tippy";
 import "tippy.js/dist/tippy.css"; */
 /* https://vcalendar.io/ */
 import VCalendar from "v-calendar";
+import "v-calendar/style.css";
 /* https://v-tooltip.netlify.app/ */
 import VTooltip from "v-tooltip";
 import "v-tooltip/dist/v-tooltip.css";
