@@ -180,7 +180,7 @@ export default defineComponent({
                   borderWidth: 2,
                   borderDash: [10, 16],
                   label: {
-                    enabled: true,
+                    display: true,
                     content: this.getGradeCountAveragePerSubject(),
                     position: "start",
                     font: { style: "normal" },
@@ -194,7 +194,7 @@ export default defineComponent({
                   borderWidth: 2,
                   borderDash: [10, 16],
                   label: {
-                    enabled: true,
+                    display: true,
                     content: this.getFinalGradesCount(),
                     position: "end",
                     font: { style: "normal" },

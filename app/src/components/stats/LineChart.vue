@@ -124,7 +124,7 @@ export default defineComponent({
                   borderWidth: 2,
                   borderDash: [10, 16],
                   label: {
-                    enabled: true,
+                    display: true,
                     content: this.getGradeCountAveragePerMonth(),
                     position: "start",
                     font: { style: "normal" },
