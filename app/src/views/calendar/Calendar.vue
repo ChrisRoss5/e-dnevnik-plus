@@ -71,18 +71,16 @@
         >
           <div class="day-container" @click="dayClicked(day)">
             <div>{{ day.day }}</div>
-            <template v-if="attributes">
+            <template v-if="Array.isArray(attributes) && attributes.length">
               <div
                 v-for="(attr, i) in attributes.filter((attr) => attr.popover)"
                 :key="i"
                 class="day-card card"
                 :style="{
-                  'background-color': attr.highlight
-                    ? attr.highlight.base.style.backgroundColor
-                    : '',
-                  'border-color': attr.dot
-                    ? attr.dot.base.style.backgroundColor
-                    : '',
+                  'background-color':
+                    attr.highlight?.base?.style?.backgroundColor || '',
+                  'border-color':
+                    attr.dot?.base?.style?.backgroundColor || '',
                 }"
               >
                 {{ attr.popover.label }}
