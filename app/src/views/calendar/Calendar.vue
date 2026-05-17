@@ -46,8 +46,8 @@
         :class="{ 'custom-calendar': !settings.showEntireCalendar }"
         :rows="settings.showEntireCalendar ? calendarRows : 1"
         :columns="settings.showEntireCalendar ? calendarColumns : 1"
-        :from-date="settings.showEntireCalendar ? fromDate : today"
-        :nav-visibility="settings.showEntireCalendar ? 'hidden' : 'hover'"
+        :initial-page="settings.showEntireCalendar ? fromPage : todayPage"
+        :nav-visibility="settings.showEntireCalendar ? 'click' : 'hover'"
         :transition="'slide-h'"
         :locale="{
           id: 'hr',
@@ -60,9 +60,9 @@
         }"
         :is-dark="isDarkTheme"
         :attributes="attributes"
-        is-expanded
+        expanded
         show-iso-weeknumbers
-        @update:from-page="updateSchoolYearTitle"
+        @did-move="updateSchoolYearTitle"
         @dayclick="dayClicked"
       >
         <template
@@ -252,8 +252,9 @@ export default defineComponent({
       this.updateUserSettings("calendarSettings", settings);
       this.sendAnalyticsButtonClick("zoom", settings.zoom);
     },
-    async updateSchoolYearTitle(newPage: any) {
-      const { year, month } = newPage;
+    async updateSchoolYearTitle(pages: any) {
+      const first = Array.isArray(pages) ? pages[0] : pages;
+      const { year, month } = first || {};
       if (!year || !month) return;
       const firstSemester = month > 8 ? 0 : 1;
       const startYear = year - firstSemester;
@@ -312,6 +313,13 @@ export default defineComponent({
     },
     isDarkTheme(): boolean {
       return this.$store.state.settings.darkTheme;
+    },
+    todayPage(): { month: number; year: number } {
+      return { month: this.today.getMonth() + 1, year: this.today.getFullYear() };
+    },
+    fromPage(): { month: number; year: number } {
+      const d = this.fromDate || this.today;
+      return { month: d.getMonth() + 1, year: d.getFullYear() };
     },
   },
 });
