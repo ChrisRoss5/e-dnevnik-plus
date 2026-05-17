@@ -1,1 +1,8 @@
 .idea
+.DS_Store
+node_modules/
+
+# Local prototype/build output
+dist-chrome-dev/
+dist-edge-dev/
+dist-firefox-dev/
