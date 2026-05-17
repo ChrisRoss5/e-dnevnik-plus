@@ -8,7 +8,7 @@
     "build-service-worker:watch": "tsc -w -p service-worker/tsconfig.json --outFile ../dist/service-worker.js"
   },
   "dependencies": {
-    "typescript": "^5.6.3"
+    "typescript": "^6.0.3"
   },
   "devDependencies": {
     "chrome-types": "^0.1.428"
