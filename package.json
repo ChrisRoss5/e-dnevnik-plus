@@ -7,6 +7,6 @@
     "prototype:run:firefox": "npx web-ext run --source-dir dist-firefox-dev"
   },
   "devDependencies": {
-    "web-ext": "^8.3.0"
+    "web-ext": "^10.1.0"
   }
 }
