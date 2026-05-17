@@ -126,7 +126,7 @@ app
   .use(store)
   .use(router)
   .use(Toast, { position: "bottom-right" } as PluginOptions)
-  .use(VWave)
+  .use(VWave, {})
   .use(VTooltip)
   .use(VCalendar)
   .mixin(GlobalMixin as any)

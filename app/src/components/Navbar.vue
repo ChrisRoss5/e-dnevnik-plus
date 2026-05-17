@@ -139,7 +139,7 @@ export default defineComponent({
     setTimeout(() => (this.mounted = true), this.navCollapsed ? 100 : 1000);
     if (!chrome.storage) return;
     chrome.storage.sync.get(["newUpdates", "updateNotif", "ads"], (data) => {
-      this.linksBottom[1].blinking = data.newUpdates;
+      this.linksBottom[1].blinking = !!data.newUpdates;
       if (data.updateNotif) {
         toast.success(
           "Proširenje je ažurirano! Nova verzija: " +
@@ -150,7 +150,7 @@ export default defineComponent({
         );
         chrome.storage.sync.remove("updateNotif");
       }
-      this.ads = data.ads || [];
+      this.ads = Array.isArray(data.ads) ? (data.ads as Ad[]) : [];
     });
   },
   methods: {

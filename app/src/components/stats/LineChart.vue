@@ -92,7 +92,7 @@ export default defineComponent({
                   const label = " " + context.dataset.label + ": ";
                   const value = context.parsed.y;
                   const shouldParse = label.includes("Prosjek");
-                  return label + (shouldParse ? formatNum(value) : value);
+                  return label + (shouldParse ? formatNum(value ?? 0) : value);
                 },
                 footer: (context) => {
                   const { dataIndex } = context[0];
@@ -146,7 +146,7 @@ export default defineComponent({
                   xMax: 3.5,
                 },
               },
-            },
+            } as any,
             legend: {
               reverse: true,
               labels: { padding: 35 },
