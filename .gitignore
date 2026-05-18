@@ -3,6 +3,8 @@
 node_modules/
 
 # Local prototype/build output
+dist/
 dist-chrome-dev/
 dist-edge-dev/
 dist-firefox-dev/
+zips/firefox-dev/
