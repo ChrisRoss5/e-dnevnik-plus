@@ -340,6 +340,43 @@ export default defineComponent({
   margin-right: 10px !important;
 }
 
+.vc-nav-popover-container.vc-dark,
+.vc-dark .vc-nav-popover-container {
+  color-scheme: dark;
+
+  .vc-nav-title,
+  .vc-nav-arrow,
+  .vc-nav-item {
+    background-color: transparent;
+    color: var(--vc-gray-100);
+  }
+
+  .vc-nav-item.is-active {
+    background-color: var(--vc-nav-item-active-bg);
+    color: var(--vc-nav-item-active-color);
+  }
+
+  .vc-nav-item.is-current {
+    color: var(--vc-nav-item-current-color);
+  }
+
+  .vc-nav-title:hover,
+  .vc-nav-arrow:hover,
+  .vc-nav-item:hover:not(.is-active) {
+    background-color: var(--vc-nav-hover-bg);
+  }
+}
+
+.vc-dark .vc-title,
+.vc-dark .vc-arrow {
+  background-color: transparent;
+  color: var(--vc-gray-100);
+
+  &:hover {
+    background-color: var(--vc-nav-hover-bg);
+  }
+}
+
 .custom-calendar.vc-container {
   width: 0;
   margin: 0 !important;
