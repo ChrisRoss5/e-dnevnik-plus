@@ -6,9 +6,18 @@ module.exports = {
   lintOnSave: false,
   publicPath: '',
   outputDir: '../dist/app',
+  productionSourceMap: false,
+  configureWebpack: {
+    performance: {
+      hints: false,
+    },
+  },
   css: {
     loaderOptions: {
       sass: {
+        sassOptions: {
+          silenceDeprecations: ['import', 'global-builtin'],
+        },
         additionalData: `
           @import "@/styles/_variables.scss";
           @import "@/styles/global.scss";

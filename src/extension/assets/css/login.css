@@ -1,0 +1,139 @@
+#page-wrapper {
+  display: none !important;
+}
+
+.check {
+  cursor: pointer;
+  position: relative;
+  width: 25px;
+  height: 25px;
+  -webkit-tap-highlight-color: transparent;
+  transform: translate3d(0, 0, 0);
+  margin: auto;
+}
+
+.check:before {
+  opacity: 0;
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: -11px;
+  width: 45px;
+  height: 45px;
+  background: rgba(34, 50, 84, 0.164);
+  border-radius: 50%;
+  transition: opacity 200ms ease;
+}
+
+.check svg {
+  position: relative;
+  z-index: 1;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke: #c8ccd4;
+  stroke-width: 1.5;
+  transition: all 200ms ease;
+  transform: translateY(25%);
+}
+
+.check svg path {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 0;
+}
+
+.check svg polyline {
+  stroke-dasharray: 22;
+  stroke-dashoffset: 66;
+}
+
+.check:hover:before {
+  opacity: 1;
+}
+
+.check:hover svg {
+  stroke: #4285f4;
+}
+
+.checkbox:checked~svg {
+  stroke: #4285f4;
+}
+
+.checkbox:checked~svg path {
+  stroke-dashoffset: 60;
+  transition: all 300ms linear;
+}
+
+.checkbox:checked~svg polyline {
+  stroke-dashoffset: 42;
+  transition: all 200ms linear;
+  transition-delay: 150ms;
+}
+
+.check {
+  cursor: pointer;
+  position: relative;
+  width: 25px;
+  height: 25px;
+  -webkit-tap-highlight-color: transparent;
+  transform: translate3d(0, 0, 0);
+  margin: auto;
+}
+
+.check:before {
+  opacity: 0;
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: -11px;
+  width: 45px;
+  height: 45px;
+  background: rgba(34, 50, 84, 0.164);
+  border-radius: 50%;
+  transition: opacity 200ms ease;
+}
+
+.check svg {
+  position: relative;
+  z-index: 1;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke: #c8ccd4;
+  stroke-width: 1.5;
+  transition: all 200ms ease;
+  transform: translateY(25%);
+}
+
+.check svg path {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 0;
+}
+
+.check svg polyline {
+  stroke-dasharray: 22;
+  stroke-dashoffset: 66;
+}
+
+.check:hover:before {
+  opacity: 1;
+}
+
+.check:hover svg {
+  stroke: #4285f4;
+}
+
+.checkbox:checked~svg {
+  stroke: #4285f4;
+}
+
+.checkbox:checked~svg path {
+  stroke-dashoffset: 60;
+  transition: all 300ms linear;
+}
+
+.checkbox:checked~svg polyline {
+  stroke-dashoffset: 42;
+  transition: all 200ms linear;
+  transition-delay: 150ms;
+}

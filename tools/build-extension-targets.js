@@ -3,7 +3,8 @@ const path = require("path");
 const { execFileSync } = require("child_process");
 
 const rootDir = path.resolve(__dirname, "..");
-const sourceDir = path.join(rootDir, "dist");
+const baseDir = path.join(rootDir, "dist");
+const extensionSourceDir = path.join(rootDir, "src", "extension");
 
 const HOST_PERMISSIONS = [
   "*://ocjene.skole.hr/*",
@@ -15,15 +16,15 @@ const HOST_PERMISSIONS = [
 
 const targets = {
   chrome: {
-    outputDir: "dist-chrome-dev",
+    outputDir: "dist-chrome",
     background: { service_worker: "service-worker.js" },
   },
   edge: {
-    outputDir: "dist-edge-dev",
+    outputDir: "dist-edge",
     background: { service_worker: "service-worker.js" },
   },
   firefox: {
-    outputDir: "dist-firefox-dev",
+    outputDir: "dist-firefox",
     background: { scripts: ["service-worker.js"] },
     browser_specific_settings: {
       gecko: {
@@ -46,10 +47,15 @@ function writeJson(filePath, value) {
   fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`);
 }
 
-function copySourceToTarget(outputDir) {
+function copySourceToBase() {
+  fs.mkdirSync(baseDir, { recursive: true });
+  fs.cpSync(extensionSourceDir, baseDir, { recursive: true });
+}
+
+function copyBaseToTarget(outputDir) {
   const targetDir = path.join(rootDir, outputDir);
   fs.rmSync(targetDir, { recursive: true, force: true });
-  fs.cpSync(sourceDir, targetDir, {
+  fs.cpSync(baseDir, targetDir, {
     recursive: true,
     filter: (src) => !src.includes(`${path.sep}_metadata${path.sep}`),
   });
@@ -57,7 +63,7 @@ function copySourceToTarget(outputDir) {
 }
 
 function buildManifest(target) {
-  const manifest = readJson(path.join(sourceDir, "manifest.json"));
+  const manifest = readJson(path.join(extensionSourceDir, "manifest.json"));
   manifest.host_permissions = HOST_PERMISSIONS;
   manifest.background = target.background;
   manifest.icons = {
@@ -125,35 +131,66 @@ function buildRules() {
   ];
 }
 
-function patchPopup(targetDir, browserName) {
-  const popupPath = path.join(targetDir, "popup", "popup.html");
-  let popup = fs.readFileSync(popupPath, "utf8");
-  popup = popup.replace(
-    /<a id="rate-me"[\s\S]*?<\/a>/,
-    `<a id="rate-me" href="#" style="display: none">Dev build (${browserName})</a>`,
-  );
-  fs.writeFileSync(popupPath, popup);
-}
-
-function ensureTarget(targetName, target) {
-  const targetDir = copySourceToTarget(target.outputDir);
+function ensureTarget(target) {
+  const targetDir = copyBaseToTarget(target.outputDir);
   resizeIcon(targetDir, 16, "logo-light.png", "logo-16.png");
   resizeIcon(targetDir, 48, "logo.png", "logo-48.png");
   writeJson(path.join(targetDir, "manifest.json"), buildManifest(target));
   writeJson(path.join(targetDir, "rules.json"), buildRules());
-  patchPopup(targetDir, targetName);
   return target.outputDir;
 }
 
+function clean() {
+  [
+    "dist",
+    ...Object.values(targets).map((target) => target.outputDir),
+    "web-ext-artifacts",
+  ].forEach((outputDir) => {
+    fs.rmSync(path.join(rootDir, outputDir), { recursive: true, force: true });
+  });
+}
+
+function assertBaseBuild() {
+  [
+    "manifest.json",
+    "rules.json",
+    "content-script.js",
+    "service-worker.js",
+    "app/index.html",
+    "popup/popup.html",
+  ].forEach((relativePath) => {
+    const filePath = path.join(baseDir, relativePath);
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`${relativePath} is missing from dist. Run npm run build:base first.`);
+    }
+  });
+}
+
+function buildTargets() {
+  assertBaseBuild();
+  const outputs = Object.values(targets).map((target) => ensureTarget(target));
+  console.log(`Generated extension targets: ${outputs.join(", ")}`);
+}
+
 function main() {
-  if (!fs.existsSync(path.join(sourceDir, "manifest.json"))) {
-    throw new Error("dist/manifest.json is missing. Build the extension base output first.");
+  const command = process.argv[2] || "targets";
+
+  if (command === "clean") {
+    clean();
+    return;
   }
 
-  const outputs = Object.entries(targets).map(([targetName, target]) =>
-    ensureTarget(targetName, target),
-  );
-  console.log(`Generated prototype extension targets: ${outputs.join(", ")}`);
+  if (command === "prepare-base") {
+    copySourceToBase();
+    return;
+  }
+
+  if (command === "targets") {
+    buildTargets();
+    return;
+  }
+
+  throw new Error(`Unknown command: ${command}`);
 }
 
 main();

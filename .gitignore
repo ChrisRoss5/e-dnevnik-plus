@@ -2,9 +2,10 @@
 .DS_Store
 node_modules/
 
-# Local prototype/build output
+# Local build output
 dist/
-dist-chrome-dev/
-dist-edge-dev/
-dist-firefox-dev/
+dist-chrome/
+dist-edge/
+dist-firefox/
+web-ext-artifacts/
 zips/firefox-dev/
