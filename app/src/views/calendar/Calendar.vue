@@ -49,7 +49,7 @@
         :initial-page="settings.showEntireCalendar ? fromPage : todayPage"
         :initial-page-position="1"
         :first-day-of-week="2"
-        :nav-visibility="settings.showEntireCalendar ? 'click' : 'hover'"
+        :nav-visibility="'click'"
         :transition="'slide-h'"
         locale="hr"
         :masks="{
@@ -429,6 +429,7 @@ export default defineComponent({
     margin: 5px 3px;
     padding: 5px 8px;
     border: 1px solid transparent;
+    color: #1f2937;
   }
 
   .day-container {
