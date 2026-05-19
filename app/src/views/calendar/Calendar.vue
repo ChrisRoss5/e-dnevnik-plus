@@ -47,16 +47,15 @@
         :rows="settings.showEntireCalendar ? calendarRows : 1"
         :columns="settings.showEntireCalendar ? calendarColumns : 1"
         :initial-page="settings.showEntireCalendar ? fromPage : todayPage"
+        :initial-page-position="1"
+        :first-day-of-week="2"
         :nav-visibility="settings.showEntireCalendar ? 'click' : 'hover'"
         :transition="'slide-h'"
-        :locale="{
-          id: 'hr',
-          firstDayOfWeek: 2,
-          masks: {
+        locale="hr"
+        :masks="{
             title: 'MMMM YYYY.',
             weekdays: settings.showEntireCalendar ? 'WWW' : 'WWWW',
             dayPopover: 'WWWW, D.M.YYYY.',
-          },
         }"
         :is-dark="isDarkTheme"
         :attributes="attributes"
@@ -76,11 +75,10 @@
                 v-for="(attr, i) in attributes.filter((attr) => attr.popover)"
                 :key="i"
                 class="day-card card"
+                :class="getAttributeColorClass(attr)"
                 :style="{
-                  'background-color':
-                    attr.highlight?.base?.style?.backgroundColor || '',
-                  'border-color':
-                    attr.dot?.base?.style?.backgroundColor || '',
+                  'background-color': getHighlightColor(attr),
+                  'border-color': getDotColor(attr),
                 }"
               >
                 {{ attr.popover.label }}
@@ -204,7 +202,7 @@ export default defineComponent({
           ((await getExams(classId)) || []).map(({ subject, note, date }) => ({
             dot: {
               color: "red",
-              style: { boxShadow: "0 0 12px 4px var(--red-500)" },
+              style: { boxShadow: "0 0 12px 4px #ef4444" },
             },
             popover: { label: subject + ": " + note },
             dates: this.convertToDate(date),
@@ -274,14 +272,14 @@ export default defineComponent({
           (n) => n.date == date && n.note == note,
         );
         const j = this.attributes.findIndex((attr: any) => {
-          if (!attr.dot || attr.dot.color != "blue") return false;
+          if (!this.isCustomNoteAttribute(attr)) return false;
           return (
             this.convertFromDate(attr.dates) == date &&
             attr.popover.label == note
           );
         });
-        settings.customNotes.splice(i, 1);
-        this.attributes.splice(j, 1);
+        if (i >= 0) settings.customNotes.splice(i, 1);
+        if (j >= 0) this.attributes.splice(j, 1);
       } else {
         settings.customNotes.push({ date, note });
         const newNote = this.createNote(note, this.selectedDay.date);
@@ -295,11 +293,32 @@ export default defineComponent({
       return {
         dot: {
           color: "blue",
-          style: { boxShadow: "0 0 12px 4px var(--blue-500)" },
+          style: { boxShadow: "0 0 12px 4px #3b82f6" },
         },
         popover: { label: note },
         dates: date,
       };
+    },
+    getDotColor(attr: any) {
+      const dot = attr?.dot?.base || attr?.dot;
+      if (!dot) return "";
+      return dot.style?.backgroundColor || "var(--vc-accent-500)";
+    },
+    getHighlightColor(attr: any) {
+      const highlight = attr?.highlight?.base || attr?.highlight;
+      if (!highlight) return "";
+      return highlight.style?.backgroundColor || "var(--vc-accent-100)";
+    },
+    getAttributeColorClass(attr: any) {
+      const color =
+        attr?.dot?.base?.color ||
+        attr?.dot?.color ||
+        attr?.highlight?.base?.color ||
+        attr?.highlight?.color;
+      return color ? `vc-${color}` : "";
+    },
+    isCustomNoteAttribute(attr: any) {
+      return (attr?.dot?.base?.color || attr?.dot?.color) == "blue";
     },
   },
   computed: {
