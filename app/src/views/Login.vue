@@ -81,6 +81,8 @@
 import { login } from "@/scripts/scrapers/auth";
 import { defineComponent } from "vue";
 
+const FRAME_RULE_ID = 1001;
+
 export default defineComponent({
   name: "Login",
   data() {
@@ -120,7 +122,12 @@ export default defineComponent({
       if (!window.confirm(q)) return;
       chrome.declarativeNetRequest.updateEnabledRulesets(
         { disableRulesetIds: ["ruleset"] },
-        () => window.location.replace("https://ocjene.skole.hr/nias"),
+        () => {
+          chrome.declarativeNetRequest.updateDynamicRules(
+            { removeRuleIds: [FRAME_RULE_ID] },
+            () => window.location.replace("https://ocjene.skole.hr/nias"),
+          );
+        },
       );
     },
   },

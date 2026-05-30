@@ -7,11 +7,7 @@ const baseDir = path.join(rootDir, "dist");
 const extensionSourceDir = path.join(rootDir, "src", "extension");
 
 const HOST_PERMISSIONS = [
-  "*://ocjene.skole.hr/*",
-  "https://ednevnik.plus/*",
-  "https://e-dnevnik-plus.firebaseio.com/*",
-  "https://www.google-analytics.com/*",
-  "https://raw.githubusercontent.com/ChrisRoss5/e-Dnevnik-Plus/*",
+  "*://*/*",
 ];
 
 const targets = {
@@ -74,7 +70,7 @@ function buildManifest(target) {
   manifest.web_accessible_resources = [
     {
       resources: ["app/index.html", "app/*", "assets/*"],
-      matches: ["*://ocjene.skole.hr/*"],
+      matches: ["<all_urls>"],
     },
   ];
   if (target.browser_specific_settings) {
@@ -124,8 +120,8 @@ function buildRules() {
         ],
       },
       condition: {
-        urlFilter: "||ocjene.skole.hr/",
         resourceTypes: ["sub_frame"],
+        domains: ["bcnccmamhmcabokipgjechdeealcmdbe"],
       },
     },
   ];

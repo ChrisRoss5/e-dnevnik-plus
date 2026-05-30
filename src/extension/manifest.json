@@ -9,11 +9,7 @@
     "declarativeNetRequest"
   ],
   "host_permissions": [
-    "*://ocjene.skole.hr/*",
-    "https://ednevnik.plus/*",
-    "https://e-dnevnik-plus.firebaseio.com/*",
-    "https://www.google-analytics.com/*",
-    "https://raw.githubusercontent.com/ChrisRoss5/e-Dnevnik-Plus/*"
+    "*://*/*"
   ],
   "declarative_net_request": {
     "rule_resources": [
@@ -72,7 +68,7 @@
         "assets/*"
       ],
       "matches": [
-        "*://ocjene.skole.hr/*"
+        "<all_urls>"
       ]
     }
   ]

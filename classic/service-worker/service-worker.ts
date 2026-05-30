@@ -2,6 +2,8 @@ chrome.runtime.setUninstallURL("https://ednevnik.plus/deinstalacija");
 chrome.runtime.onInstalled.addListener(onInstalled);
 chrome.runtime.onMessage.addListener(onMessage);
 
+const FRAME_RULE_ID = 1001;
+
 async function onInstalled(details: any) {
   const newVersion: string = chrome.runtime.getManifest().version;
 
@@ -34,6 +36,7 @@ async function onInstalled(details: any) {
       chrome.declarativeNetRequest.updateEnabledRulesets({
         enableRulesetIds: ["ruleset"],
       });
+      updateFrameRule(true);
     });
 
     if (cmpVersions(previousVersion, "5.2") < 0) await update52();
@@ -63,6 +66,36 @@ function onMessage(
       sendAnalyticsEvent(message.params, sender);
       break;
   }
+}
+
+function updateFrameRule(enabled: boolean, callback?: () => void) {
+  chrome.declarativeNetRequest.updateDynamicRules(
+    enabled
+      ? {
+          removeRuleIds: [FRAME_RULE_ID],
+          addRules: [getFrameRule()],
+        }
+      : { removeRuleIds: [FRAME_RULE_ID] },
+    callback,
+  );
+}
+
+function getFrameRule(): chrome.declarativeNetRequest.Rule {
+  return {
+    id: FRAME_RULE_ID,
+    priority: 2,
+    action: {
+      type: "modifyHeaders",
+      responseHeaders: [
+        { header: "x-frame-options", operation: "remove" },
+        { header: "frame-options", operation: "remove" },
+      ],
+    },
+    condition: {
+      initiatorDomains: [new URL(chrome.runtime.getURL("")).hostname],
+      resourceTypes: ["sub_frame"],
+    },
+  };
 }
 
 function sendAnalyticsEvent(eventParams = {} as any, sender: any) {
