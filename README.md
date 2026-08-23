@@ -42,3 +42,43 @@ Ovo Chrome proširenje (Manifest V3) pretvara nacionalni e-Dnevnik u modernu apl
 - [/dist](dist) — konačni build proširenja. Ovaj se direktorij zippa i uploada na Chrome Web Store.
 - [/cws](cws) — resursi za Chrome Web Store listing (screenshotovi, logotipi).
 - [/zips](zips) — arhivirani buildovi proširenja iz prethodnih verzija.
+
+---
+
+## Build
+
+App (Node 16 is already pinned in scripts):
+
+```
+cd app
+npm i
+npm run build          # Vue app → dist/app
+```
+
+Classic (TypeScript watch → `dist/`):
+
+```
+cd classic
+npm i
+npm run build-content-script:watch
+npm run build-service-worker:watch
+```
+
+One-shot instead of watch:
+
+```
+cd classic
+npx tsc -p content-script/tsconfig.json --outFile ../dist/content-script.js
+npx tsc -p service-worker/tsconfig.json --outFile ../dist/service-worker.js
+```
+
+Website (GitHub Pages serves repo-root `docs/`):
+
+```
+cd ednevnik.plus
+npm i
+npx -p node@16 vue-cli-service build --dest ../docs
+```
+
+Load unpacked: `dist/`. Zip `dist/` for the Chrome Web Store.
+
