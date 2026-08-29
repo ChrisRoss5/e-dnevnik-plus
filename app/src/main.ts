@@ -16,8 +16,7 @@ declare global {
   }
 }
 
-// TODO before publishing: set devTestMode to false
-window.devTestMode = true;
+window.devTestMode = process.env.VUE_APP_DEV_TEST_MODE == "true";
 window.devPause = (t) => new Promise((res) => setTimeout(res, t));
 window.devClearLocalStorage = () => chrome.storage.local.clear();
 window.googleAnalyticsId = "G-MPMHVT6WTW";
@@ -50,6 +49,7 @@ import VueTippy from "vue-tippy";
 import "tippy.js/dist/tippy.css"; */
 /* https://vcalendar.io/ */
 import VCalendar from "v-calendar";
+import "v-calendar/style.css";
 /* https://v-tooltip.netlify.app/ */
 import VTooltip from "v-tooltip";
 import "v-tooltip/dist/v-tooltip.css";
@@ -127,7 +127,7 @@ app
   .use(store)
   .use(router)
   .use(Toast, { position: "bottom-right" } as PluginOptions)
-  .use(VWave)
+  .use(VWave, {})
   .use(VTooltip)
   .use(VCalendar)
   .mixin(GlobalMixin as any)

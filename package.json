@@ -1,0 +1,15 @@
+{
+  "name": "e-dnevnik-plus",
+  "private": true,
+  "scripts": {
+    "clean": "node tools/build-extension-targets.js clean",
+    "build:base": "npm --prefix app run build && npm --prefix classic run build && node tools/build-extension-targets.js prepare-base",
+    "build:targets": "node tools/build-extension-targets.js targets",
+    "build": "npm run clean && npm run build:base && npm run build:targets",
+    "lint:firefox": "npx web-ext lint --source-dir dist-firefox",
+    "run:firefox": "npx web-ext run --source-dir dist-firefox"
+  },
+  "devDependencies": {
+    "web-ext": "^10.1.0"
+  }
+}

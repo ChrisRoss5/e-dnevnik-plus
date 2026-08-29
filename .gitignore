@@ -1,1 +1,11 @@
 .idea
+.DS_Store
+node_modules/
+
+# Local build output
+dist/
+dist-chrome/
+dist-edge/
+dist-firefox/
+web-ext-artifacts/
+zips/firefox-dev/

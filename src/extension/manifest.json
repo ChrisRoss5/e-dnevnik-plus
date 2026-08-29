@@ -64,6 +64,7 @@
     {
       "resources": [
         "app/index.html",
+        "app/*",
         "assets/*"
       ],
       "matches": [

@@ -21,6 +21,18 @@ export default defineComponent({
   components: { Spinner },
   props: { isSubject: Boolean },
   mounted() {
+    this.iframeReady = new Promise<void>((resolve) => {
+      const iframe = this.$refs.iframe as HTMLIFrameElement;
+      if (iframe.contentDocument?.readyState == "complete") {
+        resolve();
+        return;
+      }
+      const onLoad = () => {
+        iframe.removeEventListener("load", onLoad);
+        resolve();
+      };
+      iframe.addEventListener("load", onLoad);
+    });
     this.$nextTick(this.updateContent);
   },
   data() {
@@ -35,6 +47,7 @@ export default defineComponent({
         potvrde: "https://ocjene.skole.hr/potvrde/home",
       } as Record<string, string>,
       errorMessage: "Greška pri učitavanju stranice e-Dnevnika.",
+      iframeReady: Promise.resolve(),
     };
   },
   methods: {
@@ -43,6 +56,7 @@ export default defineComponent({
       const { classId, subjectId } = this.$route.params;
       if ((this.isSubject && !subjectId) || classId == "-" || !classId) return;
       const iframe = this.$refs.iframe as HTMLIFrameElement;
+      await this.iframeReady;
       const doc = iframe.contentWindow!.document;
       const pathName = this.$route.path.match(/[^/]+$/)![0];
       const url = this.isSubject

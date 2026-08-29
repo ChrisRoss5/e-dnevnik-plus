@@ -4,12 +4,21 @@ declare module '*.vue' {
   export default component;
 }
 
+declare module '*.css';
+declare module 'v-tooltip';
+declare module 'v-tooltip/dist/v-tooltip.css';
+declare module 'vue-toastification/dist/index.css';
+
 declare module '@/assets/high-school-points/*' {
   const points: Record<string, Record<string, number[]>>;
   export default points;
 }
 
-declare module 'v-tooltip';
+declare module '@/assets/high-school-points/*/*.js' {
+  const points: Record<string, Record<string, number[]>>;
+  export default points;
+}
+
 declare module 'chartjs-plugin-piechart-outlabels';
 
 

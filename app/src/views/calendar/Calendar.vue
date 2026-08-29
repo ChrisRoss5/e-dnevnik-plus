@@ -46,23 +46,22 @@
         :class="{ 'custom-calendar': !settings.showEntireCalendar }"
         :rows="settings.showEntireCalendar ? calendarRows : 1"
         :columns="settings.showEntireCalendar ? calendarColumns : 1"
-        :from-date="settings.showEntireCalendar ? fromDate : today"
-        :nav-visibility="settings.showEntireCalendar ? 'hidden' : 'hover'"
+        :initial-page="settings.showEntireCalendar ? fromPage : todayPage"
+        :initial-page-position="1"
+        :first-day-of-week="2"
+        :nav-visibility="'click'"
         :transition="'slide-h'"
-        :locale="{
-          id: 'hr',
-          firstDayOfWeek: 2,
-          masks: {
+        locale="hr"
+        :masks="{
             title: 'MMMM YYYY.',
             weekdays: settings.showEntireCalendar ? 'WWW' : 'WWWW',
             dayPopover: 'WWWW, D.M.YYYY.',
-          },
         }"
         :is-dark="isDarkTheme"
         :attributes="attributes"
-        is-expanded
+        expanded
         show-iso-weeknumbers
-        @update:from-page="updateSchoolYearTitle"
+        @did-move="updateSchoolYearTitle"
         @dayclick="dayClicked"
       >
         <template
@@ -71,18 +70,15 @@
         >
           <div class="day-container" @click="dayClicked(day)">
             <div>{{ day.day }}</div>
-            <template v-if="attributes">
+            <template v-if="Array.isArray(attributes) && attributes.length">
               <div
                 v-for="(attr, i) in attributes.filter((attr) => attr.popover)"
                 :key="i"
                 class="day-card card"
+                :class="getAttributeColorClass(attr)"
                 :style="{
-                  'background-color': attr.highlight
-                    ? attr.highlight.base.style.backgroundColor
-                    : '',
-                  'border-color': attr.dot
-                    ? attr.dot.base.style.backgroundColor
-                    : '',
+                  'background-color': getHighlightColor(attr),
+                  'border-color': getDotColor(attr),
                 }"
               >
                 {{ attr.popover.label }}
@@ -206,7 +202,7 @@ export default defineComponent({
           ((await getExams(classId)) || []).map(({ subject, note, date }) => ({
             dot: {
               color: "red",
-              style: { boxShadow: "0 0 12px 4px var(--red-500)" },
+              style: { boxShadow: "0 0 12px 4px #ef4444" },
             },
             popover: { label: subject + ": " + note },
             dates: this.convertToDate(date),
@@ -254,8 +250,9 @@ export default defineComponent({
       this.updateUserSettings("calendarSettings", settings);
       this.sendAnalyticsButtonClick("zoom", settings.zoom);
     },
-    async updateSchoolYearTitle(newPage: any) {
-      const { year, month } = newPage;
+    async updateSchoolYearTitle(pages: any) {
+      const first = Array.isArray(pages) ? pages[0] : pages;
+      const { year, month } = first || {};
       if (!year || !month) return;
       const firstSemester = month > 8 ? 0 : 1;
       const startYear = year - firstSemester;
@@ -275,14 +272,14 @@ export default defineComponent({
           (n) => n.date == date && n.note == note,
         );
         const j = this.attributes.findIndex((attr: any) => {
-          if (!attr.dot || attr.dot.color != "blue") return false;
+          if (!this.isCustomNoteAttribute(attr)) return false;
           return (
             this.convertFromDate(attr.dates) == date &&
             attr.popover.label == note
           );
         });
-        settings.customNotes.splice(i, 1);
-        this.attributes.splice(j, 1);
+        if (i >= 0) settings.customNotes.splice(i, 1);
+        if (j >= 0) this.attributes.splice(j, 1);
       } else {
         settings.customNotes.push({ date, note });
         const newNote = this.createNote(note, this.selectedDay.date);
@@ -296,11 +293,32 @@ export default defineComponent({
       return {
         dot: {
           color: "blue",
-          style: { boxShadow: "0 0 12px 4px var(--blue-500)" },
+          style: { boxShadow: "0 0 12px 4px #3b82f6" },
         },
         popover: { label: note },
         dates: date,
       };
+    },
+    getDotColor(attr: any) {
+      const dot = attr?.dot?.base || attr?.dot;
+      if (!dot) return "";
+      return dot.style?.backgroundColor || "var(--vc-accent-500)";
+    },
+    getHighlightColor(attr: any) {
+      const highlight = attr?.highlight?.base || attr?.highlight;
+      if (!highlight) return "";
+      return highlight.style?.backgroundColor || "var(--vc-accent-100)";
+    },
+    getAttributeColorClass(attr: any) {
+      const color =
+        attr?.dot?.base?.color ||
+        attr?.dot?.color ||
+        attr?.highlight?.base?.color ||
+        attr?.highlight?.color;
+      return color ? `vc-${color}` : "";
+    },
+    isCustomNoteAttribute(attr: any) {
+      return (attr?.dot?.base?.color || attr?.dot?.color) == "blue";
     },
   },
   computed: {
@@ -314,6 +332,13 @@ export default defineComponent({
     },
     isDarkTheme(): boolean {
       return this.$store.state.settings.darkTheme;
+    },
+    todayPage(): { month: number; year: number } {
+      return { month: this.today.getMonth() + 1, year: this.today.getFullYear() };
+    },
+    fromPage(): { month: number; year: number } {
+      const d = this.fromDate || this.today;
+      return { month: d.getMonth() + 1, year: d.getFullYear() };
     },
   },
 });
@@ -332,6 +357,43 @@ export default defineComponent({
 
 .vc-dot:not(:last-child) {
   margin-right: 10px !important;
+}
+
+.vc-nav-popover-container.vc-dark,
+.vc-dark .vc-nav-popover-container {
+  color-scheme: dark;
+
+  .vc-nav-title,
+  .vc-nav-arrow,
+  .vc-nav-item {
+    background-color: transparent;
+    color: var(--vc-gray-100);
+  }
+
+  .vc-nav-item.is-active {
+    background-color: var(--vc-nav-item-active-bg);
+    color: var(--vc-nav-item-active-color);
+  }
+
+  .vc-nav-item.is-current {
+    color: var(--vc-nav-item-current-color);
+  }
+
+  .vc-nav-title:hover,
+  .vc-nav-arrow:hover,
+  .vc-nav-item:hover:not(.is-active) {
+    background-color: var(--vc-nav-hover-bg);
+  }
+}
+
+.vc-dark .vc-title,
+.vc-dark .vc-arrow {
+  background-color: transparent;
+  color: var(--vc-gray-100);
+
+  &:hover {
+    background-color: var(--vc-nav-hover-bg);
+  }
 }
 
 .custom-calendar.vc-container {
@@ -367,6 +429,7 @@ export default defineComponent({
     margin: 5px 3px;
     padding: 5px 8px;
     border: 1px solid transparent;
+    color: #1f2937;
   }
 
   .day-container {

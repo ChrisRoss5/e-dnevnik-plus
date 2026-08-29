@@ -46,7 +46,7 @@ function customizeSubjectList() {
     el.classList.add("editable-avg");
     const child = el.firstElementChild as HTMLElement;
     el.style.backgroundColor = getComputedStyle(child).backgroundColor;
-    el.innerHTML = el.textContent?.replace(",", ".") ?? "";
+    el.textContent = el.textContent?.replace(",", ".") ?? "";
     el.contentEditable = "true";
     el.dataset.originalValue = el.textContent ? getValue(el) + "" : "";
     el.addEventListener("click", (e) => e.preventDefault());

@@ -1,15 +1,18 @@
 module.exports = {
   root: true,
   env: {
+    browser: true,
     node: true,
     webextensions: true,
   },
   extends: [
-    "plugin:vue/vue3-essential",
+    "plugin:vue/essential",
     "eslint:recommended",
-    "@vue/typescript/recommended",
+    "plugin:@typescript-eslint/recommended",
   ],
+  parser: "vue-eslint-parser",
   parserOptions: {
+    parser: "@typescript-eslint/parser",
     ecmaVersion: 2020,
     vueFeatures: {
       interpolationAsNonHTML: true,
@@ -22,6 +25,10 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-unused-expressions": "off",
+    "vue/multi-word-component-names": "off",
+    "vue/no-reserved-component-names": "off",
     "prefer-rest-params": "off",
   },
 };

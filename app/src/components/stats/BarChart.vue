@@ -148,7 +148,7 @@ export default defineComponent({
                   const label = " " + context.dataset.label + ": ";
                   const value = context.parsed.y;
                   const shouldParse = label.includes("Prosjek");
-                  return label + (shouldParse ? formatNum(value) : value);
+                  return label + (shouldParse ? formatNum(value ?? 0) : value);
                 },
                 footer: (context) => {
                   const { dataIndex } = context[0];
@@ -180,7 +180,7 @@ export default defineComponent({
                   borderWidth: 2,
                   borderDash: [10, 16],
                   label: {
-                    enabled: true,
+                    display: true,
                     content: this.getGradeCountAveragePerSubject(),
                     position: "start",
                     font: { style: "normal" },
@@ -194,14 +194,14 @@ export default defineComponent({
                   borderWidth: 2,
                   borderDash: [10, 16],
                   label: {
-                    enabled: true,
+                    display: true,
                     content: this.getFinalGradesCount(),
                     position: "end",
                     font: { style: "normal" },
                   },
                 },
               },
-            },
+            } as any,
             legend: {
               labels: { padding: 35 },
               onHover: (e) => {
