@@ -1,5 +1,59 @@
 [
   {
+    "startingDate": "7.9.2026",
+    "endingDate": "15.6.2027",
+    "edgeDays": {
+      "7.9.2026": "Počinje prvo polugodište",
+      "23.12.2026": "Završava prvo polugodište",
+      "7.1.2027": "Počinje drugo polugodište",
+      "21.5.2027": "Završava drugo polugodište za maturante",
+      "15.6.2027": "Završava drugo polugodište"
+    },
+    "holidays": {
+      "1.11.2026": "Svi sveti",
+      "18.11.2026": "Dan sjećanja na žrtve Domovinskog rata",
+      "25.12.2026": "Božić",
+      "26.12.2026": "Sveti Stjepan",
+      "1.1.2027": "Nova godina",
+      "6.1.2027": "Sveta tri kralja",
+      "28.3.2027": "Uskrs",
+      "29.3.2027": "Uskrsni ponedjeljak",
+      "1.5.2027": "Međunarodni praznik rada",
+      "27.5.2027": "Tijelovo",
+      "30.5.2027": "Dan državnosti",
+      "22.6.2027": "Dan antifašističke borbe",
+      "5.8.2027": "Dan pobjede i domovinske zahvalnosti i Dan hrvatskih branitelja",
+      "15.8.2027": "Velika Gospa"
+    },
+    "vacationRanges": [
+      {
+        "start": "1.9.2026",
+        "end": "6.9.2026",
+        "label": "Ljetni praznici"
+      },
+      {
+        "start": "24.12.2026",
+        "end": "6.1.2027",
+        "label": "Prvi dio zimskih praznika"
+      },
+      {
+        "start": "22.2.2027",
+        "end": "26.2.2027",
+        "label": "Drugi dio zimskih praznika"
+      },
+      {
+        "start": "25.3.2027",
+        "end": "2.4.2027",
+        "label": "Proljetni praznici"
+      },
+      {
+        "start": "16.6.2027",
+        "end": "31.8.2027",
+        "label": "Ljetni praznici"
+      }
+    ]
+  },
+  {
     "startingDate": "8.9.2025",
     "endingDate": "12.6.2026",
     "edgeDays": {
